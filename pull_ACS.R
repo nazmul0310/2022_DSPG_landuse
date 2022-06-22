@@ -25,20 +25,19 @@ state <- "VA"
 #fips <- 51145 I never used this, will take out
   
 years <- 2020
-endFile <- paste0(years, sep="", ".csv")
-endFile <- years
+endFile <- paste0(years, sep="", ".Rda")
 
 ## Output file names ==============
 
-workingDirectory <- "C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse"
+dataDirectory <- "C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/csv_data/"
 
-popFile <- paste0(paste0(workingDirectory, sep='', "/csv_data/population"), sep='', endFile)
-empFile <- paste0(paste0(workingDirectory, sep='', "/csv_data/employment"), sep='', endFile)
-occFile <- paste0(paste0(workingDirectory, sep='', "/csv_data/occupation"), sep='', endFile)
-incFile <- paste0(paste0(workingDirectory, sep='', "/csv_data/income"), sep='', endFile)
-eduFile <- paste0("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/csv_data/education", sep='', endFile)
-popRetFile <- paste0("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/csv_data/populationRetention", sep='', endFile)         
-transFile <- paste0("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/csv_data/transportation", sep='', endFile)                 
+popFile <- paste0(paste0(dataDirectory, sep='', "population"), sep='', endFile)
+empFile <- paste0(paste0(dataDirectory, sep='', "employment"), sep='', endFile)
+occFile <- paste0(paste0(dataDirectory, sep='', "occupation"), sep='', endFile)
+incFile <- paste0(paste0(dataDirectory, sep='', "income"), sep='', endFile)
+eduFile <- paste0(paste0(dataDirectory, sep='', "education"), sep='', endFile)
+popRetFile <- paste0(paste0(dataDirectory, sep='', "populationRetention"), sep='', endFile)         
+transFile <- paste0(paste0(dataDirectory, sep='', "transportation"), sep='', endFile)                 
      
 
 ## Pulling the data =================
@@ -81,6 +80,11 @@ population$NAME <- str_replace(population$NAME, ", Powhatan County, Virginia", "
 
 # Converting each tract to have a percent population breakdown instead of total.
 population.fnl <- population %>% group_by(NAME) %>% mutate(estimate = estimate / max(estimate))                 
+
+save(population.fnl ,file=popFile)
+
+load(popFile)
+
 population.fnl.df <- as.data.frame(population.fnl)
 population.fnl.sf <- population.fnl$geometry
 
