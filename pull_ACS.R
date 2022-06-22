@@ -288,7 +288,7 @@ save(population.fnl, employment_age, industry, income, education_earn, retention
 
 ## Loading the data ===============================
 
-#load(paste0(dataDirectory, fileOutput))
+#load(paste0(getwd(), "/csv_data/ACS2020Goochland.rData"))
 
 
 
