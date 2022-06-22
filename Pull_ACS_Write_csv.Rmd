@@ -37,7 +37,6 @@ year = Year)
 
 pop_per <- mutate(Goochland_VA_population_2020, 
               estimate = estimate / sum(estimate) *100)
-  
 ```
 ```{r}
 library(tidyverse)
@@ -48,7 +47,7 @@ county = "Goochland",
 variables = c(unemployment = "S2301_C04_001"),
 survey = "acs5",
 geometry=TRUE,
-year = Year) 
+year = Year) # scrap for now
 
 
 ```
@@ -61,7 +60,7 @@ county = "Goochland",
 variables = c(median.household.income = "B19013_001"),
 survey = "acs5",
 geometry=TRUE,
-year = Year) 
+year = Year) # like
 
 ```
 
@@ -82,12 +81,13 @@ county = "Goochland",
 variables = c(education_attainment = edu.vars),
 survey = "acs5",
 geometry=TRUE,
-year = Year) 
+year = Year) %>% mutate(estimate = estimate / sum(estimate)*100)
 
 
 
 some.df <- data.frame(name = names(edu.vars), id = edu.vars)
 some.df$name <- factor(some.df$name, levels = some.df$name)
+rownames(some.df) <- NULL # assigning levels to the columns
 
 ```
 
@@ -136,7 +136,7 @@ county = "Goochland",
 variables = ocu.vars,
 survey = "acs5",
 geometry=TRUE,
-year = Year) 
+year = Year) # good, need better viz ideas
 
 
 ```
