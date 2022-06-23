@@ -194,6 +194,7 @@ education_age <- get_acs(geography = "county",
                                                                    NAME,
                                                                    variable, 
                                                                    estimate)
+education_age$variable <- names(edu_age.var)
 # Already in percent
 
 
