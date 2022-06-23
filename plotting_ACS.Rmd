@@ -82,7 +82,7 @@ ggplot(trans.df, aes(x = "", y= value, fill= name)) +geom_col() + coord_polar("y
 
 ```{r}
 plot(income[,"median"])
-ggplot(income, aes(fill = median))+ geom_sf()+ scale_fill_distiller(palette="Reds", direction=1)+ labs(title="Median Income by Census Tract", caption="ACS5 2016-2020", fill="Income") 
+ggplot(income, aes(fill = median))+ geom_sf()+ scale_fill_distiller(palette="Reds", direction=1)+ labs(title="Median Income by Census Tract", caption="Source: ACS5 2016-2020", fill="Income") 
 ```
 ```{r}
 pal <- colorNumeric(palette="viridis",1:6, domain=income$median)
@@ -112,7 +112,13 @@ new.age.df$name<-factor(new.age.df$name, levels = new.age.df$name)
 
 
 
-ggplot(new.age.df, aes(x=name , y=value, fill=new.age.df$name))+geom_bar(stat="identity") + coord_flip() + scale_color_brewer(palette = "Set3") + theme(legend.position="none") + labs(title="Proportion of Age Groups", y= "Proportion of Population", x= "Age Groups", caption="ACS5 2016-2020")
+ggplot(new.age.df, aes(x=name , y=value, fill=new.age.df$name))+
+  geom_bar(stat="identity") + 
+  coord_flip() + 
+  scale_fill_brewer(palette = "Set3") + 
+  theme_light() + 
+  theme(legend.position="none") + 
+  labs(title="Proportion of Age Groups", y= "Proportion of Population", x= "Age Groups", caption="Source: ACS5 2016-2020")
 
 # Want to use Set3 for discrete palettes
 ```
