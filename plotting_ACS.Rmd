@@ -1,0 +1,58 @@
+---
+title: "ACS_visuals"
+author: "JAM"
+date: '2022-06-23'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tigris)
+library(dplyr)
+library(leaflet)
+library(tidycensus)
+library(tidyverse)
+library(dplyr)
+library(stringr)
+library(tigris)
+library(ggplot2)
+```
+
+
+```{r importing data}
+setwd("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse")
+load(paste0(getwd(), "/csv_data/ACS2020Powhatan.rData"))
+```
+
+```{r population visuals}
+maleTotal <- population[20,]
+femaleTotal <- population[21,]
+total.df <- data.frame(sex = c("Male total", "Female total"), population = c(maleTotal$estimate, femaleTotal$estimate))
+
+ggplot(total.df, aes(x = sex, y = population, fill = 1:2)) + geom_bar(stat = "identity") + theme(legend.position = "none") + geom_text(aes(label=population), position=position_dodge(width=0.9), vjust=-0.25) + labs(title = "Total population split by sex", x = "Sex", y = "Population", caption = "ACS5 Data 2016-2020")
+```
+
+```{r Household Size}
+
+size.df <- data.frame(persons = houseSize$variables, percent = round(houseSize$estimate, 4) * 100)[-1,]
+size.df$persons <- factor(size.df$persons, levels = c("onePerson", "twoPerson", "threePerson", "fourPlus"))
+
+ggplot(size.df, aes(x = "", y = percent, fill = persons)) + 
+  geom_col() + 
+  coord_polar("y", start=0) + 
+  geom_text(aes(label = percent), position = position_stack(vjust = 0.5)) + 
+  theme(text = element_text(size = 20)) + 
+  theme_void() + 
+  labs(title = "Proportion of persons living in households") + 
+  scale_fill_discrete(name = "House size", labels = c("One person", "Two persons", "Three persons", "4+"))
+
+```
+
+
+
+
+
+
+
+
