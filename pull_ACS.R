@@ -47,9 +47,11 @@ pop.var <- c(total        = "S0101_C01_001E",
              bet70and74   = "S0101_C01_016E",
              bet75and79   = "S0101_C01_017E",
              bet80and84   = "S0101_C01_018E",
-             above85      = "S0101_C01_019E")
+             above85      = "S0101_C01_019E",
+             maleTotal    = "S0101_C03_001E",
+             femaleTotal  = "S0101_C05_001E")
 
-population <- get_acs(geography = "tract",
+population <- get_acs(geography = "county",
                       county = counties, 
                       state = state, 
                       geometry = TRUE,
@@ -67,8 +69,7 @@ population.fnl <- population %>% group_by(NAME) %>% mutate(estimate = estimate /
 
 ### Employment ======================          
        
-emp_age.var <- c(total      = "S2301_C01_001E",
-                 bet16and19 = "S2301_C01_002E",
+emp_age.var <- c(bet16and19 = "S2301_C01_002E",
                  bet20and24 = "S2301_C01_003E",
                  bet25and29 = "S2301_C01_004E",
                  bet30and34 = "S2301_C01_005E",
@@ -79,37 +80,23 @@ emp_age.var <- c(total      = "S2301_C01_001E",
                  bet64and74 = "S2301_C01_010E",
                  above75    = "S2301_C01_011E")
 
-employment_age <- get_acs(geography = "tract",
+employment_age <- get_acs(geography = "county",
                           county = counties, 
                           state = state, 
                           geometry = TRUE,
                           year = years, 
                           cache_table = TRUE,
-                          variables = emp_age.var, 
-                          output = "wide") %>% select(GEOID, 
-                                                      NAME,
-                                                      names(emp_age.var), 
+                          variables = emp_age.var) %>% select(GEOID, 
+                                                      NAME, 
+                                                      estimate,
                                                       geometry)
+employment_age$variable <- names(emp_age.var)
 
 employment_age$NAME <- str_replace(employment_age$NAME, paste0(", ", counties, " County, Virginia"), "")
-df <- data.frame(employment_age)
-sum1 <- round(df[1,3:13] / df[1,"total"], 4)
-sum2 <- round(df[2,3:13] / df[2,"total"], 4)
-sum3 <- round(df[3,3:13] / df[3,"total"], 4)
-sum4 <- round(df[4,3:13] / df[4,"total"], 4)
-sum5 <- round(df[5,3:13] / df[5,"total"], 4)
-sum6 <- round(df[6,3:13] / df[6,"total"], 4)
 
-employment_age[1,3:13] <- sum1
-employment_age[2,3:13] <- sum2
-employment_age[3,3:13] <- sum3
-employment_age[4,3:13] <- sum4
-employment_age[5,3:13] <- sum5
-employment_age[6,3:13] <- sum6          
+employment_age <- employment_age %>% mutate(estimate = estimate/sum(estimate))
                  
-                 
-### Occupation ======================
-
+### Industry ======================
 
 ind.var <- c(paste("C24050_00", sep = '', 2:9), paste("C24050_01", sep='', 0:4))
 
@@ -136,19 +123,39 @@ industry <- get_acs(geography = "county",
 industry <- industry %>% select(-moe)
 industry <- industry %>% mutate(estimate = estimate / sum(estimate) * 100)
 
+### Household Size =====================
+
+size.var <- c(totalHouse = "S2501_C01_001E",
+              onePerson = "S2501_C01_002E", 
+              twoPerson = "S2501_C01_003E", 
+              threePerson = "S2501_C01_004E", 
+              fourPlus = "S2501_C01_005E")
+
+houseSize <- get_acs(geography = "county", 
+                     county = counties, 
+                     state = state, 
+                     year = years,
+                     cache_table = TRUE, 
+                     variables = size.var) %>% select(GEOID, NAME, estimate)
+
+houseSize$variables <- names(size.var)
+houseSize$estimate[2:5] <- houseSize$estimate[2:5] / sum(houseSize$estimate[2:5])
+
+
 ### Income ===========================
 
-inc.var <- c(median         = "S1901_C01_012E",
-             below10k       = "S1901_C01_002E",
-             bet10kand15k   = "S1901_C01_003E",
-             bet15kand25k   = "S1901_C01_004E",
-             bet25kand35k   = "S1901_C01_005E",
-             bet35kand50k   = "S1901_C01_006E",
-             bet50kand74k   = "S1901_C01_007E",
-             bet75kand100k  = "S1901_C01_008E",
-             bet100kand150k = "S1901_C01_009E",
-             bet150kand200k = "S1901_C01_010E",
-             above200k      = "S1901_C01_011E")
+inc.var <- c(median = "S1901_C01_012E")
+# inc.var <- c(median         = "S1901_C01_012E",
+#              below10k       = "S1901_C01_002E",
+#              bet10kand15k   = "S1901_C01_003E",
+#              bet15kand25k   = "S1901_C01_004E",
+#              bet25kand35k   = "S1901_C01_005E",
+#              bet35kand50k   = "S1901_C01_006E",
+#              bet50kand74k   = "S1901_C01_007E",
+#              bet75kand100k  = "S1901_C01_008E",
+#              bet100kand150k = "S1901_C01_009E",
+#              bet150kand200k = "S1901_C01_010E",
+#              above200k      = "S1901_C01_011E")
 
 income <- get_acs(geography = "tract",
                   county = counties, 
@@ -165,6 +172,29 @@ income <- get_acs(geography = "tract",
 income$NAME <- str_replace(income$NAME, paste0(", ", counties, " County, Virginia"), "")
 
 ### Education ======================
+
+edu_age.var <- c(belowHighb25 = "S1501_C02_002E",
+                 highb25 = "S1501_C02_003E", 
+                 someCollegeb25 = "S1501_C02_004E",
+                 bachelorsb25 = "S1501_C02_005E",
+                 b9grade = "S1501_C02_007E",
+                 b9and12 = "S1501_C02_008E",
+                 higha25 = "S1501_C02_009E",
+                 someCollegea25 = "S1501_C02_010E",
+                 associatesa25 = "S1501_C02_011E",
+                 bachelorsa25 = "S1501_C02_012E",
+                 graduatesa25 = "S1501_C02_013E")
+
+education_age <- get_acs(geography = "county",
+                          county = counties, 
+                          state = state, 
+                          year = years, 
+                          cache_table = TRUE,
+                          variables = edu_age.var) %>% select(GEOID,
+                                                                   NAME,
+                                                                   variable, 
+                                                                   estimate)
+# Already in percent
 
 
 edu_earnings.var <- c(belowHigh      = "S1501_C01_060E", 
@@ -187,20 +217,20 @@ education_earn$variable <- names(edu_earnings.var)
 
 ### Population Retention ======================
 
-ret.var <- c(moved_same = "S0701_C02_001E",
-             moved_same_state = "S0701_C03_001E",
-             moved_diff_state = "S0701_C04_001E",
-             moved_abroad = "S0701_C05_001E")
-
-retention <- get_acs(geography = "county",
-                     county = counties, 
-                     state = state, 
-                     year = years,
-                     cache_table = TRUE,
-                     output = "wide",
-                     variables = ret.var) %>% select(GEOID, 
-                                                     NAME,
-                                                     names(ret.var))
+# ret.var <- c(moved_same = "S0701_C02_001E",
+#              moved_same_state = "S0701_C03_001E",
+#              moved_diff_state = "S0701_C04_001E",
+#              moved_abroad = "S0701_C05_001E")
+# 
+# retention <- get_acs(geography = "county",
+#                      county = counties, 
+#                      state = state, 
+#                      year = years,
+#                      cache_table = TRUE,
+#                      output = "wide",
+#                      variables = ret.var) %>% select(GEOID, 
+#                                                      NAME,
+#                                                      names(ret.var))
 
 
 ### Transportation ======================
@@ -281,7 +311,7 @@ occupation %>% select(-moe) # These are earnings
 
 ## Saving the objects ============================
 
-save(population.fnl, employment_age, industry, income, education_earn, retention, 
+save(population, employment_age, industry, income, houseSize, education_age, education_earn, 
      transportation, occupation, file = paste0(dataDirectory, fileOutput))
 
 
