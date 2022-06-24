@@ -8,14 +8,15 @@ library(dplyr)
 library(tidycensus)
 options(scipen=999)
 
-## Setting parameters ======================
+## Setting ALL needed parameters ======================
 
-counties <- "Powhatan"
+counties <- "Goochland"
 
 state <- "VA"
   
 years <- 2020
 
+acs_Caption <- paste("Source: ACS5 ", years-5, "-", years, sep="")
 ## Output file names =======================
 
 dataDirectory <- "C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/csv_data/"
@@ -313,13 +314,13 @@ occupation %>% select(-moe) # These are earnings
 ## Saving the objects ============================
 
 save(population, employment_age, industry, income, houseSize, education_age, education_earn, 
-     transportation, occupation, file = paste0(dataDirectory, fileOutput))
+     transportation, occupation, acs_Caption, file = paste0(dataDirectory, fileOutput))
 
 
 
 ## Loading the data ===============================
 
-#load(paste0(getwd(), "/csv_data/ACS2020Goochland.rData"))
+load(paste0(getwd(), "/csv_data/ACS2020Powhatan.rData"))
 
 
 

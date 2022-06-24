@@ -25,9 +25,15 @@ options(scipen=999)
 ```
 
 
+```{r parameters}
+county = "Goochland"
+year = 2020
+fileName <- paste("/csv_data/ACS", year, county, ".rData", sep="")
+```
+
 ```{r importing data}
-setwd("C:/Users/Christopher Vest/Documents/Land_use_project/Land_use")
-load(paste0(getwd(), "/csv_data/ACS2020Goochland.rData"))
+setwd("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse")
+load(paste0(getwd(), fileName))
 ```
 
 ```{r population visuals}
@@ -77,16 +83,17 @@ ggplot(edu_earn.df, aes(x = name, y = values)) +
 ```
 
 
-```{r}
+```{r median income}
 trans.df <- data.frame(name = transportation$travel_type, value = transportation$estimate)
 ggplot(trans.df, aes(x = "", y= value, fill= name)) +geom_col() + coord_polar("y", start = 0) + labs(title = "Means of Transportation to Work", x = "", y= "", caption = "ACS5 2016-2020" )
 ```
 
-```{r}
+```{r median income}
 plot(income[,"median"])
 ggplot(income, aes(fill = median))+ geom_sf()+ scale_fill_distiller(palette="Reds", direction=1)+ labs(title="Median Income by Census Tract", caption="Source: ACS5 2016-2020", fill="Income") 
 ```
-```{r}
+
+```{r median income}
 pal <- colorNumeric(palette="viridis",1:6, domain=income$median)
 
 leaflet() %>%
@@ -95,7 +102,7 @@ leaflet() %>%
   addLegend(position="bottomleft", pal=pal, values=income$median, title= "Median Income",labFormat = labelFormat(transform = function(x) sort(x, decreasing = TRUE)))
 ```
 
-```{r}
+```{r age distributions}
 age.df <- data.frame(name = population$variable, value = population$estimate) [2:19,]
 ages <- age.df$value
 age.df$name<-factor(age.df$name, levels = age.df$name)
@@ -125,6 +132,39 @@ ggplot(new.age.df, aes(x=name , y=value, fill=new.age.df$name))+
 # Want to use Set3 for discrete palettes
 ```
 
+
+```{r population over time}
+file <- paste("/csv_data/ACS", 2020, county, ".rData", sep="")
+load(paste0(getwd(), file))
+pop20 <- population$estimate[1]
+file <- paste("/csv_data/ACS", 2019, county, ".rData", sep="")
+load(paste0(getwd(), file))
+pop19 <- population$estimate[1]
+file <- paste("/csv_data/ACS", 2018, county, ".rData", sep="")
+load(paste0(getwd(), file))
+pop18 <- population$estimate[1]
+file <- paste("/csv_data/ACS", 2017, county, ".rData", sep="")
+load(paste0(getwd(), file))
+pop17 <- population$estimate[1]
+file <- paste("/csv_data/ACS", 2016, county, ".rData", sep="")
+load(paste0(getwd(), file))
+pop16 <- population$estimate[1]
+
+pop_time.df <- data.frame(year = c(2016, 2017, 2018, 2019, 2020), values = c(pop16, pop17, pop18, pop19, pop20))
+
+
+ggplot(pop_time.df, aes(x = year, y = values)) + geom_line(color = "DarkGreen") + ylim(20000, 30000) + labs(title = "Change in Population over Time", y = "Population", x = "Year", caption = "Source: ACS5 2011-2020")
+# This doesn't really represent much
+```
+
+```{r industry}
+ind.df <- data.frame(name = industry$variable, value = industry$estimate)
+
+ggplot(ind.df, aes(x = reorder(name, -value), y = value)) + 
+  geom_bar(stat = "identity", fill = c(3, rep(2, 12)), color = "black") + 
+  coord_flip() + 
+  labs(title = "Proportion of Population in Industries", x = "Proportion of Population", y = "Industry", caption = acs_Caption)
+```
 
 
 
