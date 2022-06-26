@@ -1,0 +1,165 @@
+---
+title: "ACS_visuals"
+author: "JAM"
+date: '2022-06-23'
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tigris)
+library(dplyr)
+library(leaflet)
+library(tidycensus)
+library(tidyverse)
+library(dplyr)
+library(stringr)
+library(tigris)
+library(ggplot2)
+library(viridis)
+library(readxl)
+library(gridExtra)
+library(RColorBrewer)
+options(scipen=999)
+```
+
+
+```{r reading in data}
+parcel2012 <- read_xlsx(paste0(getwd(), "/Tax_Par_2012.xlsx"))
+parcel2021 <- read_xlsx(paste0(getwd(), "/Tax_Par_2021.xlsx"))
+```
+
+
+```{r}
+
+possibleLables <- c("Single Family Urban" = 1, 
+                    "Single Family Suburban" = 2,
+                    "Multi Family" = 3, 
+                    "Commerical/Industrial" = 4,
+                    "Commericial" = 41, 
+                    "Industrial" = 42,
+                    "Ag/Undeveloped (20-99 Acres)" = 5, 
+                    "Ag/Undeveloped (100+ Acres)" = 6,
+                    "Exempt" = 7,
+                    "Federal Govt." = 71, 
+                    "State Govt." = 72,
+                    "Regional Govt." = 73,
+                    "Local Govt." = 74,
+                    "Multiple Govt." = 75,
+                    "Religious" = 76,
+                    "Charitable" = 77,
+                    "Educational" = 78,
+                    "Other Exempt" = 79)
+
+parcel2012.df <- parcel2012 %>%
+  mutate(MLUSE = name(MLUSE %in% possibleLables))
+
+
+parcel12.df <- parcel2012 %>%
+  select(GPIN, MLUSE, Area_ACRE) %>%
+  group_by(MLUSE) %>%
+  arrange(MLUSE)
+
+
+#Omitting NA's
+count12 <-parcel12.df %>%
+  arrange(MLUSE, Area_ACRE) %>%
+  count(MLUSE)
+
+avgAcre.df <- parcel12.df %>% 
+  group_by(MLUSE) %>%
+  summarize(totalAcre = sum(Area_ACRE)) %>%
+  mutate(countUse = count12$n, averageAcre = totalAcre/count12$n)
+
+avgAcre.df <- na.omit(avgAcre.df) %>% mutate(MLUSE = factor(MLUSE, levels = MLUSE))
+
+ggplot(avgAcre.df, aes(x = MLUSE, y = averageAcre)) + geom_bar(stat = "identity") + scale_fill_viridis_d(labels =)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r making the pie charts}
+mluse12.tbl <- table(parcel2012$MLUSE)[1:12]
+
+pie12.df <- parcel2012 %>% 
+  select(GPIN, MLUSE, Area_ACRE) %>% 
+  group_by(MLUSE) %>% 
+  arrange(MLUSE, Area_ACRE) %>%
+  summarize(totalAcres = sum(Area_ACRE)) %>%
+  mutate(MLUSE = factor(MLUSE, levels = MLUSE), totalAcres = totalAcres / mluse12.tbl)
+
+mluse21.tbl <- table(parcel2021$MLUSE)
+pie21.df <- parcel2021 %>% 
+  select(MLUSE, Area_ACRE) %>% 
+  group_by(MLUSE) %>% 
+  summarize(totalAcres = sum(Area_ACRE)) %>%
+  mutate(MLUSE = factor(MLUSE, levels = MLUSE))
+```
+
+
+```{r}
+
+labels21 <- c("Single Family Suburban", "Multi Family", "Commercial/Industries", "Ag/Undeveloped (20-99 Acres)", "Ag/Undeveloped (100+ Acres)", "Federal Govt.", "State Govt.", "Local Govt.", "Religious", "Charitable", "Educational", "Other Exempt", "NA")
+
+labels12 <- c("Single Family Suburban", "Commercial/Industrial", "Ag/Undeveloped (20-99 Acres)", "Ag/Undeveloped (100+ Acres)", "Federal Govt.", "State Govt.", "Local Govt.", "Religious", "Charitable", "Educational", "Other Exempt")
+
+
+
+pie12 <- ggplot(pie12.df, aes(x ="", y = totalAcres, fill = MLUSE)) + 
+  geom_bar(stat='identity') + 
+  coord_polar("y", start = 0) + 
+  labs(title = "Acerage of all Land Uses in Powhatan (2012)", fill = "", caption = "Source: Administrative Data from Powhatan County") + 
+  theme_void() + 
+  scale_fill_viridis_d(labels = labels12)
+
+
+pie21 <- ggplot(pie21.df, aes(x ="", y = totalAcres, fill = MLUSE)) + 
+  geom_bar(stat='identity') + 
+  coord_polar("y", start = 0) + 
+  labs(title = "Acerage of all Land Uses in Powhatan (2021)", fill = "", caption = "Source: Administrative Data from Powhatan County") + 
+  theme_void() + 
+  scale_fill_viridis_d(labels = labels21)
+
+grid.arrange(pie12, pie21, ncol=2)
+```
+
+
+```{r Looking at ratios}
+building12.df <- parcel2012 %>%
+  filter(!(is.na(MCLASS))) %>%
+  select(GPIN, MCLASS, MLUSE, MIMPRV, MTOTPR) %>%
+  arrange(GPIN) %>%
+  mutate(buildRatio = MIMPRV / MTOTPR)
+
+hist(building12.df$buildRatio)
+
+building21.df <- parcel2021 %>%
+  filter(GPIN %in% building12.df$GPIN) %>%
+  select(GPIN, MCLASS, MLUSE, MIMPRV, MTOTPR) %>%
+  arrange(GPIN) %>%
+  mutate(buildRatio = MIMPRV / MTOTPR)
+
+
+
+
+```
+
