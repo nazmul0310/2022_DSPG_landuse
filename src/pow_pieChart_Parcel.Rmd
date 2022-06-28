@@ -28,8 +28,8 @@ options(scipen=999)
 ```
 
 ```{r reading in data}
-parcel2012 <- read_xlsx(paste0(getwd(), "/Tax_Par_2012.xlsx"))
-parcel2021 <- read_xlsx(paste0(getwd(), "/Tax_Par_2021.xlsx"))
+parcel2012 <- read_xlsx(paste0(getwd(), "/Powhatan_Parcel_Data/Tax_Par_2012.xlsx"))
+parcel2021 <- read_xlsx(paste0(getwd(), "/Powhatan_Parcel_Data/Tax_Par_2021.xlsx"))
 ```
 
 ```{r}
