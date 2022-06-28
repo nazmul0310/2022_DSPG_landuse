@@ -36,13 +36,6 @@ setwd("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse")
 load(paste0(getwd(), fileName))
 ```
 
-```{r population visuals}
-maleTotal <- population[20,]
-femaleTotal <- population[21,]
-total.df <- data.frame(sex = c("Male total", "Female total"), population = c(maleTotal$estimate, femaleTotal$estimate))
-
-ggplot(total.df, aes(x = sex, y = population, fill = 1:2)) + geom_bar(stat = "identity") + theme(legend.position = "none") + geom_text(aes(label=population), position=position_dodge(width=0.9), vjust=-0.25) + labs(title = "Total population split by sex", x = "Sex", y = "Population", caption = "ACS5 Data 2016-2020")
-```
 
 ```{r Household Size}
 
@@ -83,9 +76,12 @@ ggplot(edu_earn.df, aes(x = name, y = values)) +
 ```
 
 
-```{r median income}
+```{r Transportation}
 trans.df <- data.frame(name = transportation$travel_type, value = transportation$estimate)
-ggplot(trans.df, aes(x = "", y= value, fill= name)) +geom_col() + coord_polar("y", start = 0) + labs(title = "Means of Transportation to Work", x = "", y= "", caption = "ACS5 2016-2020" )
+ggplot(trans.df, aes(x = "", y= value, fill= name)) +geom_col(color = "black") + coord_polar("y", start = 0) +
+  geom_label(aes(label = round(value, 2)),
+             position = position_stack(vjust = 0.5),
+             show.legend = FALSE) + labs(title = "Means of Transportation to Work", x = "", y= "", caption = "ACS5 2016-2020" )
 ```
 
 ```{r median income}
