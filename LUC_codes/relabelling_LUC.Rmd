@@ -175,16 +175,16 @@ PowReduParc2021$FIN_MLUSE <- remap.2021
 
 fileDir <- paste0(getwd(), "/Powhatan_Parcel_Data/Powhatan_Reduced_Data_FIN/")
 
-st_write(PowReduParc2012, paste0(fileDir, "PowReduTaxParcels2012.shp"))
-st_write(PowReduParc2013, paste0(fileDir, "PowReduTaxParcels2013.shp"))
-st_write(PowReduParc2014, paste0(fileDir, "PowReduTaxParcels2014.shp"))
-st_write(PowReduParc2015, paste0(fileDir, "PowReduTaxParcels2015.shp"))
-st_write(PowReduParc2016, paste0(fileDir, "PowReduTaxParcels2016.shp"))
-st_write(PowReduParc2017, paste0(fileDir, "PowReduTaxParcels2017.shp"))
-st_write(PowReduParc2018, paste0(fileDir, "PowReduTaxParcels2018.shp"))
-st_write(PowReduParc2019, paste0(fileDir, "PowReduTaxParcels2019.shp"))
-st_write(PowReduParc2020, paste0(fileDir, "PowReduTaxParcels2020.shp"))
-st_write(PowReduParc2021, paste0(fileDir, "PowReduTaxParcels2021.shp"))
+st_write(PowReduParc2012, paste0(fileDir, "PowReduTaxParcels2012FIN.shp"))
+st_write(PowReduParc2013, paste0(fileDir, "PowReduTaxParcels2013FIN.shp"))
+st_write(PowReduParc2014, paste0(fileDir, "PowReduTaxParcels2014FIN.shp"))
+st_write(PowReduParc2015, paste0(fileDir, "PowReduTaxParcels2015FIN.shp"))
+st_write(PowReduParc2016, paste0(fileDir, "PowReduTaxParcels2016FIN.shp"))
+st_write(PowReduParc2017, paste0(fileDir, "PowReduTaxParcels2017FIN.shp"))
+st_write(PowReduParc2018, paste0(fileDir, "PowReduTaxParcels2018FIN.shp"))
+st_write(PowReduParc2019, paste0(fileDir, "PowReduTaxParcels2019FIN.shp"))
+st_write(PowReduParc2020, paste0(fileDir, "PowReduTaxParcels2020FIN.shp"))
+st_write(PowReduParc2021, paste0(fileDir, "PowReduTaxParcels2021FIN.shp"))
 ```
 
 
@@ -323,7 +323,50 @@ remap.2021.post <- mapvalues(remap.2021.post, master_label$code_value, master_la
   
 # ================================================== OVER WRITING =================
 
+PowParcellation_12_21$MLUSE_old <- remap.all.prev
+PowParcellation_12_21$MLUSE_new <- remap.all.post
+
+PowParcellation_12_13$MLUSE_old <- remap.2012.prev
+PowParcellation_12_13$MLUSE_new <- remap.2013.post
+
+PowParcellation_13_14$MLUSE_old <- remap.2013.prev
+PowParcellation_13_14$MLUSE_new <- remap.2014.post
+
+PowParcellation_14_15$MLUSE_old <- remap.2014.prev
+PowParcellation_14_15$MLUSE_new <- remap.2015.post
+
+PowParcellation_15_16$MLUSE_old <- remap.2015.prev
+PowParcellation_15_16$MLUSE_new <- remap.2016.post
+
+PowParcellation_16_17$MLUSE_old <- remap.2016.prev
+PowParcellation_16_17$MLUSE_new <- remap.2017.post
+
+PowParcellation_17_18$MLUSE_old <- remap.2017.prev
+PowParcellation_17_18$MLUSE_new <- remap.2018.post
+
+PowParcellation_18_19$MLUSE_old <- remap.2018.prev
+PowParcellation_18_19$MLUSE_new <- remap.2019.post
+
+PowParcellation_19_20$MLUSE_old <- remap.2019.prev
+PowParcellation_19_20$MLUSE_new <- remap.2020.post
+
+PowParcellation_20_21$MLUSE_old <- remap.2020.prev
+PowParcellation_20_21$MLUSE_new <- remap.2021.post
+
 
 # ================================================== SAVING =================
+
+fileDir <- paste0(getwd(), "/Powhatan_Parcel_Data/Powhatan_Parcellation_FIN/")
+
+st_write(PowParcellation_12_21, paste0(fileDir, "Pow_12_21_parcellationFIN.shp"))
+st_write(PowParcellation_12_13, paste0(fileDir, "Pow_13_12_parcellationFIN.shp"))
+st_write(PowParcellation_13_14, paste0(fileDir, "Pow_14_13_parcellationFIN.shp"))
+st_write(PowParcellation_14_15, paste0(fileDir, "Pow_15_14_parcellationFIN.shp"))
+st_write(PowParcellation_15_16, paste0(fileDir, "Pow_16_15_parcellationFIN.shp"))
+st_write(PowParcellation_16_17, paste0(fileDir, "Pow_17_16_parcellationFIN.shp"))
+st_write(PowParcellation_17_18, paste0(fileDir, "Pow_18_17_parcellationFIN.shp"))
+st_write(PowParcellation_18_19, paste0(fileDir, "Pow_19_18_parcellationFIN.shp"))
+st_write(PowParcellation_19_20, paste0(fileDir, "Pow_20_19_parcellationFIN.shp"))
+st_write(PowParcellation_20_21, paste0(fileDir, "Pow_21_20_parcellationFIN.shp"))
 ```
 
