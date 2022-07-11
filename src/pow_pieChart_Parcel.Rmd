@@ -24,155 +24,139 @@ library(readxl)
 library(gridExtra)
 library(RColorBrewer)
 library(ggpubr)
+library(plotly)
 options(scipen=999)
 ```
 
 ```{r reading in data}
-parcel2012 <- read_xlsx(paste0(getwd(), "/Powhatan_Parcel_Data/Tax_Par_2012.xlsx"))
-parcel2021 <- read_xlsx(paste0(getwd(), "/Powhatan_Parcel_Data/Tax_Par_2021.xlsx"))
+parcel2012 <- read_xlsx(paste0(getwd(), "/LUC_codes/Cleaned_Parcel_Data/Tax_Par_2012CLEANED.xlsx"))
+parcel2021 <- read_xlsx(paste0(getwd(), "/LUC_codes/Cleaned_Parcel_Data/Tax_Par_2021CLEANED.xlsx"))
+
+# Setting MLUSE to a factor so we don't have to worry about it later.
+
+parcel2012$MLUSE <- factor(parcel2012$MLUSE, 
+                               levels = c("Single Family Residential Urban",
+                                          "Single Family Residential Suburban",
+                                          "Multi-Family Residential",
+                                          "Commerical / Industrial",
+                                          "Agricultural / Undeveloped (20-99 Acres)",
+                                          "Agricultural / Undeveloped (100+ Acres)",
+                                          "Other"))
+parcel2021$MLUSE <- factor(parcel2021$MLUSE, 
+                               levels = c("Single Family Residential Urban",
+                                          "Single Family Residential Suburban",
+                                          "Multi-Family Residential",
+                                          "Commerical / Industrial",
+                                          "Agricultural / Undeveloped (20-99 Acres)",
+                                          "Agricultural / Undeveloped (100+ Acres)",
+                                          "Other"))
 ```
 
-```{r}
+```{r looking at MLUSE distributions}
 
-possibleLables <- c("Single Family Suburban" = 2,
-                    "Multi Family" = 3, 
-                    "Commerical/Industrial" = 4,
-                    "Ag/Undeveloped (20-99 Acres)" = 5, 
-                    "Ag/Undeveloped (100+ Acres)" = 6,
-                    "Federal Govt." = 71, 
-                    "State Govt." = 72,
-                    "Local Govt." = 74,
-                    "Religious" = 76,
-                    "Charitable" = 77,
-                    "Educational" = 78,
-                    "Other Exempt" = 79)
+parcel12.df <- parcel2012 %>% select(MLUSE, Area_ACRE)
+parcel12.df <- rbind(parcel12.df, data.frame(MLUSE = "Multi-Family Residential", Area_ACRE = 0))
+
+parcel12.df <- parcel12.df %>% 
+  group_by(MLUSE) %>% 
+  summarise(MLUSE_Total_Acres = sum(Area_ACRE), MLUSE_Count = length(MLUSE))
 
 
-# 2012 data
-parcel12.df <- parcel2012 %>%
-  select(GPIN, MLUSE, Area_ACRE) %>%
-  group_by(MLUSE) %>%
-  arrange(MLUSE)
+parcel21.df <- parcel2021 %>% select(MLUSE, Area_ACRE)
 
-count12 <-parcel12.df %>%
-  arrange(MLUSE, Area_ACRE) %>%
-  count(MLUSE)
-
-avgAcre12.df <- parcel12.df %>% 
-  group_by(MLUSE) %>%
-  summarize(totalAcre = sum(Area_ACRE)) %>%
-  mutate(countUse = count12$n, averageAcre = totalAcre)
-avgAcre12.df <- rbind(avgAcre12.df, c(3, 0, 0, 0))
-
-avgAcre12.df <- na.omit(avgAcre12.df) %>% arrange(MLUSE) %>% mutate(MLUSE = names(possibleLables))
-
-# 2021 data
-parcel21.df <- parcel2021 %>%
-  select(GPIN, MLUSE, Area_ACRE) %>%
-  group_by(MLUSE) %>%
-  arrange(MLUSE)
-
-count21 <-parcel21.df %>%
-  arrange(MLUSE, Area_ACRE) %>%
-  count(MLUSE)
-
-avgAcre21.df <- parcel21.df %>% 
-  group_by(MLUSE) %>%
-  summarize(totalAcre = sum(Area_ACRE)) %>%
-  mutate(countUse = count21$n, averageAcre = totalAcre)
-
-avgAcre21.df <- na.omit(avgAcre21.df) %>% mutate(MLUSE = names(possibleLables))
+parcel21.df <- parcel21.df %>% 
+  group_by(MLUSE) %>% 
+  summarise(MLUSE_Total_Acres = sum(Area_ACRE), MLUSE_Count = length(MLUSE))
 
 
 
 
-p12 <- ggplot(avgAcre12.df, aes(x = MLUSE, y = totalAcre, fill = MLUSE)) + 
+p12 <- ggplot(parcel12.df, aes(x = MLUSE, y = MLUSE_Total_Acres, fill = MLUSE)) + 
   geom_bar(stat = "identity") + 
   scale_fill_viridis_d() + 
   coord_flip() + 
   scale_y_reverse() + 
   labs(title = "Acres per Land use (2012)", x = "", y = "Acres", fill = "Land Use") + 
-  geom_text(aes(label = round(totalAcre,2)), hjust = 1.05) +
+  geom_text(aes(label = round(MLUSE_Total_Acres,2)), hjust = 1.05) +
   theme(plot.title = element_text(hjust = 1), legend.position="none") + 
   scale_x_discrete(position = "top")+
   ylim(66000, 0)
   
 
-p21 <- ggplot(avgAcre21.df, aes(x = MLUSE, y = totalAcre, fill = MLUSE)) + 
+p21 <- ggplot(parcel21.df, aes(x = MLUSE, y = MLUSE_Total_Acres, fill = MLUSE)) + 
   geom_bar(stat = "identity") + 
   scale_fill_viridis_d() + 
   coord_flip() + 
   theme(legend.position = "none", axis.text.y = element_blank()) + 
   labs(title = "Acres per Land use (2021)", x = "", y = "Acres", caption = "Source: Administrative Data from Powhatan County") +
-  geom_text(aes(label = round(totalAcre,2)), hjust = -.05)+
+  geom_text(aes(label = round(MLUSE_Total_Acres,2)), hjust = -.05) +
   ylim(0, 66000)
 
-ggarrange(p12, p21, ncol=2, common.legend=TRUE, legend="bottom", labels=NULL)
+# ggarrange(p12, p21, ncol=2, common.legend=FALSE, labels=NULL)
 
 grid.arrange(p12, p21, ncol=2, top = "Total Acres by land use (2012 vs. 2021)")
 
+
+
+p12
+p21
 ```
 
-```{r making the pie charts}
-mluse12.tbl <- table(parcel2012$MLUSE)[1:12]
 
-pie12.df <- parcel2012 %>% 
-  select(GPIN, MLUSE, Area_ACRE) %>% 
-  group_by(MLUSE) %>% 
-  arrange(MLUSE, Area_ACRE) %>%
-  summarize(totalAcres = sum(Area_ACRE)) %>%
-  mutate(MLUSE = factor(MLUSE, levels = MLUSE), totalAcres = totalAcres / mluse12.tbl)
+```{r plotting mean land values per acre}
 
-mluse21.tbl <- table(parcel2021$MLUSE)
-pie21.df <- parcel2021 %>% 
-  select(MLUSE, Area_ACRE) %>% 
-  group_by(MLUSE) %>% 
-  summarize(totalAcres = sum(Area_ACRE)) %>%
-  mutate(MLUSE = factor(MLUSE, levels = MLUSE))
+
+parcel12.df <- parcel2012 %>% 
+  select(MLUSE, MTOTPR) %>%
+  group_by(MLUSE) %>%
+  summarise(MLUSE_Mean_Cost = mean(MTOTPR))
+
+p12 <- ggplot(parcel12.df, aes(x = MLUSE, y = MLUSE_Mean_Cost, fill = MLUSE)) + 
+  geom_bar(stat = "identity") + 
+  scale_fill_viridis_d() +
+  theme(legend.position = "none") + 
+  geom_text(aes(label = round(MLUSE_Mean_Cost,2)), vjust = -.3) +
+  labs(title = "Mean Cost of Land by Land Value (2012)", caption = "Source: Administrative Data from Powhatan County", x = "Land Use", y = "Mean Cost")
+
+parcel21.df <- parcel2021 %>%
+  select(MLUSE, MTOTPR) %>%
+  group_by(MLUSE) %>%
+  summarise(MLUSE_Mean_Cost = mean(MTOTPR))
+
+p21 <- ggplot(parcel21.df, aes(x = MLUSE, y = MLUSE_Mean_Cost, fill = MLUSE)) + 
+  geom_bar(stat = "identity") + 
+  scale_fill_viridis_d() +
+  theme(legend.position = "none") + 
+  geom_text(aes(label = round(MLUSE_Mean_Cost,2)), vjust = -.3) +
+  labs(title = "Mean Cost of Land by Land Value (2021)", caption = "Source: Administrative Data from Powhatan County", x = "Land Use", y = "Mean Cost")
+
+
+p12
+p21
 ```
 
-```{r}
 
-labels21 <- c("Single Family Suburban", "Multi Family", "Commercial/Industries", "Ag/Undeveloped (20-99 Acres)", "Ag/Undeveloped (100+ Acres)", "Federal Govt.", "State Govt.", "Local Govt.", "Religious", "Charitable", "Educational", "Other Exempt", "NA")
+```{r checking out a histogram of Area_ACRE}
+parcel12.df <- parcel2012 %>%
+  select(Area_ACRE)
 
-labels12 <- c("Single Family Suburban", "Commercial/Industrial", "Ag/Undeveloped (20-99 Acres)", "Ag/Undeveloped (100+ Acres)", "Federal Govt.", "State Govt.", "Local Govt.", "Religious", "Charitable", "Educational", "Other Exempt")
+p12 <- ggplot(parcel12.df, aes(x = Area_ACRE)) + geom_histogram()
+# This doesn't really show much then
 
+parcel21.df <- parcel2021 %>%
+  select(Area_ACRE)
 
-
-pie12 <- ggplot(pie12.df, aes(x ="", y = totalAcres, fill = MLUSE)) + 
-  geom_bar(stat='identity') + 
-  coord_polar("y", start = 0) + 
-  labs(title = "Acerage of all Land Uses in Powhatan (2012)", fill = "", caption = "Source: Administrative Data from Powhatan County") + 
-  theme_void() + 
-  scale_fill_viridis_d(labels = labels12)
+p21 <- ggplot(parcel21.df, aes(x = Area_ACRE)) + geom_histogram()
 
 
-pie21 <- ggplot(pie21.df, aes(x ="", y = totalAcres, fill = MLUSE)) + 
-  geom_bar(stat='identity') + 
-  coord_polar("y", start = 0) + 
-  labs(title = "Acerage of all Land Uses in Powhatan (2021)", fill = "", caption = "Source: Administrative Data from Powhatan County") + 
-  theme_void() + 
-  scale_fill_viridis_d(labels = labels21)
-
-grid.arrange(pie12, pie21, ncol=2)
+p12
+p21
 ```
 
-```{r Looking at ratios}
-building12.df <- parcel2012 %>%
-  filter(!(is.na(MCLASS))) %>%
-  select(GPIN, MCLASS, MLUSE, MIMPRV, MTOTPR) %>%
-  arrange(GPIN) %>%
-  mutate(buildRatio = MIMPRV / MTOTPR)
 
-hist(building12.df$buildRatio)
-
-building21.df <- parcel2021 %>%
-  filter(GPIN %in% building12.df$GPIN) %>%
-  select(GPIN, MCLASS, MLUSE, MIMPRV, MTOTPR) %>%
-  arrange(GPIN) %>%
-  mutate(buildRatio = MIMPRV / MTOTPR)
-
-
-
+```{r Building values}
 
 ```
+
+
+

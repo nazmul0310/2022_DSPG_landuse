@@ -146,8 +146,12 @@ houseSize$estimate[2:5] <- houseSize$estimate[2:5] / sum(houseSize$estimate[2:5]
 ### Income ===========================
 
 #inc.var <- c(median = "S1901_C01_012E")
+<<<<<<< HEAD
 inc.var <- c(median         = "S1901_C01_012E",
              below10k       = "S1901_C01_002E",
+=======
+inc.var <- c(below10k       = "S1901_C01_002E",
+>>>>>>> 84efa332a03d976ec957edee0e765c50e65c4762
              bet10kand15k   = "S1901_C01_003E",
              bet15kand25k   = "S1901_C01_004E",
              bet25kand35k   = "S1901_C01_005E",
@@ -164,11 +168,12 @@ income <- get_acs(geography = "county",
                   geometry = TRUE,
                   year = years, 
                   cache_table = TRUE,
-                  variables = inc.var, 
-                  output = "wide") %>% select(GEOID, 
-                                              NAME,
-                                              names(inc.var), 
+                  variables = inc.var) %>% select(GEOID, 
+                                              NAME, 
+                                              variable,
+                                              estimate,
                                               geometry)
+income$variable <- names(inc.var)
 
 income$NAME <- str_replace(income$NAME, paste0(", ", counties, " County, Virginia"), "")
 
