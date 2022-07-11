@@ -12,163 +12,318 @@ knitr::opts_chunk$set(echo = TRUE)
 library(readxl)
 library(writexl)
 library(foreign)
+library(plyr)
+library(dplyr)
+
+library(RColorBrewer)
+library(traveltime)
+library(tidyverse)
+library(tidycensus)
+library(sf)
+library(osmdata)
+library(leaflet)
+library(sp)
+library(purrr)
+library(mapview)
+library(osrm)
+library(rmapzen)
+library(rgdal)
+library(ggplot2)
+library(scales)
+library(nycflights13)
+library(readxl)
+library(rgdal)
 ```
 
 ```{r setting working directory and importing data}
 setwd("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse")
-  
-# Importing the parcel data for both Powhatan and Goochland
-taxPar_2021 <- read_xlsx("Powhatan_Parcel_Data/Tax_Par_2021.xlsx")
-taxPar_2012 <- read_xlsx("Powhatan_Parcel_Data/Tax_Par_2012.xlsx")
-parc_point_2012_2021 <- read.csv("Powhatan_Parcel_Data/Parc_point_2012_2021.csv")
 
-goochland_2018 <- read.csv("Goochland_Parcel_Data/2018_goochland.csv")
-goochland_2022 <- read.csv("Goochland_Parcel_Data/2022_goochland.csv")
-goochland_parcellation <- read.csv("Goochland_Parcel_Data/Gooch_Parcellation_2018_2022.csv")
+# MASTER
+master_label <- read_excel("LUC_codes/LUC_codeToName.xlsx", sheet = "codeToName")
 
-# Importing the xlsx files with the codes
-master_relabel <- read_excel("LUC_codes/LUC_codeToName.xlsx", sheet = "codeToName")
-```
-
-```{r Powhatan Relabeling MLUSE}
-# Declaring the land use variables
-MLUSE21 <- taxPar_2021$MLUSE
-MLUSE12 <- taxPar_2012$MLUSE
+## POWHATAN ============================================
 pow_relabel <- read_excel("LUC_codes/LUC_codeToName.xlsx", sheet = "Powhatan")
 
-# Converting na's to 0's
-MLUSE21[is.na(MLUSE21)] <- 0
-MLUSE12[is.na(MLUSE12)] <- 0
+### PARCELS ============================================
 
-# Replacing codes to LUC
+PowReduParc2021 <- st_read("Powhatan_Parcel_Data/Powhatan_Reduced_Data/PowReduTaxParcels2021.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowReduParc2020 <- st_read("Powhatan_Parcel_Data/Powhatan_Reduced_Data/PowReduTaxParcels2020.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowReduParc2019 <- st_read("Powhatan_Parcel_Data/Powhatan_Reduced_Data/PowReduTaxParcels2019.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowReduParc2018 <- st_read("Powhatan_Parcel_Data/Powhatan_Reduced_Data/PowReduTaxParcels2018.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowReduParc2017 <- st_read("Powhatan_Parcel_Data/Powhatan_Reduced_Data/PowReduTaxParcels2017.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowReduParc2016 <- st_read("Powhatan_Parcel_Data/Powhatan_Reduced_Data/PowReduTaxParcels2016.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowReduParc2015 <- st_read("Powhatan_Parcel_Data/Powhatan_Reduced_Data/PowReduTaxParcels2015.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowReduParc2014 <- st_read("Powhatan_Parcel_Data/Powhatan_Reduced_Data/PowReduTaxParcels2014.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowReduParc2013 <- st_read("Powhatan_Parcel_Data/Powhatan_Reduced_Data/PowReduTaxParcels2013.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowReduParc2012 <- st_read("Powhatan_Parcel_Data/Powhatan_Reduced_Data/PowReduTaxParcels2012.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
 
-# 2012
-for(i in 1:length(MLUSE12)){
-  MLUSE12[i] <- pow_relabel$pow_code[MLUSE12[i] == pow_relabel$pow_value]
-  MLUSE12[i] <- master_relabel$code_name[MLUSE12[i] == master_relabel$code_value]
-}
-# 2021
-for(i in 1:length(MLUSE21)){ 
-  MLUSE21[i] <- pow_relabel$pow_code[MLUSE21[i] == pow_relabel$pow_value]
-  MLUSE21[i] <- master_relabel$code_name[MLUSE21[i] == master_relabel$code_value]
-}
+### PARCELLATION =======================================
 
-# re assigning the data frame
-taxPar_2012$MLUSE <- MLUSE12
-taxPar_2021$MLUSE <- MLUSE21
+PowParcellation_12_21 <- st_read("Powhatan_Parcel_Data/Powhatan_Parcellation/Pow_12_21_all_parcellation.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowParcellation_12_13 <- st_read("Powhatan_Parcel_Data/Powhatan_Parcellation/Pow_13_12_parcellation.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowParcellation_13_14 <- st_read("Powhatan_Parcel_Data/Powhatan_Parcellation/Pow_14_13_parcellation.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowParcellation_14_15 <- st_read("Powhatan_Parcel_Data/Powhatan_Parcellation/Pow_15_14_parcellation.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowParcellation_15_16 <- st_read("Powhatan_Parcel_Data/Powhatan_Parcellation/Pow_16_15_parcellation.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowParcellation_16_17 <- st_read("Powhatan_Parcel_Data/Powhatan_Parcellation/Pow_17_16_parcellation.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowParcellation_17_18 <- st_read("Powhatan_Parcel_Data/Powhatan_Parcellation/Pow_18_17_parcellation.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowParcellation_18_19 <- st_read("Powhatan_Parcel_Data/Powhatan_Parcellation/Pow_19_18_parcellation.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowParcellation_19_20 <- st_read("Powhatan_Parcel_Data/Powhatan_Parcellation/Pow_20_19_parcellation.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+PowParcellation_20_21 <- st_read("Powhatan_Parcel_Data/Powhatan_Parcellation/Pow_21_20_parcellation.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
 
+## GOOCHLAND ============================================
+
+### PARCELS ============================================
+
+### PARCELLATION =======================================
 ```
 
 
-```{r relabelling parc point}
 
-MLUSE12 <- parc_point_2012_2021$MLUSE_12
-MLUSE21 <- parc_point_2012_2021$MLUSE
 
-MLUSE12[is.na(MLUSE12)] <- 0
-MLUSE21[is.na(MLUSE21)] <- 0
+POWHATAN PARCEL
+```{r POWHATAN PARCEL}
 
-for(i in 1:nrow(parc_point_2012_2021)){
-  MLUSE12[i] <- pow_relabel$pow_code[MLUSE12[i] == pow_relabel$pow_value]
-  MLUSE12[i] <- master_relabel$code_name[MLUSE12[i] == master_relabel$code_value]
+View(PowReduParc2012)
+
+# ================================================== 2012 =========================
+fac.2012 <- PowReduParc2012$MLUSE
+fac.2012[is.na(fac.2012)] <- 0
+fac.2012 <- factor(fac.2012)
+remap.2012 <- mapvalues(fac.2012, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2012 <- mapvalues(remap.2012, master_label$code_value, master_label$code_name)
+
+# ================================================== 2013 =========================
+fac.2013 <- PowReduParc2013$MLUSE
+fac.2013[is.na(fac.2013)] <- 0
+fac.2013[fac.2013 == "02"] <- 2
+fac.2013 <- factor(fac.2013)
+remap.2013 <- mapvalues(fac.2013, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2013 <- mapvalues(remap.2013, master_label$code_value, master_label$code_name)
+
+# ================================================== 2014 =========================
+fac.2014 <- PowReduParc2014$MLUSE
+fac.2014[is.na(fac.2014)] <- 0
+fac.2014 <- factor(fac.2014)
+remap.2014 <- mapvalues(fac.2014, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2014 <- mapvalues(remap.2014, master_label$code_value, master_label$code_name)
+
+# ================================================== 2015 =========================
+fac.2015 <- PowReduParc2015$MLUSE
+fac.2015[is.na(fac.2015)] <- 0
+fac.2015 <- factor(fac.2015)
+remap.2015 <- mapvalues(fac.2015, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2015 <- mapvalues(remap.2015, master_label$code_value, master_label$code_name)
+
+# ================================================== 2016 =========================
+fac.2016 <- PowReduParc2016$MLUSE
+fac.2016[is.na(fac.2016)] <- 0
+fac.2016 <- factor(fac.2016)
+remap.2016 <- mapvalues(fac.2016, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2016 <- mapvalues(remap.2016, master_label$code_value, master_label$code_name)
+
+# ================================================== 2017 =========================
+fac.2017 <- PowReduParc2017$MLUSE
+fac.2017[is.na(fac.2017)] <- 0
+fac.2017 <- factor(fac.2017)
+remap.2017 <- mapvalues(fac.2017, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2017 <- mapvalues(remap.2017, master_label$code_value, master_label$code_name)
+
+# ================================================== 2018 =========================
+fac.2018 <- PowReduParc2018$MLUSE
+fac.2018[is.na(fac.2018)] <- 0
+fac.2018 <- factor(fac.2018)
+remap.2018 <- mapvalues(fac.2018, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2018 <- mapvalues(remap.2018, master_label$code_value, master_label$code_name)
+
+# ================================================== 2019 =========================
+fac.2019 <- PowReduParc2019$MLUSE
+fac.2019[is.na(fac.2019)] <- 0
+fac.2019 <- factor(fac.2019)
+remap.2019 <- mapvalues(fac.2019, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2019 <- mapvalues(remap.2019, master_label$code_value, master_label$code_name)
+
+# ================================================== 2020 =========================
+fac.2020 <- PowReduParc2020$MLUSE
+fac.2020[is.na(fac.2020)] <- 0
+fac.2020[fac.2020 == "06"] <- 6
+fac.2020 <- factor(fac.2020)
+remap.2020 <- mapvalues(fac.2020, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2020 <- mapvalues(remap.2020, master_label$code_value, master_label$code_name)
+
+# ================================================== 2021 =========================
+fac.2021 <- PowReduParc2021$MLUSE
+fac.2021[is.na(fac.2021)] <- 0
+fac.2021 <- factor(fac.2021)
+remap.2021 <- mapvalues(fac.2021, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2021 <- mapvalues(remap.2021, master_label$code_value, master_label$code_name)
+
+# ================================================== OVER WRITING =================
+
+PowReduParc2012$FIN_MLUSE <- remap.2012
+PowReduParc2013$FIN_MLUSE <- remap.2013
+PowReduParc2014$FIN_MLUSE <- remap.2014
+PowReduParc2015$FIN_MLUSE <- remap.2015
+PowReduParc2016$FIN_MLUSE <- remap.2016
+PowReduParc2017$FIN_MLUSE <- remap.2017
+PowReduParc2018$FIN_MLUSE <- remap.2018
+PowReduParc2019$FIN_MLUSE <- remap.2019
+PowReduParc2020$FIN_MLUSE <- remap.2020
+PowReduParc2021$FIN_MLUSE <- remap.2021
+
+
+# ================================================== SAVING =================
+
+fileDir <- paste0(getwd(), "/Powhatan_Parcel_Data/Powhatan_Reduced_Data_FIN/")
+
+st_write(PowReduParc2012, paste0(fileDir, "PowReduTaxParcels2012.shp"))
+st_write(PowReduParc2013, paste0(fileDir, "PowReduTaxParcels2013.shp"))
+st_write(PowReduParc2014, paste0(fileDir, "PowReduTaxParcels2014.shp"))
+st_write(PowReduParc2015, paste0(fileDir, "PowReduTaxParcels2015.shp"))
+st_write(PowReduParc2016, paste0(fileDir, "PowReduTaxParcels2016.shp"))
+st_write(PowReduParc2017, paste0(fileDir, "PowReduTaxParcels2017.shp"))
+st_write(PowReduParc2018, paste0(fileDir, "PowReduTaxParcels2018.shp"))
+st_write(PowReduParc2019, paste0(fileDir, "PowReduTaxParcels2019.shp"))
+st_write(PowReduParc2020, paste0(fileDir, "PowReduTaxParcels2020.shp"))
+st_write(PowReduParc2021, paste0(fileDir, "PowReduTaxParcels2021.shp"))
+```
+
+
+```{r POWHATAN PARCELLATION}
+
+# ================================================== 2012 - 2021 =========================
+fac.all.prev <- PowParcellation_12_21$MLUSE_1
+fac.all.prev[is.na(fac.all.prev)] <- 0
+fac.all.prev <- factor(fac.all.prev)
+remap.all.prev <- mapvalues(fac.all.prev, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.all.prev <- mapvalues(remap.all.prev, master_label$code_value, master_label$code_name)
+
+
+fac.all.post <- PowParcellation_12_21$MLUSE
+fac.all.post[is.na(fac.all.post)] <- 0
+fac.all.post <- factor(fac.all.post)
+remap.all.post <- mapvalues(fac.all.post, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.all.post <- mapvalues(remap.all.post, master_label$code_value, master_label$code_name)
+
+# ================================================== 2012 - 2013 =========================
+fac.2012.prev <- PowParcellation_12_13$MLUSE_1
+fac.2012.prev[is.na(fac.2012.prev)] <- 0
+fac.2012.prev <- factor(fac.2012.prev)
+remap.2012.prev <- mapvalues(fac.2012.prev, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2012.prev <- mapvalues(remap.2012.prev, master_label$code_value, master_label$code_name)
+
+fac.2013.post <- PowParcellation_12_13$MLUSE
+fac.2013.post[is.na(fac.2013.post)] <- 0
+fac.2013.post <- factor(fac.2013.post)
+remap.2013.post <- mapvalues(fac.2013.post, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2013.post <- mapvalues(remap.2013.post, master_label$code_value, master_label$code_name)
+
+# ================================================== 2013 - 2014 =========================
+fac.2013.prev <- PowParcellation_13_14$MLUSE_1
+fac.2013.prev[is.na(fac.2013.prev)] <- 0
+fac.2013.prev <- factor(fac.2013.prev)
+remap.2013.prev <- mapvalues(fac.2013.prev, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2013.prev <- mapvalues(remap.2013.prev, master_label$code_value, master_label$code_name)
+
+fac.2014.post <- PowParcellation_13_14$MLUSE
+fac.2014.post[is.na(fac.2014.post)] <- 0
+fac.2014.post <- factor(fac.2014.post)
+remap.2014.post <- mapvalues(fac.2014.post, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2014.post <- mapvalues(remap.2014.post, master_label$code_value, master_label$code_name)
+
+# ================================================== 2014 - 2015 =========================
+fac.2014.prev <- PowParcellation_14_15$MLUSE_1
+fac.2014.prev[is.na(fac.2014.prev)] <- 0
+fac.2014.prev <- factor(fac.2014.prev)
+remap.2014.prev <- mapvalues(fac.2014.prev, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2014.prev <- mapvalues(remap.2014.prev, master_label$code_value, master_label$code_name)
+
+fac.2015.post <- PowParcellation_14_15$MLUSE
+fac.2015.post[is.na(fac.2015.post)] <- 0
+fac.2015.post <- factor(fac.2015.post)
+remap.2015.post <- mapvalues(fac.2015.post, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2015.post <- mapvalues(remap.2015.post, master_label$code_value, master_label$code_name)
+
+# ================================================== 2015 - 2016 =========================
+fac.2015.prev <- PowParcellation_15_16$MLUSE_1
+fac.2015.prev[is.na(fac.2015.prev)] <- 0
+fac.2015.prev <- factor(fac.2015.prev)
+remap.2015.prev <- mapvalues(fac.2015.prev, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2015.prev <- mapvalues(remap.2015.prev, master_label$code_value, master_label$code_name)
+
+fac.2016.post <- PowParcellation_15_16$MLUSE
+fac.2016.post[is.na(fac.2016.post)] <- 0
+fac.2016.post <- factor(fac.2016.post)
+remap.2016.post <- mapvalues(fac.2016.post, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2016.post <- mapvalues(remap.2016.post, master_label$code_value, master_label$code_name)
+
+# ================================================== 2016 - 2017 =========================
+fac.2016.prev <- PowParcellation_16_17$MLUSE_1
+fac.2016.prev[is.na(fac.2016.prev)] <- 0
+fac.2016.prev <- factor(fac.2016.prev)
+remap.2016.prev <- mapvalues(fac.2016.prev, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2016.prev <- mapvalues(remap.2016.prev, master_label$code_value, master_label$code_name)
+
+fac.2017.post <- PowParcellation_16_17$MLUSE
+fac.2017.post[is.na(fac.2017.post)] <- 0
+fac.2017.post <- factor(fac.2017.post)
+remap.2017.post <- mapvalues(fac.2017.post, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2017.post <- mapvalues(remap.2017.post, master_label$code_value, master_label$code_name)
+
+# ================================================== 2017 - 2018 =========================
+fac.2017.prev <- PowParcellation_17_18$MLUSE_1
+fac.2017.prev[is.na(fac.2016.prev)] <- 0
+fac.2017.prev <- factor(fac.2016.prev)
+remap.2017.prev <- mapvalues(fac.2016.prev, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2017.prev <- mapvalues(remap.2016.prev, master_label$code_value, master_label$code_name)
+
+fac.2018.post <- PowParcellation_17_18$MLUSE
+fac.2018.post[is.na(fac.2018.post)] <- 0
+fac.2018.post <- factor(fac.2018.post)
+remap.2018.post <- mapvalues(fac.2018.post, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2018.post <- mapvalues(remap.2018.post, master_label$code_value, master_label$code_name)
+
+# ================================================== 2018 - 2019 =========================
+fac.2018.prev <- PowParcellation_18_19$MLUSE_1
+fac.2018.prev[is.na(fac.2018.prev)] <- 0
+fac.2018.prev <- factor(fac.2018.prev)
+remap.2018.prev <- mapvalues(fac.2018.prev, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2018.prev <- mapvalues(remap.2018.prev, master_label$code_value, master_label$code_name)
+
+fac.2019.post <- PowParcellation_18_19$MLUSE
+fac.2019.post[is.na(fac.2019.post)] <- 0
+fac.2019.post <- factor(fac.2019.post)
+remap.2019.post <- mapvalues(fac.2019.post, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2019.post <- mapvalues(remap.2019.post, master_label$code_value, master_label$code_name)
+
+# ================================================== 2019 - 2020 =========================
+fac.2019.prev <- PowParcellation_19_20$MLUSE_1
+fac.2019.prev[is.na(fac.2019.prev)] <- 0
+fac.2019.prev <- factor(fac.2019.prev)
+remap.2019.prev <- mapvalues(fac.2019.prev, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2019.prev <- mapvalues(remap.2019.prev, master_label$code_value, master_label$code_name)
+
+fac.2020.post <- PowParcellation_19_20$MLUSE
+fac.2020.post[is.na(fac.2020.post)] <- 0
+fac.2020.post <- factor(fac.2020.post)
+remap.2020.post <- mapvalues(fac.2020.post, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2020.post <- mapvalues(remap.2020.post, master_label$code_value, master_label$code_name)
+
+# ================================================== 2020 - 2021 =========================
+fac.2020.prev <- PowParcellation_20_21$MLUSE_1
+fac.2020.prev[is.na(fac.2020.prev)] <- 0
+fac.2020.prev <- factor(fac.2020.prev)
+remap.2020.prev <- mapvalues(fac.2020.prev, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2020.prev <- mapvalues(remap.2020.prev, master_label$code_value, master_label$code_name)
+
+fac.2021.post <- PowParcellation_20_21$MLUSE
+fac.2021.post[is.na(fac.2021.post)] <- 0
+fac.2021.post <- factor(fac.2021.post)
+remap.2021.post <- mapvalues(fac.2021.post, pow_relabel$pow_value, pow_relabel$pow_code)
+remap.2021.post <- mapvalues(remap.2021.post, master_label$code_value, master_label$code_name)
   
-  MLUSE21[i] <- pow_relabel$pow_code[MLUSE21[i] == pow_relabel$pow_value]
-  MLUSE21[i] <- master_relabel$code_name[MLUSE21[i] == master_relabel$code_value]
-}
+# ================================================== OVER WRITING =================
 
-parc_point_2012_2021$MLUSE_12 <- MLUSE12
-parc_point_2012_2021$MLUSE <- MLUSE21
 
+# ================================================== SAVING =================
 ```
-
-
-
-```{r Goochland 2018 relabeling LUC}
-MLUSE <- goochland_2018$LUC
-gooch_2018_relabel <- read_excel("LUC_codes/LUC_codeToName.xlsx", sheet = "Goochland 2018")
-
-# Converting na's to 0's
-MLUSE[is.na(MLUSE)] <- 0
-
-# There's a small problem with a few labelled uses
-gooch_2018_relabel$gooch_value[20] <- "3 Multi-Family "
-gooch_2018_relabel$gooch_value[15] <- "19 TAXED-SCC\nTAXED BY SCC"
-gooch_2018_relabel$gooch_value[1] <- "17 NOT TAXABLE "
-gooch_2018_relabel[28,] <- data.frame(gooch_value = "", gooch_code = 7)
-
-
-# Replacing Powhatan's LUC codes to right codes
-for(i in 1:length(MLUSE)){
-  MLUSE[i] <- gooch_2018_relabel$gooch_code[MLUSE[i] == gooch_2018_relabel$gooch_value]
-  MLUSE[i] <- master_relabel$code_name[MLUSE[i] == master_relabel$code_value]
-}
-goochland_2018$LUC <- MLUSE
-```
-
-
-```{r Goochland 2022}
-MLUSE <- goochland_2022$LUC
-
-gooch_2022_relabel <- read_excel("LUC_codes/LUC_codeToName.xlsx", sheet = "Goochland 2022")
-
-# Converting na's to 0's
-MLUSE[is.na(MLUSE)] <- 0
-
-for(i in 1:length(MLUSE)){
-  MLUSE[i] <- gooch_2022_relabel$gooch_code[MLUSE[i] == gooch_2022_relabel$gooch_value]
-  MLUSE[i] <- master_relabel$code_name[MLUSE[i] == master_relabel$code_value]
-}
-goochland_2022$LUC <- MLUSE
-```
-
-
-```{r Goochland Parcellation}
-MLUSE18 <- goochland_parcellation$LandUseCod2018
-MLUSE22 <- goochland_parcellation$LUC_2022
-
-gooch_2022_relabel <- read_excel("LUC_codes/LUC_codeToName.xlsx", sheet = "Goochland Parcellation 2022")
-gooch_2018_relabel <- read_excel("LUC_codes/LUC_codeToName.xlsx", sheet = "Goochland Parcellation 2018")
-
-
-# Converting na's to 0's
-MLUSE18[is.na(MLUSE18)] <- 0
-MLUSE22[is.na(MLUSE22)] <- 0
-
-for(i in 1:nrow(goochland_parcellation)){
-  # 2018
-  MLUSE18[i] <- gooch_2018_relabel$gooch_code[MLUSE18[i] == gooch_2018_relabel$gooch_value]
-  MLUSE18[i] <- master_relabel$code_name[MLUSE18[i] == master_relabel$code_value]
-
-  # 2022
-  MLUSE22[i] <- gooch_2022_relabel$gooch_code[MLUSE22[i] == gooch_2022_relabel$gooch_value]
-  MLUSE22[i] <- master_relabel$code_name[MLUSE22[i] == master_relabel$code_value]
-}
-
-goochland_parcellation$LUC_2022 <- MLUSE22
-goochland_parcellation$LandUseCod2018 <- MLUSE18
-
-```
-
-
-```{r Saving cleaned data}
-# Writing Powhatan Data
-write_xlsx(taxPar_2012, "LUC_codes/Cleaned_Parcel_Data/Tax_Par_2012CLEANED.xlsx")
-
-write_xlsx(taxPar_2021, "LUC_codes/Cleaned_Parcel_Data/Tax_Par_2021CLEANED.xlsx")
-
-write_csv(parc_point_2012_2021, "LUC_codes/Cleaned_Parcel_Data/Parc_point_2012_2021CLEANED.csv")
-
-
-# Writing Goochland Data
-
-write_csv(goochland_parcellation, "LUC_codes/Cleaned_Parcel_Data/Gooch_Parcellation_2018_2022CLEANED.csv")
-
-write_csv(goochland_2018, "LUC_codes/Cleaned_Parcel_Data/2018_goochlandCLEANED.csv")
-
-write_csv(goochland_2022, "LUC_codes/Cleaned_Parcel_Data/2022_goochlandCLEANED.csv")
-```
-
-
-
-
 
