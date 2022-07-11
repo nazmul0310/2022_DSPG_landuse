@@ -80,39 +80,6 @@ YourAppId <- "acfb52eb"
 
 ```
 
-
-#Error Check
-```{r eval=FALSE, include=FALSE}
-# retrieve data via request 
-
-# The following transport modes are supported:
-
-# "cycling"", "cycling_ferry", "driving", "driving+train", "driving_ferry", "public_transport", 
-# "walking", "walking+coach", "walking_bus", "walking_ferry" or "walking_train".
-
-# how far can you go by public transport within 30 minutes?
-
-# We can make some excel file with the coordinates of richmond so we can easily select it within the traveltime_map function call.
-
-
-traveltime30 <- traveltime_map(appId="YourAppId",
-               apiKey="YourAPIKey",
-              location=c(47.378610,8.54000),
-               traveltime=1800,
-               type="public_transport",
-               departure="2018-11-15T08:00:00+01:00")
-
-# ... and within 60 minutes?
-traveltime60 <- traveltime_map(appId="YourAppId",
-               apiKey="YourAPIKey",
-               location=c(47.378610,8.54000),
-               traveltime=3600,
-               type="public_transport",
-               departure="2012-11-15T08:00:00+01:00")
-
-```
-
-
 # Checks: latitude, Longitude, seconds
 # Also, departure time must lie in the future.
 
@@ -127,193 +94,74 @@ traveltime60 <- traveltime_map(appId="YourAppId",
 # how far can you go by public transport within 30 minutes?
 
 # Travel times for 2021
-traveltime30_2021 <- traveltime_map(appId=YourAppId,
-              apiKey=YourAPIKey,
-              location=c(37.534379575044426,-77.44071077873014),
-              traveltime=1800,
-              type="driving",
-              departure="2021-07-07T08:00:00+01:00") %>%
-  st_set_crs(st_crs("EPSG:4326"))
-traveltime45_2021 <- traveltime_map(appId=YourAppId,
-              apiKey=YourAPIKey,
-              location=c(37.534379575044426,-77.44071077873014),
-              traveltime=2700,
-              type="driving",
-              departure="2021-07-07T08:00:00+01:00") %>%
-  st_set_crs(st_crs("EPSG:4326"))
-traveltime60_2021 <- traveltime_map(appId=YourAppId,
-              apiKey=YourAPIKey,
-              location=c(37.534379575044426,-77.44071077873014),
-              traveltime=3600,
-              type="driving",
-              departure="2021-07-07T08:00:00+01:00") %>%
-  st_set_crs(st_crs("EPSG:4326"))
-
-
-# Travel times for 2020
-
-traveltime30_2020 <- traveltime_map(appId=YourAppId,
-              apiKey=YourAPIKey,
-              location=c(37.534379575044426,-77.44071077873014),
-              traveltime=1800,
-              type="driving",
-              departure="2020-07-07T08:00:00+01:00") %>%
-  st_set_crs(st_crs("EPSG:4326"))
-traveltime45_2020 <- traveltime_map(appId=YourAppId,
-              apiKey=YourAPIKey,
-              location=c(37.534379575044426,-77.44071077873014),
-              traveltime=2700,
-              type="driving",
-              departure="2020-07-07T08:00:00+01:00") %>%
-  st_set_crs(st_crs("EPSG:4326"))
-traveltime60_2020 <- traveltime_map(appId=YourAppId,
-              apiKey=YourAPIKey,
-              location=c(37.534379575044426,-77.44071077873014),
-              traveltime=3600,
-              type="driving",
-              departure="2020-07-07T08:00:00+01:00") %>%
-  st_set_crs(st_crs("EPSG:4326"))
-traveltime15_2021 <- traveltime_map(appId=YourAppId,
+traveltime15 <- traveltime_map(appId=YourAppId,
               apiKey=YourAPIKey,
               location=c(37.534379575044426,-77.44071077873014),
               traveltime=900,
               type="driving",
               departure="2021-07-07T08:00:00+01:00") %>%
   st_set_crs(st_crs("EPSG:4326"))
+traveltime30 <- traveltime_map(appId=YourAppId,
+              apiKey=YourAPIKey,
+              location=c(37.534379575044426,-77.44071077873014),
+              traveltime=1800,
+              type="driving",
+              departure="2021-07-07T08:00:00+01:00") %>%
+  st_set_crs(st_crs("EPSG:4326"))
+traveltime45 <- traveltime_map(appId=YourAppId,
+              apiKey=YourAPIKey,
+              location=c(37.534379575044426,-77.44071077873014),
+              traveltime=2700,
+              type="driving",
+              departure="2021-07-07T08:00:00+01:00") %>%
+  st_set_crs(st_crs("EPSG:4326"))
+traveltime60 <- traveltime_map(appId=YourAppId,
+              apiKey=YourAPIKey,
+              location=c(37.534379575044426,-77.44071077873014),
+              traveltime=3600,
+              type="driving",
+              departure="2021-07-07T08:00:00+01:00") %>%
+  st_set_crs(st_crs("EPSG:4326"))
 ```
 
 ```{r eval=FALSE, include=FALSE}
 # Importing the data with centroid coordinates
-aoi_boundary_POW <- st_read("Powhatan_Parcel_Data/Powhatan_2021_Centroid/PowReduTaxParcels2021.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
-
-# Creating a dataframe and shape object of the parcel centroids
-centroid_coords <- data.frame(lat = aoi_boundary_POW$centroid_x, lng = aoi_boundary_POW$centroid_y)
-centroid_points <- st_as_sf(SpatialPoints(coords = centroid_coords)) %>% st_set_crs(st_crs("EPSG:4326"))
-
-# Seeing whether or not the travel time's are in the boundary at a given time
-traveltime_categories <- c("Within 30 Minutes", "Within 45 Minutes", "Within 60 Minutes", "More than 60 Minutes")
-aoi_boundary_POW$travel <- rep("stale", nrow(aoi_boundary_POW))
-
-# Don't run this too often, it's long
-for(i in 1:nrow(aoi_boundary_POW)){
-  if(st_intersects(traveltime30_2021, centroid_points$geometry[i], sparse=FALSE)){
-    aoi_boundary_POW$travel[i] = traveltime_categories[1]
-  }
-  else if(st_intersects(traveltime45_2021, centroid_points$geometry[i], sparse=FALSE)){
-    aoi_boundary_POW$travel[i] = traveltime_categories[2]
-  }
-  else if(st_intersects(traveltime60_2021, centroid_points$geometry[i], sparse=FALSE)){
-    aoi_boundary_POW$travel[i] = traveltime_categories[3]
-  }
-  else {
-    aoi_boundary_POW$travel[i] = traveltime_categories[4]
-  }
-}
-aoi_boundary_POW$travel <- str_replace(aoi_boundary_POW$travel, "More than 60 Minutes", "4")
-aoi_boundary_POW$travel <- str_replace(aoi_boundary_POW$travel, "Within 60 Minutes", "3")
-aoi_boundary_POW$travel <- str_replace(aoi_boundary_POW$travel, "Within 45 Minutes", "2")
-aoi_boundary_POW$travel <- str_replace(aoi_boundary_POW$travel, "Within 30 Minutes", "1")
-
-mypalette <- colorBin(palette = "viridis", as.numeric(aoi_boundary_POW$travel), bins = 5)
+aoi_boundary_POW <- st_read("Powhatan_Parcel_Data/Powhatan_Travel_Time/Powhatan_Travel_Times.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+aoi_boundary_POW$Trv2RcMnd <- factor(aoi_boundary_POW$Trv2RcMnd, levels = c("30 minutes", "45 minutes", "One hour", "More than an hour"))
+# Custom color palette
+mypalette <- colorBin(palette = "viridis", as.numeric(aoi_boundary_POW$Trv2RcMnd), bins = 5)
+colors <- mypalette(unclass(aoi_boundary_POW$Trv2RcMnd))
 sorted_colors <- c("#440154", "#2A788E", "#7AD151", "#FDE725")
 
+#aoi_boundary_POW30 <- aoi_boundary_POW %>% filter(Trv2RcMnd == "45 minutes")
+
+
 # First provider shape file of the county boundary, so first addPolygons
+
 map <-leaflet() %>%
   addTiles() %>%
   addProviderTiles("Esri") %>%  
   
+  # powhatan parcels colored by distance
   addPolygons(data=aoi_boundary_POW$geometry, color = "black",
-              fillColor = mypalette(as.numeric(aoi_boundary_POW$travel)),
-              smoothFactor = 0.2, fillOpacity=.6, weight = 1,stroke = T) %>%
+              fillColor = colors,
+              smoothFactor = 0.1, fillOpacity=.6, weight = 1,stroke = T, ) %>%
   
-  addPolygons(data = traveltime30_2021 , color = "Yellow",
+  # driving times from richmond
+  addPolygons(data = traveltime30, color = "Yellow",
                opacity = 1, weight = 2, fillColor = "white",fillOpacity = .1, 
               group = "Within 30") %>%
-  addPolygons(data = traveltime45_2021 , color = "Orange",
+  addPolygons(data = traveltime45, color = "Orange",
                opacity = 1, weight = 2, fillColor = "white",fillOpacity = .1,
               group = "Within 45") %>%
-  addPolygons(data = traveltime60_2021 , color = "Red",
-               opacity = 1, weight = 2, fillColor = "white",fillOpacity = .2,
+  addPolygons(data = traveltime60, color = "Red",
+               opacity = 1, weight = 2, fillColor = "white",fillOpacity = .1,
               group = "Within 60") %>%
-  addPolygons(data = traveltime15_2021 , color = "Red",
-               opacity = 1, weight = 2, fillColor = "white",fillOpacity = .2,
-              group = "Within 15") %>%
-  addCircleMarkers(lat = 37.534379575044426, lng = -77.44071077873014) %>%
+  addCircleMarkers(lat = 37.534379575044426, lng = -77.44071077873014, label = "Richmond") %>%
   addLegend("bottomright", 
             colors= sorted_colors,
             labels = traveltime_categories,
             title = "Travel Times in Minutes (2021)", 
-            opacity = 1) %>%
-  addLayersControl(
-    baseGroups=c("Within 15", "Within 30", "Within 45", "Within 60"),
-    position = "bottomleft",
-    options = layersControlOptions(collapsed = FALSE)
-  )
-  
-map
-```
-
-```{r eval=FALSE, include=FALSE}
-# Importing the data with centroid coordinates
-aoi_boundary_POW <- st_read("Powhatan_Parcel_Data/Powhatan_2021_Centroid/PowReduTaxParcels2021.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
-
-# Creating a dataframe and shape object of the parcel centroids
-centroid_coords <- data.frame(lat = aoi_boundary_POW$centroid_x, lng = aoi_boundary_POW$centroid_y)
-centroid_points <- st_as_sf(SpatialPoints(coords = centroid_coords)) %>% st_set_crs(st_crs("EPSG:4326"))
-
-# Seeing whether or not the travel time's are in the boundary at a given time
-traveltime_categories <- c("Within 30 Minutes", "Within 45 Minutes", "Within 60 Minutes", "More than 60 Minutes")
-aoi_boundary_POW$travel20 <- rep("stale", nrow(aoi_boundary_POW))
-
-# Don't run this too often, it's long
-for(i in 1:nrow(aoi_boundary_POW)){
-  if(st_intersects(traveltime30_2020, centroid_points$geometry[i], sparse=FALSE)){
-    aoi_boundary_POW$travel[i] = traveltime_categories[1]
-  }
-  else if(st_intersects(traveltime45_2020, centroid_points$geometry[i], sparse=FALSE)){
-    aoi_boundary_POW$travel[i] = traveltime_categories[2]
-  }
-  else if(st_intersects(traveltime60_2020, centroid_points$geometry[i], sparse=FALSE)){
-    aoi_boundary_POW$travel[i] = traveltime_categories[3]
-  }
-  else {
-    aoi_boundary_POW$travel[i] = traveltime_categories[4]
-  }
-}
-aoi_boundary_POW$travel <- str_replace(aoi_boundary_POW$travel, "More than 60 Minutes", "4")
-aoi_boundary_POW$travel <- str_replace(aoi_boundary_POW$travel, "Within 60 Minutes", "3")
-aoi_boundary_POW$travel <- str_replace(aoi_boundary_POW$travel, "Within 45 Minutes", "2")
-aoi_boundary_POW$travel <- str_replace(aoi_boundary_POW$travel, "Within 30 Minutes", "1")
-
-mypalette <- colorBin(palette = "viridis", as.numeric(aoi_boundary_POW$travel), bins = 5)
-sorted_colors <- c("#440154", "#2A788E", "#7AD151", "#FDE725")
-
-# First provider shape file of the county boundary, so first addPolygons
-map <-leaflet() %>%
-  addTiles() %>%
-  addProviderTiles("Esri") %>%  
-  
-  addPolygons(data=aoi_boundary_POW$geometry, color = "black",
-              fillColor = mypalette(as.numeric(aoi_boundary_POW$travel)),
-              smoothFactor = 0.2, fillOpacity=.6, weight = 1,stroke = T) %>%
-  
-  addPolygons(data = traveltime30_2020 , color = "Orange",
-               opacity = 1, weight = 2, fillColor = "white",fillOpacity = .1, 
-              group = "Within 30") %>%
-  addPolygons(data = traveltime45_2020 , color = "Yellow",
-               opacity = 1, weight = 2, fillColor = "white",fillOpacity = .1,
-              group = "Within 45") %>%
-  addPolygons(data = traveltime60_2020 , color = "Red",
-               opacity = 1, weight = 2, fillColor = "white",fillOpacity = .2,
-              group = "Within 60") %>%
-  addPolygons(data = traveltime15_2020 , color = "Red",
-               opacity = 1, weight = 2, fillColor = "white",fillOpacity = .2,
-              group = "Within 15") %>%
-  addCircleMarkers(lat = 37.534379575044426, lng = -77.44071077873014) %>%
-  addLegend("bottomright", 
-            colors= sorted_colors,
-            labels = traveltime_categories,
-            title = "Travel Times in Minutes (2020)", 
             opacity = 1) %>%
   addLayersControl(
     baseGroups=c("Within 30", "Within 45", "Within 60"),
@@ -324,12 +172,10 @@ map <-leaflet() %>%
 map
 ```
 
-
 ```{r}
-st_write(traveltime15_2021, "15MinuteTravelTime.shp")
-st_write(traveltime30_2021, "30MinuteTravelTime.shp")
-st_write(traveltime45_2021, "45MinuteTravelTime.shp")
-st_write(traveltime60_2021, "60MinuteTravelTime.shp")
+# st_write(traveltime30, "30MinuteTravelTime.shp")
+# st_write(traveltime45, "45MinuteTravelTime.shp")
+# st_write(traveltime60, "60MinuteTravelTime.shp")
 ```
 
 
