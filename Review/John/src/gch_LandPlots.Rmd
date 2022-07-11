@@ -1,0 +1,158 @@
+---
+title: "Goochland_Land_Plot"
+output: html_document
+date: '2022-06-27'
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+library(readxl)
+library(writexl)
+library(ggpubr)
+library(dplyr)
+library(viridis)
+setwd("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse")
+```
+
+```{r}
+goochland2022 <- read.csv("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/LUC_codes/Cleaned_parcel_Data/2022_goochlandCLEANED.csv")
+goochland2018 <- read.csv("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/LUC_codes/Cleaned_parcel_Data/2018_goochlandCLEANED.csv")
+goochland2018.22<- read.csv("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/Gooch_Parcellation_2018_2022.csv")
+
+gooch2022.LUC <- data.frame(LUC = unique(goochland2022$LUC))
+gooch2018.LUC <- data.frame(LUC = unique(goochland2018$LUC))
+gooch2018.22.LUC <- data.frame(LUC = unique(c(goochland2018.22$LUC_2022, goochland2018.22$LandUseCod2018)))
+
+LUC_codes <- data.frame(LUC_codes = rbind(gooch2022.LUC, gooch2018.LUC, gooch2018.22.LUC))
+LUC_codes <- data.frame(unique(LUC_codes$LUC))
+
+write_xlsx(LUC_codes, "fnl_LUC.xlsx")
+
+```
+
+```{r}
+LUC_codes <- read_xlsx("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/fnl_LUC.xlsx")
+LUC_codes_rev <- read_xlsx("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/fnl_LUC_revert.xlsx")
+LUC_codes$LUC_name[39] <- "3 Multi-Family "
+
+#LUC_codes$LUC_code <- as.character(LUC_codes$LUC_code)
+#LUC_codes_rev$LUC_code <- as.character(LUC_codes_rev$LUC_code)
+
+
+for(i in 1:nrow(goochland2022)){
+  # goochland 2022 first
+  goochland2022$LUC[i] <- LUC_codes$LUC_code[goochland2022$LUC[i] == LUC_codes$LUC_name]
+  goochland2022$LUC[i] <- LUC_codes_rev$LUC_name[goochland2022$LUC[i] == LUC_codes_rev$LUC_code]
+}
+
+
+for(i in 1:nrow(goochland2018)) {
+  # goochland 2018 second
+  
+  if(goochland2018$LUC[i] == ""){
+    goochland2018$LUC[i] = "<Null>"
+  }
+  goochland2018$LUC[i] <- LUC_codes$LUC_code[goochland2018$LUC[i] == LUC_codes$LUC_name]
+  goochland2018$LUC[i] <- LUC_codes_rev$LUC_name[goochland2018$LUC[i] == LUC_codes_rev$LUC_code]
+}
+
+
+for(i in 1:nrow(goochland2018.22)) {
+  # goochland 2018-2022 third
+  
+  goochland2018.22$LUC_2022[i] <- LUC_codes$LUC_code[goochland2018.22$LUC_2022[i] == LUC_codes$LUC_name]
+  goochland2018.22$LandUseCod2018[i] <- LUC_codes$LUC_code[goochland2018.22$LandUseCod2018[i] == LUC_codes$LUC_name]
+  
+  goochland2018.22$LUC_2022[i] <- LUC_codes_rev$LUC_name[goochland2018.22$LUC_2022[i] == LUC_codes_rev$LUC_code]
+  goochland2018.22$LandUseCod2018[i] <- LUC_codes_rev$LUC_name[goochland2018.22$LandUseCod2018[i] == LUC_codes_rev$LUC_code]
+}
+```
+
+
+```{r}
+
+goochland2022.df <- goochland2022 %>% select(LUC, Total.Land)
+goochland2022.df$LUC <-factor(goochland2022.df$LUC, 
+                               levels = c("Single Family Residential Urban",
+                                          "Single Family Residential Suburban",
+                                          "Multi-Family Residential",
+                                          "Commerical / Industrial",
+                                          "Agricultural / Undeveloped (20-99 Acres)",
+                                          "Agricultural / Undeveloped (100+ Acres)",
+                                          "Other"))
+p1 <- goochland2022.df %>% 
+  group_by(LUC) %>% 
+  summarise(totalAcres = sum(Total.Land, na.rm=TRUE)) %>%
+  ggplot(aes(x=LUC, y = totalAcres, fill = LUC)) + geom_bar(stat='identity') + theme(legend.position='none') + scale_fill_viridis_d() + coord_flip() + labs(title ="Total Acreage by Land Use in Goochland (2022)", x = "", y = "Acres", caption = "Source: Administrative Data from Goochland County") + geom_text(aes(label = round(totalAcres, 2)), hjust = -.1) + ylim(0, 70000)
+
+p1
+
+p2 <- goochland2022.df %>%
+  group_by(LUC) %>% 
+  count() %>%
+  ggplot(aes(x = LUC, y = n, fill = LUC)) + geom_bar(stat="identity") +
+  theme(legend.position = 'none') + scale_fill_viridis_d() + coord_flip() + labs(title ="Total Parcels by Land Use in Goochland (2022)", x = "Land Use", y = "Parcel Count", caption = "") + scale_y_reverse() + geom_text(aes(label = round(n, 2)), hjust = 1.1) + ylim(13000, 0)
+  p2
+
+
+ggarrange(p2, p1, ncol=2)
+
+```
+
+
+```{r}
+goochland2018.22$Total.Land <- as.numeric(goochland2018.22$Total.Land)
+gooch2218.df <- goochland2018.22 %>%
+  select(LUC_2022, LandUseCod2018, Total.Land) %>%
+  mutate(LU_change = paste0(LUC_2022, sep=" -> ", LandUseCod2018))
+
+
+
+p1 <- gooch2218.df %>% 
+  filter(LUC_2022 != LandUseCod2018) %>%
+  group_by(LUC_2022) %>%
+  summarise(totalAcres = sum(Total.Land, na.rm=TRUE))
+
+ggplot(p1, aes(x = LUC_2022, y = totalAcres, fill = LUC_2022)) + geom_bar(stat = "identity") + theme(legend.position = "none") + labs(title = "") + coord_flip()
+
+      
+```
+
+
+
+```{r}
+
+
+
+for(i in 1:nrow(goochland2022)){
+  goochland2022$LUC[i] = LUC_codes$Code[goochland2022$LUC[i] == LUC_codes$LUC]
+  goochland2022$LUC[i] = LUC_codes_rev$LUC[goochland2022$LUC[i] == LUC_codes_rev$Code]
+}
+goochland2022$LUC <- factor(goochland2022$LUC, levels = unique(goochland2022$LUC))
+```
+
+
+```{r}
+lu_count.df <- goochland2022 %>% group_by(LUC) %>% count(LUC)
+p1 <- ggplot(lu_count.df, aes(x =LUC, y = n, fill = LUC)) + geom_bar(stat = "identity") + theme(legend.position = "none") + coord_flip() + scale_fill_viridis_d()  +labs(title = "Number of Parcels by Land Use (Goochland 2018)", y = "Parcels", x= "Land Use", caption = "")+ geom_text(aes(label = round(n, 2)), hjust = 1.1) + scale_y_reverse() + theme(axis.text.x = element_blank())
+p1
+
+```
+
+
+```{r}
+
+land_use.df <- goochland2022 %>% group_by(LUC) %>% summarise(total_acre = sum(Total.Land, na.rm = TRUE))
+p2 <- ggplot(land_use.df, aes(x =LUC, y = total_acre, fill = LUC)) + geom_bar(stat = "identity") + theme(legend.position = "none") + coord_flip() + scale_fill_viridis_d() +labs(title = "Total Acreage by Land Use (Goochland 2018)", y = "Acres", x= "", caption = "Source: Administrative Data from Goochland County") + geom_text(aes(label = round(total_acre, 2)), hjust = -.1) + ylim(0, 112000)
+p2
+```
+
+
+```{r}
+ggarrange(p1, p2, ncol=2)
+```
+
