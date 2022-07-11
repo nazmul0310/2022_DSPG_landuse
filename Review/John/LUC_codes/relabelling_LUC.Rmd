@@ -14,25 +14,9 @@ library(writexl)
 library(foreign)
 library(plyr)
 library(dplyr)
-
-library(RColorBrewer)
-library(traveltime)
-library(tidyverse)
-library(tidycensus)
 library(sf)
-library(osmdata)
-library(leaflet)
-library(sp)
-library(purrr)
-library(mapview)
-library(osrm)
-library(rmapzen)
-library(rgdal)
-library(ggplot2)
-library(scales)
-library(nycflights13)
-library(readxl)
-library(rgdal)
+
+# Script
 ```
 
 ```{r setting working directory and importing data}
@@ -71,8 +55,17 @@ PowParcellation_20_21 <- st_read("Powhatan_Parcel_Data/Powhatan_Parcellation/Pow
 ## GOOCHLAND ============================================
 
 ### PARCELS ============================================
+Gooch2018 <- st_read("Goochland_Parcel_Data/Goochland_Original_Data/Gooch_2018.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+Gooch2019 <- st_read("Goochland_Parcel_Data/Goochland_Original_Data/Gooch_2019.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+Gooch2020 <- st_read("Goochland_Parcel_Data/Goochland_Original_Data/Gooch_2020.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+Gooch2021 <- st_read("Goochland_Parcel_Data/Goochland_Original_Data/Gooch_2021.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
 
 ### PARCELLATION =======================================
+Gooch_18_22 <- st_read("Goochland_Parcel_Data/Goochland_Parcellation/Gooch_18_22_all_parcellation.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+Gooch_19_18 <- st_read("Goochland_Parcel_Data/Goochland_Parcellation/Gooch_Parcellation_19_18.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+Gooch_20_19 <- st_read("Goochland_Parcel_Data/Goochland_Parcellation/Gooch_Parcellation_20_19.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+Gooch_21_20 <- st_read("Goochland_Parcel_Data/Goochland_Parcellation/Gooch_Parcellation_21_20.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
+Gooch_22_21 <- st_read("Goochland_Parcel_Data/Goochland_Parcellation/Gooch_Parcellation_22_21.shp") %>% st_transform(crs = st_crs("EPSG:4326"))
 ```
 
 
@@ -367,4 +360,159 @@ st_write(PowParcellation_18_19, paste0(fileDir, "Pow_19_18_parcellationFIN.shp")
 st_write(PowParcellation_19_20, paste0(fileDir, "Pow_20_19_parcellationFIN.shp"))
 st_write(PowParcellation_20_21, paste0(fileDir, "Pow_21_20_parcellationFIN.shp"))
 ```
+
+```{r GOOCHLAND PARCEL}
+gooch_relabel <- read_excel("LUC_codes/LUC_codeToName.xlsx", sheet = "Goochland")
+
+# ================================================== 2018 =========================
+fac.2018 <- Gooch2018$LUC
+fac.2018[is.na(fac.2018)] <- 0
+fac.2018 <- factor(fac.2018)
+remap.2018 <- mapvalues(fac.2018, gooch_relabel$gooch_value, gooch_relabel$gooch_code)
+remap.2018 <- mapvalues(remap.2018, master_label$code_value, master_label$code_name)
+
+# ================================================== 2019 =========================
+fac.2019 <- Gooch2019$LUC
+fac.2019[is.na(fac.2019)] <- 0
+fac.2019 <- factor(fac.2019)
+remap.2019 <- mapvalues(fac.2019, gooch_relabel$gooch_value, gooch_relabel$gooch_code)
+remap.2019 <- mapvalues(remap.2019, master_label$code_value, master_label$code_name)
+
+# ================================================== 2020 =========================
+fac.2020 <- Gooch2020$LUC
+fac.2020[is.na(fac.2020)] <- 0
+fac.2020[fac.2020 == "ag100"] <- "ag100+"
+fac.2020 <- factor(fac.2020)
+remap.2020 <- mapvalues(fac.2020, gooch_relabel$gooch_value, gooch_relabel$gooch_code)
+remap.2020 <- mapvalues(remap.2020, master_label$code_value, master_label$code_name)
+
+# ================================================== 2021 =========================
+fac.2021 <- Gooch2021$LUC
+fac.2021[is.na(fac.2021)] <- 0
+fac.2021 <- factor(fac.2021)
+remap.2021 <- mapvalues(fac.2021, gooch_relabel$gooch_value, gooch_relabel$gooch_code)
+remap.2021 <- mapvalues(remap.2021, master_label$code_value, master_label$code_name)
+
+# ================================================== OVER WRITING =================
+
+Gooch2018$LUC_FIN <- remap.2018
+Gooch2019$LUC_FIN <- remap.2019
+Gooch2020$LUC_FIN <- remap.2020
+Gooch2021$LUC_FIN <- remap.2021
+
+
+# ================================================== SAVING =================
+fileDir <- paste0(getwd(), "/Goochland_Parcel_Data/Goochland_Original_Data_FIN/")
+
+st_write(Gooch2018, paste0(fileDir, "Gooch2018FIN.shp"))
+st_write(Gooch2019, paste0(fileDir, "Gooch2019FIN.shp"))
+st_write(Gooch2020, paste0(fileDir, "Gooch2020FIN.shp"))
+st_write(Gooch2021, paste0(fileDir, "Gooch2021FIN.shp"))
+```
+
+
+```{r GOOCHLAND PARCELLATIONS}
+
+# ================================================== 2018 - 2022 =========================
+fac.prev <- Gooch_18_22$LUC_1
+fac.prev[is.na(fac.prev)] <- 0
+fac.prev[fac.prev == "ag100"] <- "ag100+"
+fac.prev[fac.prev == "mutli"] <- "multi"
+fac.prev <- factor(fac.prev)
+remap.prev <- mapvalues(fac.prev, gooch_relabel$gooch_value, gooch_relabel$gooch_code)
+remap.prev <- mapvalues(remap.prev, master_label$code_value, master_label$code_name)
+
+fac.post <- Gooch_18_22$LUC
+fac.post[is.na(fac.post)] <- 0
+fac.post[fac.post == "ag100"] <- "ag100+"
+fac.post <- factor(fac.post)
+remap.post <- mapvalues(fac.post, gooch_relabel$gooch_value, gooch_relabel$gooch_code)
+remap.post <- mapvalues(remap.post, master_label$code_value, master_label$code_name)
+
+# ================================================== 2018 - 2019 =========================
+fac.2018.prev <- Gooch_19_18$LUC_1
+fac.2018.prev[is.na(fac.2018.prev)] <- 0
+fac.2018.prev <- factor(fac.2018.prev)
+remap.2018.prev <- mapvalues(fac.2018.prev, gooch_relabel$gooch_value, gooch_relabel$gooch_code)
+remap.2018.prev <- mapvalues(remap.2018.prev, master_label$code_value, master_label$code_name)
+
+fac.2019.post <- Gooch_19_18$LUC
+fac.2019.post[is.na(fac.2019.post)] <- 0
+fac.2019.post <- factor(fac.2019.post)
+remap.2019.post <- mapvalues(fac.2019.post, gooch_relabel$gooch_value, gooch_relabel$gooch_code)
+remap.2019.post <- mapvalues(remap.2019.post, master_label$code_value, master_label$code_name)
+
+# ================================================== 2019 - 2020 =========================
+fac.2019.prev <- Gooch_20_19$LUC_1
+fac.2019.prev[is.na(fac.2019.prev)] <- 0
+fac.2019.prev[fac.2019.prev == "mutli"] <- "multi"
+fac.2019.prev <- factor(fac.2019.prev)
+remap.2019.prev <- mapvalues(fac.2019.prev, gooch_relabel$gooch_value, gooch_relabel$gooch_code)
+remap.2019.prev <- mapvalues(remap.2019.prev, master_label$code_value, master_label$code_name)
+
+fac.2020.post <- Gooch_20_19$LUC
+fac.2020.post[is.na(fac.2020.post)] <- 0
+fac.2020.post[fac.2020.post == "ag100"] <- "ag100+"
+fac.2020.post <- factor(fac.2020.post)
+remap.2020.post <- mapvalues(fac.2020.post, gooch_relabel$gooch_value, gooch_relabel$gooch_code)
+remap.2020.post <- mapvalues(remap.2020.post, master_label$code_value, master_label$code_name)
+
+# ================================================== 2020 - 2021 =========================
+fac.2020.prev <- Gooch_21_20$LUC_1
+fac.2020.prev[is.na(fac.2020.prev)] <- 0
+fac.2020.prev[fac.2020.prev == "ag100"] <- "ag100+"
+fac.2020.prev <- factor(fac.2020.prev)
+remap.2020.prev <- mapvalues(fac.2020.prev, gooch_relabel$gooch_value, gooch_relabel$gooch_code)
+remap.2020.prev <- mapvalues(remap.2020.prev, master_label$code_value, master_label$code_name)
+
+fac.2021.post <- Gooch_21_20$LUC
+fac.2021.post[is.na(fac.2021.post)] <- 0
+fac.2021.post[fac.2021.post == "ag100"] <- "ag100+"
+fac.2021.post <- factor(fac.2021.post)
+remap.2021.post <- mapvalues(fac.2021.post, gooch_relabel$gooch_value, gooch_relabel$gooch_code)
+remap.2021.post <- mapvalues(remap.2021.post, master_label$code_value, master_label$code_name)
+
+# ================================================== 2021 - 2022 =========================
+fac.2021.prev <- Gooch_22_21$LUC_1
+fac.2021.prev[is.na(fac.2021.prev)] <- 0
+fac.2021.prev[fac.2021.prev == "ag100"] <- "ag100+"
+fac.2021.prev <- factor(fac.2021.prev)
+remap.2021.prev <- mapvalues(fac.2021.prev, gooch_relabel$gooch_value, gooch_relabel$gooch_code)
+remap.2021.prev <- mapvalues(remap.2021.prev, master_label$code_value, master_label$code_name)
+
+fac.2022.post <- Gooch_22_21$LUC
+fac.2022.post[is.na(fac.2022.post)] <- 0
+fac.2022.post[fac.2022.post == "ag100"] <- "ag100+"
+fac.2022.post <- factor(fac.2022.post)
+remap.2022.post <- mapvalues(fac.2022.post, gooch_relabel$gooch_value, gooch_relabel$gooch_code)
+remap.2022.post <- mapvalues(remap.2022.post, master_label$code_value, master_label$code_name)
+
+# ================================================== OVER WRITING =================
+
+Gooch_18_22$LUC_old <- remap.prev
+Gooch_18_22$LUC_new <- remap.post
+
+Gooch_19_18$LUC_old <- remap.2018.prev
+Gooch_19_18$LUC_new <- remap.2019.post
+
+Gooch_20_19$LUC_old <- remap.2019.prev
+Gooch_20_19$LUC_new <- remap.2020.post
+
+Gooch_21_20$LUC_old <- remap.2020.prev
+Gooch_21_20$LUC_new <- remap.2021.post
+
+Gooch_22_21$LUC_old <- remap.2021.prev
+Gooch_22_21$LUC_new <- remap.2022.post
+
+
+# ================================================== SAVING =================
+fileDir <- paste0(getwd(), "/Goochland_Parcel_Data/Goochland_Parcellation_FIN/")
+
+st_write(Gooch_18_22, paste0(fileDir, "Gooch_18_22_all_parcellationFIN.shp"))
+st_write(Gooch_19_18, paste0(fileDir, "Gooch_Parcellation_19_18FIN.shp"))
+st_write(Gooch_20_19, paste0(fileDir, "Gooch_Parcellation_20_19FIN.shp"))
+st_write(Gooch_21_20, paste0(fileDir, "Gooch_Parcellation_21_20FIN.shp"))
+st_write(Gooch_22_21, paste0(fileDir, "Gooch_Parcellation_22_21FIN.shp"))
+```
+
 
