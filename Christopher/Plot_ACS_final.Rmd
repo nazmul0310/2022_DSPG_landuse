@@ -27,7 +27,7 @@ options(scipen=999)
 ```{r parameters}
 county = "Goochland"
 year = 2020
-fileName <- paste("/ACS_rObjects/ACS", year, county, ".rData", sep="")
+fileName <- paste("/Christopher/ACS_rObjects/ACS", year, county, ".rData", sep="")
 ```
 
 ```{r importing data}
