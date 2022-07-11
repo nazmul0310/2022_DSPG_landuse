@@ -1,0 +1,36 @@
+---
+title: "MIMPRV/MTOTPR_Ratio"
+output: html_document
+date: '2022-06-24'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tigris)
+library(dplyr)
+library(leaflet)
+library(tidycensus)
+library(tidyverse)
+library(dplyr)
+library(stringr)
+library(tigris)
+library(ggplot2)
+library(viridis)
+library(RColorBrewer)
+options(scipen=999)
+```
+
+```{r importing data}
+setwd("C:/Users/Christopher Vest/Documents/Land_use_project/Land_use")
+parcel_data <- read.csv("C:/Users/Christopher Vest/Documents/Land_use_project/Land_use/parc_point_2012_2021.csv")
+```
+```{r}
+house_over_total_21 <- mutate(parcel_data, MIMPRV / MTOTPR)
+
+
+value.df <- house_over_total_21 %>% 
+  select(`MIMPRV/MTOTPR`)
+hist(value.df$`MIMPRV/MTOTPR`, na.rm=TRUE)
+```
+

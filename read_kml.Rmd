@@ -1,0 +1,15 @@
+---
+title: "Untitled"
+output: html_document
+date: '2022-06-27'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(sf)
+Map1 <- st_read("C:/Users/Christopher Vest/Downloads/CropScape_CDL_1274771988.kml")
+```
+
