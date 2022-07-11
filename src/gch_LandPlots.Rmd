@@ -19,8 +19,8 @@ setwd("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse")
 ```
 
 ```{r}
-goochland2022 <- read.csv("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/2022_goochland.csv")
-goochland2018 <- read.csv("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/2018_goochland.csv")
+goochland2022 <- read.csv("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/LUC_codes/Cleaned_parcel_Data/2022_goochlandCLEANED.csv")
+goochland2018 <- read.csv("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/LUC_codes/Cleaned_parcel_Data/2018_goochlandCLEANED.csv")
 goochland2018.22<- read.csv("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/Gooch_Parcellation_2018_2022.csv")
 
 gooch2022.LUC <- data.frame(LUC = unique(goochland2022$LUC))
@@ -76,7 +76,14 @@ for(i in 1:nrow(goochland2018.22)) {
 ```{r}
 
 goochland2022.df <- goochland2022 %>% select(LUC, Total.Land)
-
+goochland2022.df$LUC <-factor(goochland2022.df$LUC, 
+                               levels = c("Single Family Residential Urban",
+                                          "Single Family Residential Suburban",
+                                          "Multi-Family Residential",
+                                          "Commerical / Industrial",
+                                          "Agricultural / Undeveloped (20-99 Acres)",
+                                          "Agricultural / Undeveloped (100+ Acres)",
+                                          "Other"))
 p1 <- goochland2022.df %>% 
   group_by(LUC) %>% 
   summarise(totalAcres = sum(Total.Land, na.rm=TRUE)) %>%

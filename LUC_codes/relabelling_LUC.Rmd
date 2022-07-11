@@ -1,0 +1,174 @@
+---
+title: "Relabelling Land Uses"
+author: "JAM"
+date: '2022-06-29'
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(writexl)
+library(foreign)
+```
+
+```{r setting working directory and importing data}
+setwd("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse")
+  
+# Importing the parcel data for both Powhatan and Goochland
+taxPar_2021 <- read_xlsx("Powhatan_Parcel_Data/Tax_Par_2021.xlsx")
+taxPar_2012 <- read_xlsx("Powhatan_Parcel_Data/Tax_Par_2012.xlsx")
+parc_point_2012_2021 <- read.csv("Powhatan_Parcel_Data/Parc_point_2012_2021.csv")
+
+goochland_2018 <- read.csv("Goochland_Parcel_Data/2018_goochland.csv")
+goochland_2022 <- read.csv("Goochland_Parcel_Data/2022_goochland.csv")
+goochland_parcellation <- read.csv("Goochland_Parcel_Data/Gooch_Parcellation_2018_2022.csv")
+
+# Importing the xlsx files with the codes
+master_relabel <- read_excel("LUC_codes/LUC_codeToName.xlsx", sheet = "codeToName")
+```
+
+```{r Powhatan Relabeling MLUSE}
+# Declaring the land use variables
+MLUSE21 <- taxPar_2021$MLUSE
+MLUSE12 <- taxPar_2012$MLUSE
+pow_relabel <- read_excel("LUC_codes/LUC_codeToName.xlsx", sheet = "Powhatan")
+
+# Converting na's to 0's
+MLUSE21[is.na(MLUSE21)] <- 0
+MLUSE12[is.na(MLUSE12)] <- 0
+
+# Replacing codes to LUC
+
+# 2012
+for(i in 1:length(MLUSE12)){
+  MLUSE12[i] <- pow_relabel$pow_code[MLUSE12[i] == pow_relabel$pow_value]
+  MLUSE12[i] <- master_relabel$code_name[MLUSE12[i] == master_relabel$code_value]
+}
+# 2021
+for(i in 1:length(MLUSE21)){ 
+  MLUSE21[i] <- pow_relabel$pow_code[MLUSE21[i] == pow_relabel$pow_value]
+  MLUSE21[i] <- master_relabel$code_name[MLUSE21[i] == master_relabel$code_value]
+}
+
+# re assigning the data frame
+taxPar_2012$MLUSE <- MLUSE12
+taxPar_2021$MLUSE <- MLUSE21
+
+```
+
+
+```{r relabelling parc point}
+
+MLUSE12 <- parc_point_2012_2021$MLUSE_12
+MLUSE21 <- parc_point_2012_2021$MLUSE
+
+MLUSE12[is.na(MLUSE12)] <- 0
+MLUSE21[is.na(MLUSE21)] <- 0
+
+for(i in 1:nrow(parc_point_2012_2021)){
+  MLUSE12[i] <- pow_relabel$pow_code[MLUSE12[i] == pow_relabel$pow_value]
+  MLUSE12[i] <- master_relabel$code_name[MLUSE12[i] == master_relabel$code_value]
+  
+  MLUSE21[i] <- pow_relabel$pow_code[MLUSE21[i] == pow_relabel$pow_value]
+  MLUSE21[i] <- master_relabel$code_name[MLUSE21[i] == master_relabel$code_value]
+}
+
+parc_point_2012_2021$MLUSE_12 <- MLUSE12
+parc_point_2012_2021$MLUSE <- MLUSE21
+
+```
+
+
+
+```{r Goochland 2018 relabeling LUC}
+MLUSE <- goochland_2018$LUC
+gooch_2018_relabel <- read_excel("LUC_codes/LUC_codeToName.xlsx", sheet = "Goochland 2018")
+
+# Converting na's to 0's
+MLUSE[is.na(MLUSE)] <- 0
+
+# There's a small problem with a few labelled uses
+gooch_2018_relabel$gooch_value[20] <- "3 Multi-Family "
+gooch_2018_relabel$gooch_value[15] <- "19 TAXED-SCC\nTAXED BY SCC"
+gooch_2018_relabel$gooch_value[1] <- "17 NOT TAXABLE "
+gooch_2018_relabel[28,] <- data.frame(gooch_value = "", gooch_code = 7)
+
+
+# Replacing Powhatan's LUC codes to right codes
+for(i in 1:length(MLUSE)){
+  MLUSE[i] <- gooch_2018_relabel$gooch_code[MLUSE[i] == gooch_2018_relabel$gooch_value]
+  MLUSE[i] <- master_relabel$code_name[MLUSE[i] == master_relabel$code_value]
+}
+goochland_2018$LUC <- MLUSE
+```
+
+
+```{r Goochland 2022}
+MLUSE <- goochland_2022$LUC
+
+gooch_2022_relabel <- read_excel("LUC_codes/LUC_codeToName.xlsx", sheet = "Goochland 2022")
+
+# Converting na's to 0's
+MLUSE[is.na(MLUSE)] <- 0
+
+for(i in 1:length(MLUSE)){
+  MLUSE[i] <- gooch_2022_relabel$gooch_code[MLUSE[i] == gooch_2022_relabel$gooch_value]
+  MLUSE[i] <- master_relabel$code_name[MLUSE[i] == master_relabel$code_value]
+}
+goochland_2022$LUC <- MLUSE
+```
+
+
+```{r Goochland Parcellation}
+MLUSE18 <- goochland_parcellation$LandUseCod2018
+MLUSE22 <- goochland_parcellation$LUC_2022
+
+gooch_2022_relabel <- read_excel("LUC_codes/LUC_codeToName.xlsx", sheet = "Goochland Parcellation 2022")
+gooch_2018_relabel <- read_excel("LUC_codes/LUC_codeToName.xlsx", sheet = "Goochland Parcellation 2018")
+
+
+# Converting na's to 0's
+MLUSE18[is.na(MLUSE18)] <- 0
+MLUSE22[is.na(MLUSE22)] <- 0
+
+for(i in 1:nrow(goochland_parcellation)){
+  # 2018
+  MLUSE18[i] <- gooch_2018_relabel$gooch_code[MLUSE18[i] == gooch_2018_relabel$gooch_value]
+  MLUSE18[i] <- master_relabel$code_name[MLUSE18[i] == master_relabel$code_value]
+
+  # 2022
+  MLUSE22[i] <- gooch_2022_relabel$gooch_code[MLUSE22[i] == gooch_2022_relabel$gooch_value]
+  MLUSE22[i] <- master_relabel$code_name[MLUSE22[i] == master_relabel$code_value]
+}
+
+goochland_parcellation$LUC_2022 <- MLUSE22
+goochland_parcellation$LandUseCod2018 <- MLUSE18
+
+```
+
+
+```{r Saving cleaned data}
+# Writing Powhatan Data
+write_xlsx(taxPar_2012, "LUC_codes/Cleaned_Parcel_Data/Tax_Par_2012CLEANED.xlsx")
+
+write_xlsx(taxPar_2021, "LUC_codes/Cleaned_Parcel_Data/Tax_Par_2021CLEANED.xlsx")
+
+write_csv(parc_point_2012_2021, "LUC_codes/Cleaned_Parcel_Data/Parc_point_2012_2021CLEANED.csv")
+
+
+# Writing Goochland Data
+
+write_csv(goochland_parcellation, "LUC_codes/Cleaned_Parcel_Data/Gooch_Parcellation_2018_2022CLEANED.csv")
+
+write_csv(goochland_2018, "LUC_codes/Cleaned_Parcel_Data/2018_goochlandCLEANED.csv")
+
+write_csv(goochland_2022, "LUC_codes/Cleaned_Parcel_Data/2022_goochlandCLEANED.csv")
+```
+
+
+
+
+

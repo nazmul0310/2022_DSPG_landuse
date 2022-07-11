@@ -145,30 +145,30 @@ houseSize$estimate[2:5] <- houseSize$estimate[2:5] / sum(houseSize$estimate[2:5]
 
 ### Income ===========================
 
-inc.var <- c(median = "S1901_C01_012E")
-# inc.var <- c(median         = "S1901_C01_012E",
-#              below10k       = "S1901_C01_002E",
-#              bet10kand15k   = "S1901_C01_003E",
-#              bet15kand25k   = "S1901_C01_004E",
-#              bet25kand35k   = "S1901_C01_005E",
-#              bet35kand50k   = "S1901_C01_006E",
-#              bet50kand74k   = "S1901_C01_007E",
-#              bet75kand100k  = "S1901_C01_008E",
-#              bet100kand150k = "S1901_C01_009E",
-#              bet150kand200k = "S1901_C01_010E",
-#              above200k      = "S1901_C01_011E")
+#inc.var <- c(median = "S1901_C01_012E")
+inc.var <- c(below10k       = "S1901_C01_002E",
+             bet10kand15k   = "S1901_C01_003E",
+             bet15kand25k   = "S1901_C01_004E",
+             bet25kand35k   = "S1901_C01_005E",
+             bet35kand50k   = "S1901_C01_006E",
+             bet50kand74k   = "S1901_C01_007E",
+             bet75kand100k  = "S1901_C01_008E",
+             bet100kand150k = "S1901_C01_009E",
+             bet150kand200k = "S1901_C01_010E",
+             above200k      = "S1901_C01_011E")
 
-income <- get_acs(geography = "tract",
+income <- get_acs(geography = "county",
                   county = counties, 
                   state = state, 
                   geometry = TRUE,
                   year = years, 
                   cache_table = TRUE,
-                  variables = inc.var, 
-                  output = "wide") %>% select(GEOID, 
-                                              NAME,
-                                              names(inc.var), 
+                  variables = inc.var) %>% select(GEOID, 
+                                              NAME, 
+                                              variable,
+                                              estimate,
                                               geometry)
+income$variable <- names(inc.var)
 
 income$NAME <- str_replace(income$NAME, paste0(", ", counties, " County, Virginia"), "")
 
