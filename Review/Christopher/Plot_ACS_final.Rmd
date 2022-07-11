@@ -27,7 +27,7 @@ options(scipen=999)
 ```{r parameters}
 county = "Goochland"
 year = 2020
-fileName <- paste("/ACS_rObjects/ACS", year, county, ".rData", sep="")
+fileName <- paste("/Review/Christopher/ACS_rObjects/ACS", year, county, ".rData", sep="")
 ```
 
 ```{r importing data}
@@ -76,7 +76,8 @@ ggplot(ind.df, aes(x = reorder(name, -value), y = value, fill = value)) +
 
 ```{r median income}
 plot(income)
-ggplot(income, aes(x = median, y = NAME, fill = NAME))+ geom_bar(stat = "identity") + theme(legend.position = "none") + scale_fill_viridis(discrete=TRUE) + labs(title="Median Income by Census Tract", caption="Source: ACS5 2016-2020") 
+income$variable <- factor(income$variable, levels = income$variable)
+ggplot(income, aes(x = variable, y = estimate, fill = variable))+ geom_bar(stat = "identity") + theme(legend.position = "none") + scale_fill_viridis(discrete=TRUE) + labs(title="Median Income by Census Tract", caption="Source: ACS5 2016-2020") + coord_flip()
 ```
 
 ```{r Educational attainment} 
