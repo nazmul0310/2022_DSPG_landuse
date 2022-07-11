@@ -36,8 +36,6 @@ library(rgdal)
 ```
 
 ```{r setting working directory and importing data}
-setwd("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse")
-
 # MASTER
 master_label <- read_excel("LUC_codes/LUC_codeToName.xlsx", sheet = "codeToName")
 

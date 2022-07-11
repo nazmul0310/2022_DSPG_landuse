@@ -6,20 +6,21 @@ setwd("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse")
 
 library(dplyr)
 library(tidycensus)
+library(stringr)
 options(scipen=999)
 
 ## Setting ALL needed parameters ======================
 
-counties <- "Goochland"
+counties <- "Powhatan"
 
 state <- "VA"
   
-years <- 2020
+years <- 2016
 
 acs_Caption <- paste("Source: ACS5 ", years-5, "-", years, sep="")
 ## Output file names =======================
 
-dataDirectory <- "C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/csv_data/"
+dataDirectory <- "C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/Review/John/ACS_rObjects/"
 
 fileOutput <- paste0("ACS", years, counties, ".rData")
 
@@ -146,12 +147,8 @@ houseSize$estimate[2:5] <- houseSize$estimate[2:5] / sum(houseSize$estimate[2:5]
 ### Income ===========================
 
 #inc.var <- c(median = "S1901_C01_012E")
-<<<<<<< HEAD
-inc.var <- c(median         = "S1901_C01_012E",
-             below10k       = "S1901_C01_002E",
-=======
+
 inc.var <- c(below10k       = "S1901_C01_002E",
->>>>>>> 84efa332a03d976ec957edee0e765c50e65c4762
              bet10kand15k   = "S1901_C01_003E",
              bet15kand25k   = "S1901_C01_004E",
              bet25kand35k   = "S1901_C01_005E",
@@ -325,7 +322,7 @@ save(population, employment_age, industry, income, houseSize, education_age, edu
 
 ## Loading the data ===============================
 
-load(paste0(getwd(), "/csv_data/ACS2020Powhatan.rData"))
+# load(paste0(getwd(), "/csv_data/ACS2020Powhatan.rData"))
 
 
 
