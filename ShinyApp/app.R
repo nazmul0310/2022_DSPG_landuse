@@ -113,9 +113,9 @@ pind <- industry %>% # code for Shiny app
   theme(axis.text.y = element_text(hjust=0)) +
   labs(title="Employment By Industry", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
 
-pinc <- inc <- read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/inc.csv", header=TRUE) #for Shiny app
+inc <- read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/inc.csv", header=TRUE) #for Shiny app
 
-inc %>% # code for Shiny app
+pinc <- inc %>% # code for Shiny app
   filter(county == "Powhatan ", year==2020) %>%  mutate(inccat = fct_relevel(inccat, "<35K", "35K - 50K", "50K - 75K","75K-100K", ">100K")) %>%
   ggplot(aes(x = inccat, y = estimate, fill = inccat))+ 
   geom_bar(stat = "identity") + 
@@ -1092,7 +1092,7 @@ server <- function(input, output){
     
   })  
   
-  powhatan <- reactive({
+  powhatan_soc <- reactive({
     input$powhatan_soc
   })
   

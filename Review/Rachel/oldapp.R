@@ -10,6 +10,7 @@
 
 
 library(shiny)
+library(dplyr)
 library(shinycssloaders)
 library(shinythemes)
 library(stringr)
@@ -17,129 +18,10 @@ library(shinyjs)
 library(ggplot2)
 library(plotly)
 library(rsconnect)
-library(rgdal)
-library(plyr)
-library(tigris)
-library(dplyr)
 library(leaflet)
-library(tidycensus)
-library(tidyverse)
-library(stringr)
-library(viridis)
-library(RColorBrewer)
-options(scipen=999)
+library(rgdal)
 
 # data --------------------------------------------------------------------------------------------------------------------
-
-    # Goochland sociodemographic
-
-popdist<-read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/popdist.csv", header = TRUE) #for Shiny app
-
-gage <- popdist %>% # code for Shiny app
-  filter(county == "Goochland", year==2020) %>%
-  ggplot(aes(x=agecat , y=value, fill=agecat))+
-  geom_bar(stat="identity") + 
-  coord_flip() + 
-  scale_fill_viridis(discrete=TRUE) + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
-
-industry <- read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/industry.csv", header=TRUE) #for Shiny app
-
-gind <- industry %>% # code for Shiny app
-  filter(county == "Goochland", year==2020) %>%
-  ggplot(aes(x = reorder(name, -val2), y = value, fill = value)) + 
-  geom_bar(stat = "identity") + theme(legend.position = "none") +
-  coord_flip() + scale_fill_viridis()  + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Employment By Industry", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
-
-inc <- read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/inc.csv", header=TRUE) #for Shiny app
-
-ginc <- inc %>% # code for Shiny app
-  filter(county == "Goochland", year==2020) %>%  mutate(inccat = fct_relevel(inccat, "<35K", "35K - 50K", "50K - 75K","75K-100K", ">100K")) %>%
-  ggplot(aes(x = inccat, y = estimate, fill = inccat))+ 
-  geom_bar(stat = "identity") + 
-  theme(legend.position = "none") + 
-  scale_fill_viridis(discrete=TRUE) + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) +
-  labs(title = "Income Distribution", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
-  coord_flip()
-
-educ_earn <- read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/educ_earn.csv", header=TRUE) #for Shiny app
-
-gedu <- educ_earn %>% # code for Shiny app
-  filter(county == "Goochland", year==2020) %>%
-  ggplot(aes(x = name, y = values)) + 
-  geom_bar(stat = "identity", mapping=(aes(fill = name))) + 
-  theme(legend.position = "none") + scale_fill_viridis(discrete=TRUE) +
-  labs(title = "Median Earnings By Educational Attainment (Age > 25 years)", x = "Highest Education", y = "Median Earnings", caption = "Source: ACS5 2016-2020") + 
-  geom_text(aes(label = values), vjust = -0.25) +
-  scale_x_discrete(labels = c("Below\nhighschool", "Highschool\ngraduate", "Some college/\nAssociates'", "Bachelor's", "Graduate")) + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) 
-
-    # Powhatan sociodemographic
-
-popdist<-read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/popdist.csv", header = TRUE) #for Shiny app
-
-page <- popdist %>% # code for Shiny app
-  filter(county == "Powhatan ", year==2020) %>%
-  ggplot(aes(x=agecat , y=value, fill=agecat))+
-  geom_bar(stat="identity") + 
-  coord_flip() + 
-  scale_fill_viridis(discrete=TRUE) + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
-
-industry <- read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/industry.csv", header=TRUE) #for Shiny app
-
-pind <- industry %>% # code for Shiny app
-  filter(county == "Powhatan ", year==2020) %>%
-  ggplot(aes(x = reorder(name, -val2), y = value, fill = value)) + 
-  geom_bar(stat = "identity") + theme(legend.position = "none") +
-  coord_flip() + scale_fill_viridis()  + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Employment By Industry", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
-
-pinc <- inc <- read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/inc.csv", header=TRUE) #for Shiny app
-
-inc %>% # code for Shiny app
-  filter(county == "Powhatan ", year==2020) %>%  mutate(inccat = fct_relevel(inccat, "<35K", "35K - 50K", "50K - 75K","75K-100K", ">100K")) %>%
-  ggplot(aes(x = inccat, y = estimate, fill = inccat))+ 
-  geom_bar(stat = "identity") + 
-  theme(legend.position = "none") + 
-  scale_fill_viridis(discrete=TRUE) + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) +
-  labs(title = "Income Distribution", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
-  coord_flip()  
-
-educ_earn <- read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/educ_earn.csv", header=TRUE) #for Shiny app
-
-pedu <- educ_earn %>% # code for Shiny app
-  filter(county == "Powhatan ", year==2020) %>%
-  ggplot(aes(x = name, y = values)) + 
-  geom_bar(stat = "identity", mapping=(aes(fill = name))) + 
-  theme(legend.position = "none") + scale_fill_viridis(discrete=TRUE) +
-  labs(title = "Median Earnings By Educational Attainment (Age > 25 years)", x = "Highest Education", y = "Median Earnings", caption = "Source: ACS5 2016-2020") + 
-  geom_text(aes(label = values), vjust = -0.25) +
-  scale_x_discrete(labels = c("Below\nhighschool", "Highschool\ngraduate", "Some college/\nAssociates'", "Bachelor's", "Graduate")) + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0))
 
 
   harbour<- leaflet()
@@ -250,10 +132,10 @@ ui <- navbarPage(title = "DSPG 2022",
                                               column(8, 
                                                      h4(strong("Sociodemographics")),
                                                      selectInput("goochland_soc", "Select Variable:", width = "100%", choices = c(
-                                                       "Age Distribution of Population" = "gage",
-                                                       "Employment by Industry" = "gind",
-                                                       "Income Distribution" = "ginc",
-                                                       "Median Earnings By Educational Attainment (Age > 25 years)" = "gedu")
+                                                       "Proportion of Age Groups" = "gage",
+                                                       "Proportion of Population by Industry" = "gind",
+                                                       "Median Income" = "ginc",
+                                                       "Median Income by Educational Attainment Over the Age of 25" = "gedu")
                                                      ),
                                                      plotOutput("gsoc", height = "500px"),
                                                      p(tags$small("Data Source: US Census"))),
@@ -302,10 +184,10 @@ ui <- navbarPage(title = "DSPG 2022",
                                               column(8, 
                                                      h4(strong("Sociodemographics")),
                                                      selectInput("powhatan_soc", "Select Variable:", width = "100%", choices = c(
-                                                       "Age Distribution of Population" = "page",
-                                                       "Employment by Industry" = "pind",
-                                                       "Income Distribution" = "pinc",
-                                                       "Median Earnings By Educational Attainment (Age > 25 years)" = "pedu")
+                                                       "Proportion of Age Groups" = "page",
+                                                       "Proportion of Population by Industry" = "pind",
+                                                       "Median Income" = "pinc",
+                                                       "Median Income by Educational Attainment Over the Age of 25" = "pedu")
                                                      ),
                                                      
                                                      plotOutput("psoc", height = "500px"),
@@ -1071,48 +953,6 @@ ui <- navbarPage(title = "DSPG 2022",
 
 server <- function(input, output){
  
-  goochland_soc <- reactive({
-    input$goochland_soc
-  })
-  
-  output$gsoc <- renderPlot({
-    
-    if(goochland_soc() == "gage"){
-      gage
-    }
-    else if(goochland_soc() == "gind"){
-      gind
-    }
-    else if(goochland_soc() == "ginc"){
-      ginc
-    }
-    else if(goochland_soc() == "gedu"){
-      gedu
-    }
-    
-  })  
-  
-  powhatan <- reactive({
-    input$powhatan_soc
-  })
-  
-  output$psoc <- renderPlot({
-    
-    if(powhatan_soc() == "page"){
-      page
-    }
-    else if(powhatan_soc() == "pind"){
-      pind
-    }
-    else if(powhatan_soc() == "pinc"){
-      pinc
-    }
-    else if(powhatan_soc() == "pedu"){
-      pedu
-    }
-    
-  })
-  
 
 output$harbour<- renderLeaflet({
   harbour
