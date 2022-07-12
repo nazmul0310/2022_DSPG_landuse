@@ -26,6 +26,7 @@ library(scales)
 library(nycflights13)
 library(readxl)
 library(rgdal)
+library(htmlwidgets)
 ```
 
 
@@ -246,6 +247,8 @@ gooch18
 gooch19
 gooch20
 gooch21
+
+saveWidget(widget=gooch18, file = "goochland2018.html", selfcontained=TRUE)
 ```
 
 
