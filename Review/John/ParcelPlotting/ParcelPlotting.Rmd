@@ -1,0 +1,71 @@
+---
+title: "ParcelPlotting"
+author: "JAM"
+date: '2022-07-11'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(RColorBrewer)
+library(traveltime)
+library(tidyverse)
+library(tidycensus)
+library(sf)
+library(osmdata)
+library(leaflet)
+library(sp)
+library(purrr)
+library(mapview)
+library(osrm)
+library(rmapzen)
+library(rgdal)
+library(ggplot2)
+library(scales)
+library(nycflights13)
+library(readxl)
+library(rgdal)
+```
+
+
+```{r GOOCHLAND PLOTTING}
+Gooch2018 <- read_sf("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/Review/John/Goochland_Parcel_Data/Goochland_Original_Data_FIN/Gooch2018FIN.shp")
+Gooch2019 <- read_sf("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/Review/John/Goochland_Parcel_Data/Goochland_Original_Data_FIN/Gooch2019FIN.shp")
+Gooch2020 <- read_sf("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/Review/John/Goochland_Parcel_Data/Goochland_Original_Data_FIN/Gooch2020FIN.shp")
+Gooch2021 <- read_sf("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/Review/John/Goochland_Parcel_Data/Goochland_Original_Data_FIN/Gooch2021FIN.shp")
+
+LUC_values <- c("Single Family Residential Suburban", 
+                "Single Family Residential Urban", 
+                "Multi-Family Residential", 
+                "Commerical / Industrial", 
+                "Agricultural / Undeveloped (20-99 Acres)", 
+                "Agricultural / Undeveloped (100+ Acres)", 
+                "Other", 
+                "Undefined")
+LUC_values <- factor(LUC_values, levels = LUC_values)
+
+mypalette <- colorBin(palette = "Paired", as.numeric(LUC_values))
+colors18 <- mypalette(unclass(factor(Gooch2018$LUC_FIN)))
+colors19 <- mypalette(unclass(factor(Gooch2019$LUC_FIN)))
+colors20 <- mypalette(unclass(factor(Gooch2020$LUC_FIN)))
+colors21 <- mypalette(unclass(factor(Gooch2021$LUC_FIN)))
+
+
+
+
+### Working just with 2018 =================================================================
+
+
+
+gooch1 <- leaflet() %>%
+  addTiles() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  
+  addPolygons(data=Gooch2018$geometry, 
+              fillColor = mypalette(unclass(factor(Gooch2018$LUC_FIN))), 
+              smoothFactor = 0.1, fillOpacity=1, stroke = FALSE)
+
+gooch1
+```
+
