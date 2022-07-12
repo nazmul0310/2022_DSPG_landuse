@@ -35,8 +35,8 @@ Gooch2019 <- read_sf("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/Rev
 Gooch2020 <- read_sf("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/Review/John/Goochland_Parcel_Data/Goochland_Original_Data_FIN/Gooch2020FIN.shp")
 Gooch2021 <- read_sf("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/Review/John/Goochland_Parcel_Data/Goochland_Original_Data_FIN/Gooch2021FIN.shp")
 
-LUC_values <- c("Single Family Residential Suburban", 
-                "Single Family Residential Urban", 
+LUC_values <- c("Single Family Residential Urban", 
+                "Single Family Residential Suburban", 
                 "Multi-Family Residential", 
                 "Commerical / Industrial", 
                 "Agricultural / Undeveloped (20-99 Acres)", 
@@ -46,26 +46,206 @@ LUC_values <- c("Single Family Residential Suburban",
 LUC_values <- factor(LUC_values, levels = LUC_values)
 
 mypalette <- colorBin(palette = "Paired", as.numeric(LUC_values))
-colors18 <- mypalette(unclass(factor(Gooch2018$LUC_FIN)))
-colors19 <- mypalette(unclass(factor(Gooch2019$LUC_FIN)))
-colors20 <- mypalette(unclass(factor(Gooch2020$LUC_FIN)))
-colors21 <- mypalette(unclass(factor(Gooch2021$LUC_FIN)))
+colors <- mypalette(unclass(LUC_values))
 
 
 
 
-### Working just with 2018 =================================================================
+
+### 2018 ==========================================================================
+
+code1.18 <- Gooch2018 %>% filter(LUC_FIN == "Single Family Residential Urban")
+code2.18 <- Gooch2018 %>% filter(LUC_FIN == "Single Family Residential Suburban")
+code3.18 <- Gooch2018 %>% filter(LUC_FIN == "Multi-Family Residential")
+code4.18 <- Gooch2018 %>% filter(LUC_FIN == "Commerical / Industrial")
+code5.18 <- Gooch2018 %>% filter(LUC_FIN == "Agricultural / Undeveloped (20-99 Acres)")
+code6.18 <- Gooch2018 %>% filter(LUC_FIN == "Agricultural / Undeveloped (100+ Acres)")
+code7.18 <- Gooch2018 %>% filter(LUC_FIN == "Other")
+code0.18 <- Gooch2018 %>% filter(LUC_FIN == "Undefined")
 
 
-
-gooch1 <- leaflet() %>%
+gooch18 <- leaflet() %>%
   addTiles() %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
   
-  addPolygons(data=Gooch2018$geometry, 
-              fillColor = mypalette(unclass(factor(Gooch2018$LUC_FIN))), 
-              smoothFactor = 0.1, fillOpacity=1, stroke = FALSE)
+  addPolygons(data=code1.18$geometry, 
+              fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Single Family Urban") %>%
+  addPolygons(data=code2.18$geometry, 
+              fillColor = colors[2], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Single Family Suburban") %>%
+  addPolygons(data=code3.18$geometry, 
+              fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Milti-Family Residential") %>%
+  addPolygons(data=code4.18$geometry, 
+              fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Commercial & Industrial") %>%
+  addPolygons(data=code5.18$geometry, 
+              fillColor = colors[5], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Agriculture/Undeveloped (20-99 Acres)") %>%
+  addPolygons(data=code6.18$geometry, 
+              fillColor = colors[6], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Agriculture/Undeveloped (100+ Acres)") %>%
+  addPolygons(data=code7.18$geometry, 
+              fillColor = colors[7], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Other") %>%
+  addPolygons(data=code0.18$geometry, 
+              fillColor = colors[8], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Unknown") %>%
+  addLayersControl(
+    overlayGroups = c("Single Family Urban", "Single Family Suburban", "Milti-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
+    position = "bottomleft",
+    options = layersControlOptions(collapsed = FALSE)
+  )
 
-gooch1
+
+
+### 2019 ==========================================================================
+
+code1.19 <- Gooch2019 %>% filter(LUC_FIN == "Single Family Residential Urban")
+code2.19 <- Gooch2019 %>% filter(LUC_FIN == "Single Family Residential Suburban")
+code3.19 <- Gooch2019 %>% filter(LUC_FIN == "Multi-Family Residential")
+code4.19 <- Gooch2019 %>% filter(LUC_FIN == "Commerical / Industrial")
+code5.19 <- Gooch2019 %>% filter(LUC_FIN == "Agricultural / Undeveloped (20-99 Acres)")
+code6.19 <- Gooch2019 %>% filter(LUC_FIN == "Agricultural / Undeveloped (100+ Acres)")
+code7.19 <- Gooch2019 %>% filter(LUC_FIN == "Other")
+code0.19 <- Gooch2019 %>% filter(LUC_FIN == "Undefined")
+
+
+gooch19 <- leaflet() %>%
+  addTiles() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  
+  addPolygons(data=code1.19$geometry, 
+              fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Single Family Urban") %>%
+  addPolygons(data=code2.19$geometry, 
+              fillColor = colors[2], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Single Family Suburban") %>%
+  addPolygons(data=code3.19$geometry, 
+              fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Milti-Family Residential") %>%
+  addPolygons(data=code4.19$geometry, 
+              fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Commercial & Industrial") %>%
+  addPolygons(data=code5.19$geometry, 
+              fillColor = colors[5], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Agriculture/Undeveloped (20-99 Acres)") %>%
+  addPolygons(data=code6.19$geometry, 
+              fillColor = colors[6], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Agriculture/Undeveloped (100+ Acres)") %>%
+  addPolygons(data=code7.19$geometry, 
+              fillColor = colors[7], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Other") %>%
+  addPolygons(data=code0.19$geometry, 
+              fillColor = colors[8], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Unknown") %>%
+  addLayersControl(
+    overlayGroups = c("Single Family Urban", "Single Family Suburban", "Milti-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
+    position = "bottomleft",
+    options = layersControlOptions(collapsed = FALSE)
+  )
+
+### 2020 ==========================================================================
+
+code1.20 <- Gooch2020 %>% filter(LUC_FIN == "Single Family Residential Urban")
+code2.20 <- Gooch2020 %>% filter(LUC_FIN == "Single Family Residential Suburban")
+code3.20 <- Gooch2020 %>% filter(LUC_FIN == "Multi-Family Residential")
+code4.20 <- Gooch2020 %>% filter(LUC_FIN == "Commerical / Industrial")
+code5.20 <- Gooch2020 %>% filter(LUC_FIN == "Agricultural / Undeveloped (20-99 Acres)")
+code6.20 <- Gooch2020 %>% filter(LUC_FIN == "Agricultural / Undeveloped (100+ Acres)")
+code7.20 <- Gooch2020 %>% filter(LUC_FIN == "Other")
+code0.20 <- Gooch2020 %>% filter(LUC_FIN == "Undefined")
+
+
+gooch20 <- leaflet() %>%
+  addTiles() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  
+  addPolygons(data=code1.20$geometry, 
+              fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Single Family Urban") %>%
+  addPolygons(data=code2.20$geometry, 
+              fillColor = colors[2], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Single Family Suburban") %>%
+  addPolygons(data=code3.20$geometry, 
+              fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Milti-Family Residential") %>%
+  addPolygons(data=code4.20$geometry, 
+              fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Commercial & Industrial") %>%
+  addPolygons(data=code5.20$geometry, 
+              fillColor = colors[5], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Agriculture/Undeveloped (20-99 Acres)") %>%
+  addPolygons(data=code6.20$geometry, 
+              fillColor = colors[6], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Agriculture/Undeveloped (100+ Acres)") %>%
+  addPolygons(data=code7.20$geometry, 
+              fillColor = colors[7], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Other") %>%
+  addPolygons(data=code0.20$geometry, 
+              fillColor = colors[8], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Unknown") %>%
+  addLayersControl(
+    overlayGroups = c("Single Family Urban", "Single Family Suburban", "Milti-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
+    position = "bottomleft",
+    options = layersControlOptions(collapsed = FALSE)
+  )
+
+
+### 2021 ==========================================================================
+
+code1.21 <- Gooch2021 %>% filter(LUC_FIN == "Single Family Residential Urban")
+code2.21 <- Gooch2021 %>% filter(LUC_FIN == "Single Family Residential Suburban")
+code3.21 <- Gooch2021 %>% filter(LUC_FIN == "Multi-Family Residential")
+code4.21 <- Gooch2021 %>% filter(LUC_FIN == "Commerical / Industrial")
+code5.21 <- Gooch2021 %>% filter(LUC_FIN == "Agricultural / Undeveloped (20-99 Acres)")
+code6.21 <- Gooch2021 %>% filter(LUC_FIN == "Agricultural / Undeveloped (100+ Acres)")
+code7.21 <- Gooch2021 %>% filter(LUC_FIN == "Other")
+code0.21 <- Gooch2021 %>% filter(LUC_FIN == "Undefined")
+
+
+gooch21 <- leaflet() %>%
+  addTiles() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  
+  addPolygons(data=code1.21$geometry, 
+              fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Single Family Urban") %>%
+  addPolygons(data=code2.21$geometry, 
+              fillColor = colors[2], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Single Family Suburban") %>%
+  addPolygons(data=code3.21$geometry, 
+              fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Milti-Family Residential") %>%
+  addPolygons(data=code4.21$geometry, 
+              fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Commercial & Industrial") %>%
+  addPolygons(data=code5.21$geometry, 
+              fillColor = colors[5], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Agriculture/Undeveloped (20-99 Acres)") %>%
+  addPolygons(data=code6.21$geometry, 
+              fillColor = colors[6], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Agriculture/Undeveloped (100+ Acres)") %>%
+  addPolygons(data=code7.21$geometry, 
+              fillColor = colors[7], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Other") %>%
+  addPolygons(data=code0.21$geometry, 
+              fillColor = colors[8], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+              group = "Unknown") %>%
+  addLayersControl(
+    overlayGroups = c("Single Family Urban", "Single Family Suburban", "Milti-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
+    position = "bottomleft",
+    options = layersControlOptions(collapsed = FALSE)
+  )
 ```
+
+
+```{r}
+gooch18
+gooch19
+gooch20
+gooch21
+```
+
 
