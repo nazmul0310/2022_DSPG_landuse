@@ -27,14 +27,17 @@ library(nycflights13)
 library(readxl)
 library(rgdal)
 library(htmlwidgets)
+setwd("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse")
 ```
 
 
 ```{r GOOCHLAND PLOTTING}
-Gooch2018 <- read_sf("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/Review/John/Goochland_Parcel_Data/Goochland_Original_Data_FIN/Gooch2018FIN.shp")
-Gooch2019 <- read_sf("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/Review/John/Goochland_Parcel_Data/Goochland_Original_Data_FIN/Gooch2019FIN.shp")
-Gooch2020 <- read_sf("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/Review/John/Goochland_Parcel_Data/Goochland_Original_Data_FIN/Gooch2020FIN.shp")
-Gooch2021 <- read_sf("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/Review/John/Goochland_Parcel_Data/Goochland_Original_Data_FIN/Gooch2021FIN.shp")
+
+Gooch2018 <- read_sf("../Goochland_Parcel_Data/Goochland_Original_Data_FIN/Gooch2018FIN.shp")
+Gooch2019 <- read_sf("../Goochland_Parcel_Data/Goochland_Original_Data_FIN/Gooch2019FIN.shp")
+Gooch2020 <- read_sf("../Goochland_Parcel_Data/Goochland_Original_Data_FIN/Gooch2020FIN.shp")
+Gooch2021 <- read_sf("../Goochland_Parcel_Data/Goochland_Original_Data_FIN/Gooch2021FIN.shp")
+
 
 LUC_values <- c("Single Family Residential Urban", 
                 "Single Family Residential Suburban", 
@@ -77,7 +80,7 @@ gooch18 <- leaflet() %>%
               group = "Single Family Suburban") %>%
   addPolygons(data=code3.18$geometry, 
               fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-              group = "Milti-Family Residential") %>%
+              group = "Multi-Family Residential") %>%
   addPolygons(data=code4.18$geometry, 
               fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
               group = "Commercial & Industrial") %>%
@@ -94,7 +97,7 @@ gooch18 <- leaflet() %>%
               fillColor = colors[8], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
               group = "Unknown") %>%
   addLayersControl(
-    overlayGroups = c("Single Family Urban", "Single Family Suburban", "Milti-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
+    overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
     position = "bottomleft",
     options = layersControlOptions(collapsed = FALSE)
   )
@@ -125,7 +128,7 @@ gooch19 <- leaflet() %>%
               group = "Single Family Suburban") %>%
   addPolygons(data=code3.19$geometry, 
               fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-              group = "Milti-Family Residential") %>%
+              group = "Multi-Family Residential") %>%
   addPolygons(data=code4.19$geometry, 
               fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
               group = "Commercial & Industrial") %>%
@@ -142,7 +145,7 @@ gooch19 <- leaflet() %>%
               fillColor = colors[8], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
               group = "Unknown") %>%
   addLayersControl(
-    overlayGroups = c("Single Family Urban", "Single Family Suburban", "Milti-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
+    overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
     position = "bottomleft",
     options = layersControlOptions(collapsed = FALSE)
   )
@@ -171,7 +174,7 @@ gooch20 <- leaflet() %>%
               group = "Single Family Suburban") %>%
   addPolygons(data=code3.20$geometry, 
               fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-              group = "Milti-Family Residential") %>%
+              group = "Multi-Family Residential") %>%
   addPolygons(data=code4.20$geometry, 
               fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
               group = "Commercial & Industrial") %>%
@@ -188,7 +191,7 @@ gooch20 <- leaflet() %>%
               fillColor = colors[8], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
               group = "Unknown") %>%
   addLayersControl(
-    overlayGroups = c("Single Family Urban", "Single Family Suburban", "Milti-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
+    overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
     position = "bottomleft",
     options = layersControlOptions(collapsed = FALSE)
   )
@@ -218,7 +221,7 @@ gooch21 <- leaflet() %>%
               group = "Single Family Suburban") %>%
   addPolygons(data=code3.21$geometry, 
               fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-              group = "Milti-Family Residential") %>%
+              group = "Multi-Family Residential") %>%
   addPolygons(data=code4.21$geometry, 
               fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
               group = "Commercial & Industrial") %>%
@@ -235,20 +238,18 @@ gooch21 <- leaflet() %>%
               fillColor = colors[8], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
               group = "Unknown") %>%
   addLayersControl(
-    overlayGroups = c("Single Family Urban", "Single Family Suburban", "Milti-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
+    overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
     position = "bottomleft",
     options = layersControlOptions(collapsed = FALSE)
   )
 ```
 
 
-```{r}
+```{r render plot}
 gooch18
-gooch19
-gooch20
-gooch21
-
-saveWidget(widget=gooch18, file = "goochland2018.html", selfcontained=TRUE)
+# gooch19
+# gooch20
+# gooch21
 ```
 
 
