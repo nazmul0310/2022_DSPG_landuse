@@ -8,7 +8,6 @@
 #
 # LAND USE PROJECT APP
 
-#install.packages(c('shiny', 'dplyer', 'shinycssloaders', 'shinythemes', 'stingr', 'shinyjs', 'ggplot2', 'plotly', 'rsconnect'))
 
 library(shiny)
 library(dplyr)
@@ -19,11 +18,17 @@ library(shinyjs)
 library(ggplot2)
 library(plotly)
 library(rsconnect)
+library(leaflet)
+library(rgdal)
 
 # data --------------------------------------------------------------------------------------------------------------------
 
-# COMMENT
 
+  harbour<- leaflet()
+  harbour<- addTiles(harbour)
+  harbour<- setView(harbour, lng=-77.949, lat=37.742, zoom=9)
+
+  
 # body --------------------------------------------------------------------------------------------------------------------
   
 ui <- navbarPage(title = "DSPG 2022",
@@ -36,7 +41,6 @@ ui <- navbarPage(title = "DSPG 2022",
                  tabPanel("Overview", value = "overview",
                           fluidRow(style = "margin: 2px;",
                                    align = "center",
-                                   br(""),
                                    h1(strong("Land Use in Rural Counties on the Urban Fringe: the case of Goochland and Powhatan Counties​"),
                                       br(""),
                                       h4("Data Science for the Public Good Program"),
@@ -48,7 +52,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                    column(4,
                                           h2(strong("Project Background")),
                                           p(strong("The setting:"), "Powhatan and Goochland County are two counties on the urban fringe outside of Richmond, Virginia. Both counties are known for their 
-                                            rich agricultural histories.  Although Powhatan County has been growing and devolving faster than the average rate, they like Goochland County would like to 
+                                            rich agricultural histories. Communities on the urban fringe are located between both rural and urban areas. Although Powhatan County has been growing and devolving faster than the average rate, they like Goochland County would like to 
                                             keep their agricultural roots.  "),
                                           p(),
                                           p(strong("The problem:"), "Powhatan and Goochland are both rural counties that are located close to Richmond. Being that close to a big city like 
@@ -59,8 +63,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                             is a key step in understanding the factors that cause land conversation or the probability that a parcel of land will convert. "),
                                           p(),
                                           p(strong("The project:"), "This Virginia Tech", a(href = "https://aaec.vt.edu/index.html", "Department of Argicultural and Applied Economics", target = "_blank"),
-                                            "Data Science for Public Good (DSPG) project aims to leverage data science to provide an estimation of the water resources and the quality 
-                                       issues they face in the county in order to design better management strategies for industrial and residential growth.")
+                                            "Data Science for Public Good (DSPG) project uses data science to analyze land conversion in Goochland and Powhatan counties in order to provide stakeholders with 
+                                            a better understanding of how land is being distributed, specifically in regards to agriculture.")
                                    ),
                                    column(4,
                                           h2(strong("Our Work")),
@@ -129,12 +133,12 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      h4(strong("Sociodemographics")),
                                                      selectInput("goochland_soc", "Select Variable:", width = "100%", choices = c(
                                                        "Proportion of Age Groups" = "gage",
-                                                       "Proportion of Population in Industries" = "gind",
+                                                       "Proportion of Population by Industry" = "gind",
                                                        "Median Income" = "ginc",
                                                        "Median Income by Educational Attainment Over the Age of 25" = "gedu")
                                                      ),
                                                      plotOutput("gsoc", height = "500px"),
-                                                     p(tags$small("Data Source: US Climate"))),
+                                                     p(tags$small("Data Source: US Census"))),
                                               column(12, 
                                                      h4("References: "), 
                                                      p(tags$small("[1] United States Department of Agriculture. Goochland County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51075.pdf")), 
@@ -181,13 +185,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      h4(strong("Sociodemographics")),
                                                      selectInput("powhatan_soc", "Select Variable:", width = "100%", choices = c(
                                                        "Proportion of Age Groups" = "page",
-                                                       "Proportion of Population in Industries" = "pind",
+                                                       "Proportion of Population by Industry" = "pind",
                                                        "Median Income" = "pinc",
                                                        "Median Income by Educational Attainment Over the Age of 25" = "pedu")
                                                      ),
                                                      
                                                      plotOutput("psoc", height = "500px"),
-                                                     p(tags$small("Data Source: US Climate"))),
+                                                     p(tags$small("Data Source: US Census"))),
                                               column(12, 
                                                      h4("References: "), 
                                                      p(tags$small("United States Department of Agriculture. Powhatan County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51145.pdf")) ,
@@ -403,9 +407,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 ),
                                                                 #          plotlyOutput("trend1", height = "600px")
                                                                 h4(strong("Land Use Transition Matrix")),
-                                                                #withSpinner(leafletOutput("mines")),
-                                                                p(tags$small("Data Source: The Department of Mines, Minerals and Energy")))  ,
-                                                         column(12, 
+                                                                p(tags$small("Data Source: Goochland County Administrative Data")))  ,
+                                                         column(12,
+                                                                
                                                                 
                                                                 h4("References") , 
                                                                 p(tags$small("[1] American Community Survey 5-year Estimates 2014/2019")), 
@@ -422,19 +426,19 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Crops Grown in Goochland County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("The map and histogram on the right show the crop layer data for Goochland County. Goochland County is heavily forested. 
+                                                                  Forested lands account for 63.94% of all land in Goochland County. This number is a decrease from the 69.63% in 2012. 
+                                                                  Developed land in Goochland increased from 7.28% to 9.29% in 10 years. Most of their developed land in the east side of 
+                                                                  the county closer to Richmond, VA. Forages is the second biggest crop layer category with 14.99%. Forage is bulky food 
+                                                                  such as grass or hay for horses and cattle. Croplands are spread out throughout the county. Croplands only use 4.1% of 
+                                                                  the land in the county. From an agricultural perspective, the land is most likely used for raising livestock instead of 
+                                                                  growing crops. There is a heavy concentration of row crops on the south boundary of Goochland. The James River also creates 
+                                                                  the boundary between Powhatan County and Goochland County.")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
                                                                 
-                                                                #                plotlyOutput("trend1", height = "600px")
+                                                                                leafletOutput("harbour")
                                                                 
                                                          ),
                                                          column(12, 
@@ -547,7 +551,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 #          plotlyOutput("trend1", height = "600px")
                                                                 h4(strong("Land Use Transition Matrix")),
                                                                 #withSpinner(leafletOutput("mines")),
-                                                                p(tags$small("Data Source: The Department of Mines, Minerals and Energy")))  ,
+                                                                p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
                                                                 
                                                          column(12, 
                                                                 
@@ -566,14 +570,12 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Crops Grown in Powhatan County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("The map and histogram on the right show the crop layer data for Powhatan County. Powhatan County is heavily forested. Forested lands account for 67.84% of all 
+                                                                  land in Powhatan County. This number is a decrease from the 75.82% in 2012. A big reason why that number is reduced is that Powhatan is rapidly developing. 
+                                                                  Developed land in Powhatan increased from 3.46% to 6.88% in 10 yearsost of their developed land in the east side of the county closer to Richmond, VA. Forages 
+                                                                  is the second biggest crop layer category with 15.42%. Forage is bulky food such as grass or hay for horses and cattle. Croplands are spread out throughout the 
+                                                                  county. Croplands only use 4.1% of the land in the county. From an agricultural perspective, the land is most likely used for raising livestock instead of growing crops. 
+                                                                  There is a heavy concentration of row crops on the north boundary of Powhatan. The James River also creates the boundary between Powhatan County and Goochland County.")
                                                          ), 
                                                          column(8, 
                                                               h4(strong("Crop Layer Map")),
@@ -820,67 +822,25 @@ ui <- navbarPage(title = "DSPG 2022",
                           fluidRow(style = "margin: 6px;",
                                    h1(strong("Project Findings and Predictions"), align = "center"),
                                    p("", style = "padding-top:10px;"),
-                                   p("Policy plays a key role in land-use. At every level- federal, state, and local- officials develop land use plans, with a wide 
-                                     variety of different objectives and long-term visions. These plans drive changes in land-use, and it is important to investigate 
-                                     policies at every level to get a full picture of land-use conversion."),
-                                   
-                                   column(6, 
-                                          p("", style = "padding-top:10px;"),
-                                          p(strong("The Conservation Reserve Program (CRP):")), 
-                                          p("The CRP is a federal land conversion program administered by the Farm Service Agency (FSA). 
+                                   p(),
+                                   h4(strong("Title")),
+                                   p("The CRP is a federal land conversion program administered by the Farm Service Agency (FSA). 
                                                        The goal of this program is to reduce cropland acreage- a land retirement program that pays farmers to retire some of their crop land. 
                                                        This program has been a major driver of land retirement since it was implemented in 1985. The program is motivated by environmental 
                                                        protection goals. To get approved for the land retirement program, your land must hit specific criteria based on targeted environmental 
                                                        factors. There is then a bidding process. To farmers, this is an incentive to retire land. Studies show that this policy has led to farmers 
                                                        retire their less productive land. In 2005, “CRP paid $1.7 billion to keep a land area almost the size of Iowa out of production” (source). 
                                                        This federal land conversion program incentivizes farmers to retire their land- and lower production. The goal is to protect the environment."),
-                                          br(),
-                                          p(strong("Federal Crop Insurance Program:")),
-                                          p("This program is a partnership between the federal government and insurers- connecting the public and private sectors. 
-                                                       This program does the opposite of the CRP and raises incentives to grow crops. The goal of the Federal Crop Insurance Program is not directly to affect 
-                                                       land-use, but it does influence conversion rates. In 1993, after some catastrophic flooding, congress passed the Federal Crop Insurance Reform Act. This 
-                                                       act increased the premium subsidies for all crop insurance products- now the program includes a revenue insurance option and catastrophic coverage. About 
-                                                       60% of cultivated cropland in the Unites States is covered by the Federal Crop Insurance Program. This program raises incentives to grow crops, and could 
-                                                       influence farmers to cultivate riskier, less productive land (source)."),
-                                          br(),
-                                          p(strong("Emergency Relief Program (ERP):")), 
-                                          p("The purpose of this program is to help agriculture producers offset damage caused by natural disasters such as drought or 
-                                                     flooding (source). Funds are distributed in two phases, to aid livestock producers impacted by natural disasters. The USDA announced in May of 2022 that 
-                                                       “commodity and specialty crop producers impacted by natural disaster events in 2020 and 2021 will soon begin receiving emergency relief payments totaling 
-                                                       approximately $6 billion through the Farm Service Agency’s (FSA) new Emergency Relief Program (ERP) to offset crop yield and value losses” (source)."),
-                                          p(),
-                                          p(),
-                                          h4("References:"),
-                                          p(tags$small("[1] How Can You Help Protect Source Water? (n.d.). Retrieved July 29, 2021, from https://www.epa.gov/sourcewaterprotection/how-can-you-help-protect-source-water")), 
-                                          p(tags$small("[2] Well maintenance. (2009, April 10). Retrieved July 29, 2021, from https://www.cdc.gov/healthywater/drinking/private/wells/maintenance.html#:~:text=Wells%20should%20be%20checked%20and,example%2C%20arsenic%20and%20radon).")) ,
-                                          p(tags$small("[3] A Guide to Private Wells (pp. 5-25, Publication). (1995). Blacksburg, VA: Virginia Water Resources Research Center.")) ,
-                                          p("", style = "padding-top:10px;"),
-                                          
-                                          
-                                   ) , 
-                                   column(6, 
-                                          p("", style = "padding-top:10px;"),
-                                          p(strong("Emergency Conservation Program (ECP):")), 
-                                          p("This program “provides funding and technical assistance for farmers and ranchers to restore farmland damaged by natural disasters and for emergency water 
-                                                       conservation measures in severe droughts” (source). This program does so by giving landowners funding to install water conservation systems or to repair 
-                                                       damaged farmland. This is another example of a conservation program that gives farmers insurance, which could incentive farmers to continue to cultivate their 
-                                                       land- regardless of the potential risks associated with damage from storms and droughts. Farms are eligible for this assistance if the damage is affecting 
-                                                       productivity, there is evidence that conditions will worsen without intervention, and the repairs will be too costly without federal assistance (source). 
-                                                       Up to 75% of the costs can be provided. The FSA County Committee can “approve applications up to $125,000 while $125,001 to $250,000 requires state committee 
-                                                       approval (source)."),
-                                          br(), 
-                                          p(strong("Source Water Protection Program (SWPP):")),
-                                          p("This program is a joint project with the U.S. Department of Agriculture (USDA) Farm Service Agency (FSA) and the National Rural Water Association (NRWA), 
-                                                       a non-profit water and wastewater utility membership organization (source). It was designed with the goal of protecting surface and ground water that is 
-                                                       used as drinking water by rural residents. The NRWA employs full-time rural source water technicians that work with state and county FSA staff to make decisions 
-                                                       on where pollution prevention is needed. The SWPP works at the local level, to educate and encourage farmers to prevent source water prevention. With this program, 
-                                                       it is the local community to create and invest in a water protection plan."),
-                                          br(),
-                                          p(strong("Agriculture Risk Coverage (ARC) and Price Loss Coverage (PLC):")),
-                                          p("ARC program is an “income support program that provides payments when actual crop revenue declines below a specified guaranteed level” (source). PLC program “provides 
-                                                     income support payments when the effective price for a covered commodity falls below its effective reference price” (source). Both programs provide financial protection 
-                                                       to farmers. They serve as a safety net from drops in crop revenues and prices."),
-                                   )), 
+                                   br(),
+                                   h4(strong("Title 2")),
+                                   p("The CRP is a federal land conversion program administered by the Farm Service Agency (FSA). 
+                                                       The goal of this program is to reduce cropland acreage- a land retirement program that pays farmers to retire some of their crop land. 
+                                                       This program has been a major driver of land retirement since it was implemented in 1985. The program is motivated by environmental 
+                                                       protection goals. To get approved for the land retirement program, your land must hit specific criteria based on targeted environmental 
+                                                       factors. There is then a bidding process. To farmers, this is an incentive to retire land. Studies show that this policy has led to farmers 
+                                                       retire their less productive land. In 2005, “CRP paid $1.7 billion to keep a land area almost the size of Iowa out of production” (source). 
+                                                       This federal land conversion program incentivizes farmers to retire their land- and lower production. The goal is to protect the environment."),
+                                   ), 
                           
                           
                           
@@ -898,11 +858,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                       estimates to obtain census tract and census block group-level to explore Floyd County resident characteristics."),
                                           br(""),
                                           img(src = "usgs.jpg", style = "display: inline; float: left;", width = "150px"),
-                                          p(strong("USGS National Land Cover Database"), " ***description*** ")
+                                          p(strong("USGS National Land Cover Database"), "The USGS National Land Cover Database provided us with land cover data which allowed us to look into crop layer data for both counties. This was important for 
+                                            us to gain a better understanding of how prevalent agriculture is in the counties and to visualize any changes in crops over the last several years.")
                                    ),
                                    column(4,
                                           img(src = "goochland.jpg", style = "display: inline; float: left;", width = "150px"),
-                                          p(strong("Goochland County Administrative Data"), " ***description*** "),
+                                          p(strong("Goochland County Administrative Data"), "Goochland County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
+                                            that has occured over a 5 year period (2018 - 2022). We used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
                                           br(""),
                                           img(src = "vdot.png", style = "display: inline; float: left;", width = "200px"),
                                           p(strong("VDOT Traffic Data "), " ***description*** "),
@@ -911,7 +873,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                    ),
                                    column(4,
                                           img(src = "powhatan.jpg", style = "display: inline; float: left;", width = "150px"),
-                                          p(strong("Powhatan County Administrative Data"), " ***descripition*** ") 
+                                          p(strong("Powhatan County Administrative Data"), "Powhatan County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
+                                            that has occured over a 8 year period (2014 - 2021). We used this data to create visualizations, specifically focusing on the distribution and change in land use in the county.") 
                                            
                                           
                                    ),
@@ -924,8 +887,8 @@ ui <- navbarPage(title = "DSPG 2022",
                  tabPanel("Meet the Team", 
                           fluidRow(style = "margin-left: 100px; margin-right: 100px;",
                                    align = "center",
-                                   br(""),
                                    h1(strong("Meet the Team")),
+                                   br(),
                                    h4(strong("VT Data Science for the Public Good")),
                                    p("The", a(href = 'https://aaec.vt.edu/academics/undergraduate/beyond-classroom/dspg.html', 'Data Science for the Public Good (DSPG) Young Scholars program', target = "_blank"),
                                      "is a summer immersive program held at the", a(href = 'https://aaec.vt.edu/index.html', 'Virginia Tech Department of Agricultural'), "and", a(href = 'https://ext.vt.edu/','Applied Economics and the Virginia Cooperative Extension Service.'),
@@ -954,24 +917,24 @@ ui <- navbarPage(title = "DSPG 2022",
                                           h4(strong("VT Faculty Members")),
                                           img(src = "team-posadas.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
                                           img(src = "team-sarah.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = "https://www.linkedin.com/in/briannaposadas/", 'Dr. Susan Chen', target = '_blank'), "(Postdoctoral Associate Department of Agricultural, Leadership, & Community Education);",
+                                          p(a(href = "https://www.linkedin.com/in/briannaposadas/", 'Dr. Susan Chen', target = '_blank'), "(Associate Professor of Econometrics & Data Analytics);",
                                             br(), 
-                                            a(href = '', 'Dr. Wei Zhang', target = '_blank'), "(Associate Professor Department of Biology Virginia State University)."),
+                                            a(href = '', 'Dr. Wei Zhang', target = '_blank'), "(Assistant Professor of Agricultural & Applied Economics)."),
                                           p("", style = "padding-top:10px;")
                                    )
                           ),
                           fluidRow(style = "margin-left: 100px; margin-right: 100px;",
                                    column(6, align = "center",
-                                          h4(strong("DSPG Graduate Fellows")),
+                                          h4(strong("DSPG Graduate Fellows and Research Assistants")),
                                           img(src = "farm.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           img(src = "team-julie.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           br(), 
                                           img(src = "---.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Nazmul Huda', target = '_blank'), "(Virginia Tech, PHD in Economics);",
+                                          p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Nazmul Huda', target = '_blank'), "(Virginia Tech, Graduate in Geography);",
                                             br(), 
-                                            a(href = 'https://www.linkedin.com/in/julie-rebstock', 'Yuanyuan Wen', target = '_blank'), "(Virgina Tech, Undergraduate in Economics and Computational Modeling and Data Analytics);",
+                                            a(href = 'https://www.linkedin.com/in/julie-rebstock', 'Yuanyuan Wen', target = '_blank'), "(Virgina Tech, Graduate in Agricultural & Applied Economics);",
                                             br(), 
-                                            a(href = 'www.linkedin.com/in/rachelinman21', 'Samantha Rippley', target = '_blank'), "(Virginia Tech, Undergraduate in Smart and Sustainable Cities and Minoring in Landscape Architecture)."),
+                                            a(href = 'www.linkedin.com/in/rachelinman21', 'Samantha Rippley', target = '_blank'), "(Virginia Tech, Graduate in Agricultural Economics)."),
                                           p("", style = "padding-top:10px;") 
                                    ),
                                    column(6, align = "center",
@@ -989,8 +952,11 @@ ui <- navbarPage(title = "DSPG 2022",
 
 
 server <- function(input, output){
-  
+ 
 
+output$harbour<- renderLeaflet({
+  harbour
+})
   
 }
  
