@@ -16,8 +16,8 @@ library(readxl)
 ```
 
 ```{r}
-croplayer1 <- read_excel("C:/Users/Christopher Vest/Documents/Land_use_project/Land_use/Review/Christopher/Croplayer/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2021")
-croplayer2 <- read_excel("C:/Users/Christopher Vest/Documents/Land_use_project/Land_use/Review/Christopher/Croplayer/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2012")
+croplayer1 <- read_excel("C:/Users/Christopher Vest/Documents/Land_use_project/2022_DSPG_Landuse/Review/Christopher/Croplayer/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2021")
+croplayer2 <- read_excel("C:/Users/Christopher Vest/Documents/Land_use_project/2022_DSPG_Landuse/Review/Christopher/Croplayer/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2012")
 ```
 ```{r Powhatan 2021}
 ggplot(croplayer1, aes(x = reorder(`Powhatan Combined`, `Area Acre...2`), y = `Area Acre...2`, fill = `Area Acre...2`)) + geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")

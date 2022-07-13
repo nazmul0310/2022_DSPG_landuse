@@ -31,7 +31,7 @@ fileName <- paste("/Review/Christopher/ACS_rObjects/ACS", year, county, ".rData"
 ```
 
 ```{r importing data}
-setwd("C:/Users/Christopher Vest/Documents/Land_use_project/Land_use")
+setwd("C:/Users/Christopher Vest/Documents/Land_use_project/2022_DSPG_Landuse")
 load(paste0(getwd(), fileName))
 ```
 
