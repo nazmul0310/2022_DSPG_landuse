@@ -1188,7 +1188,7 @@ server <- function(input, output){
     
   })
   
-
+paste0(`G_Value`, "\n")
 output$harbour<- renderLeaflet({
   harbour
 })
