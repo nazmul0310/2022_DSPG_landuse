@@ -28,6 +28,7 @@ library(stringr)
 library(viridis)
 library(RColorBrewer)
 options(scipen=999)
+options(shiny.maxRequestSize = 100*1024^2)
 
 # data --------------------------------------------------------------------------------------------------------------------
 
@@ -145,6 +146,66 @@ pedu <- educ_earn %>% # code for Shiny app
   harbour<- addTiles(harbour)
   harbour<- setView(harbour, lng=-77.949, lat=37.742, zoom=9)
 
+  
+
+
+lu_render.func <- function(year.g) {
+  GoochlandAllParcel <- read_sf("data/luParcelData/GoochAll.shp")
+  Gooch <- GoochlandAllParcel %>% filter(year == year.g)
+  
+  LUC_values <- c("Single Family Residential Urban", 
+                  "Single Family Residential Suburban", 
+                  "Multi-Family Residential", 
+                  "Commerical / Industrial", 
+                  "Agricultural / Undeveloped (20-99 Acres)", 
+                  "Agricultural / Undeveloped (100+ Acres)", 
+                  "Other", 
+                  "Undefined")
+  
+  LUC_values <- factor(LUC_values, levels = LUC_values)
+  
+  mypalette <- colorBin(palette = "viridis", as.numeric(LUC_values), bins = 9)
+  colors <- mypalette(unclass(LUC_values))
+  colors[8] <- "#addc30"
+  
+  MyMap <- leaflet() %>%
+    addTiles() %>%
+    addProviderTiles(providers$CartoDB.Positron) %>%
+    
+    addPolygons(data = Gooch %>% filter(LUC_FIN == "Single Family Residential Urban"), 
+                fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Single Family Urban") %>%
+    addPolygons(data=Gooch %>% filter(LUC_FIN == "Single Family Residential Suburban"), 
+                fillColor = colors[2], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Single Family Suburban") %>%
+    addPolygons(data=Gooch %>% filter(LUC_FIN == "Multi-Family Residential"), 
+                fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Multi-Family Residential") %>%
+    addPolygons(data=Gooch %>% filter(LUC_FIN == "Commerical / Industrial") ,
+                fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Commercial & Industrial") %>%
+    addPolygons(data=Gooch %>% filter(LUC_FIN == "Agricultural / Undeveloped (20-99 Acres)"),
+                fillColor = colors[5], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Agriculture/Undeveloped (20-99 Acres)") %>%
+    addPolygons(data=Gooch %>% filter(LUC_FIN == "Agricultural / Undeveloped (100+ Acres)") ,
+                fillColor = colors[6], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Agriculture/Undeveloped (100+ Acres)") %>%
+    addPolygons(data=Gooch %>% filter(LUC_FIN == "Other"),
+                fillColor = colors[7], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Other") %>%
+    addPolygons(data=Gooch %>% filter(LUC_FIN == "Undefined") ,
+                fillColor = colors[8], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Unknown") %>%
+    addLayersControl(
+      overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
+      position = "bottomleft",
+      options = layersControlOptions(collapsed = FALSE)
+    )
+}
+  
+
+  
+  
   
 # ui --------------------------------------------------------------------------------------------------------------------
   
@@ -518,15 +579,15 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
-                                                                selectInput("econ1", "Select Variable:", width = "100%", choices = c(
-                                                                  "2018" = "g2018",
-                                                                  "2019" = "g2019",
-                                                                  "2020" = "g2020", 
-                                                                  "2021" = "g2021", 
-                                                                  "2022" = "g2022")
-                                                                ),
-                                                                #          plotlyOutput("trend1", height = "600px")
-                                                                h4(strong("Land Use Transition Matrix")),
+                                                                sliderInput(inputId = "luYear_input.g", label = "Year:",
+                                                                            min = 2018, max = 2021,
+                                                                            value = 2021, sep = "", width = "150%"
+                                                                            ),
+                                                                #h4(strong("Land Use Transition Matrix")),
+                                                                h4(strong("Land Uses Over the Years")),
+                                                                
+                                                                # I deleted commented out the transiton matrix so I could work on the land use through time slider.
+                                                                leafletOutput(outputId = "luYear.g", height = "500px"),
                                                                 p(tags$small("Data Source: Goochland County Administrative Data")))  ,
                                                          column(12,
                                                                 
@@ -1132,6 +1193,7 @@ output$harbour<- renderLeaflet({
   harbour
 })
 
+
   gcrop <- reactive({
     input$gcrop
   })
@@ -1145,6 +1207,16 @@ output$harbour<- renderLeaflet({
     }
   })
   
+luYear_input.g <- reactive({
+  input$luYear.g
+})
+
+output$luYear.g <- renderLeaflet({
+  year.g <- luYear_input.g()
+  luPlot <- lu_render.func(year.g)
+  luPlot
+})
+
 }
  
 
