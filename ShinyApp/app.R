@@ -27,15 +27,16 @@ library(tidyverse)
 library(stringr)
 library(viridis)
 library(RColorBrewer)
+library(readxl) #for import excel
 options(scipen=999)
 options(shiny.maxRequestSize = 100*1024^2)
 
 # data --------------------------------------------------------------------------------------------------------------------
 
     # Goochland sociodemographic
-popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
+popdist<-read.csv("data/popdist.csv", header = TRUE) #population's age distribution for all years
 
-gage <- popdist %>% # code for Shiny app
+gage <- popdist %>% 
   filter(county == "Goochland", year==2020) %>%
   ggplot(aes(x=agecat , y=value, fill=agecat))+
   geom_bar(stat="identity") + 
@@ -144,9 +145,8 @@ pedu <- educ_earn %>% # code for Shiny app
 # Land use
 
     #Goochland Land Use 
-
-croplayer1 <- read_excel("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2021")
-croplayer2 <- read_excel("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2012")
+croplayer1 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2021")
+croplayer2 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2012")
 
 gcrop21 <- ggplot(croplayer1, aes(x = reorder(`Goochland Combined`, `Area Acre...4`), y = `Area Acre...4`, fill = `Area Acre...4`)) + 
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
