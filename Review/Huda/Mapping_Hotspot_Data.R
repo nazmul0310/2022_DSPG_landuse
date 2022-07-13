@@ -6,10 +6,10 @@ library(tigris)
 
 # Reading each year's parcellation hotspots
 
-gl_hs_19 <- st_read(  "gooch_hotspot_19.shp")
-gl_hs_20 <- st_read(  "gooch_hotspot_20.shp")
-gl_hs_21 <- st_read(  "gooch_hotspot_21.shp")
-gl_hs_22 <- st_read(  "gooch_hotspot_22.shp")
+gl_hs_19 <- st_read(  "Review/John/Goochland_Parcel_Data/Goochland_Parcel_Hotspot/gooch_hotspot_19.shp")
+gl_hs_20 <- st_read(  "Review/John/Goochland_Parcel_Data/Goochland_Parcel_Hotspot/gooch_hotspot_20.shp")
+gl_hs_21 <- st_read(  "Review/John/Goochland_Parcel_Data/Goochland_Parcel_Hotspot/gooch_hotspot_21.shp")
+gl_hs_22 <- st_read(  "Review/John/Goochland_Parcel_Data/Goochland_Parcel_Hotspot/gooch_hotspot_22.shp")
 
 # Plotting the files together in ggplot
 ggplot() + 
