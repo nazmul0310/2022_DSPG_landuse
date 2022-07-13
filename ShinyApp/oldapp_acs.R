@@ -35,40 +35,7 @@ options(scipen=999)
 
 popdist<-read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/popdist.csv", header = TRUE) #for Shiny app
 
-gage2017 <- popdist %>% # code for Shiny app
-  filter(county == "Goochland", year==2017) %>%
-  ggplot(aes(x=agecat , y=value, fill=agecat))+
-  geom_bar(stat="identity") + 
-  coord_flip() + 
-  scale_fill_viridis(discrete=TRUE) + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
-
-gage2018 <- popdist %>% # code for Shiny app
-  filter(county == "Goochland", year==2018) %>%
-  ggplot(aes(x=agecat , y=value, fill=agecat))+
-  geom_bar(stat="identity") + 
-  coord_flip() + 
-  scale_fill_viridis(discrete=TRUE) + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
-
-gage2019 <- popdist %>% # code for Shiny app
-  filter(county == "Goochland", year==2019) %>%
-  ggplot(aes(x=agecat , y=value, fill=agecat))+
-  geom_bar(stat="identity") + 
-  coord_flip() + 
-  scale_fill_viridis(discrete=TRUE) + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
-
-gage2020 <- popdist %>% # code for Shiny app
+gage <- popdist %>% # code for Shiny app
   filter(county == "Goochland", year==2020) %>%
   ggplot(aes(x=agecat , y=value, fill=agecat))+
   geom_bar(stat="identity") + 
@@ -1111,7 +1078,7 @@ server <- function(input, output){
   output$gsoc <- renderPlot({
     
     if(goochland_soc() == "gage"){
-      gage2017
+      gage
     }
     else if(goochland_soc() == "gind"){
       gind
@@ -1123,9 +1090,7 @@ server <- function(input, output){
       gedu
     }
     
-  })
-  
-
+  })  
   
   powhatan_soc <- reactive({
     input$powhatan_soc
