@@ -32,8 +32,7 @@ options(scipen=999)
 # data --------------------------------------------------------------------------------------------------------------------
 
     # Goochland sociodemographic
-
-popdist<-read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/popdist.csv", header = TRUE) #for Shiny app
+popdist<-read.csv("ShinyApp/data/popdist.csv", header = TRUE) #for Shiny app
 
 gage <- popdist %>% # code for Shiny app
   filter(county == "Goochland", year==2020) %>%
