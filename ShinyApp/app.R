@@ -28,6 +28,7 @@ library(stringr)
 library(viridis)
 library(readxl)
 library(RColorBrewer)
+library(readxl)
 options(scipen=999)
 options(shiny.maxRequestSize = 100*1024^2)
 
@@ -172,60 +173,59 @@ pcrop12 <- ggplot(croplayer2, aes(x = reorder(`Powhatan Combined`, `Area_acre...
   
 
 
-  g.luPlotFunction <- function(year.g) {
+lu_render.func <- function(year.g) {
+  GoochlandAllParcel <- read_sf("data/luParcelData/GoochAll.shp")
+  Gooch <- GoochlandAllParcel %>% filter(year == year.g)
+  
+  LUC_values <- c("Single Family Residential Urban", 
+                  "Single Family Residential Suburban", 
+                  "Multi-Family Residential", 
+                  "Commerical / Industrial", 
+                  "Agricultural / Undeveloped (20-99 Acres)", 
+                  "Agricultural / Undeveloped (100+ Acres)", 
+                  "Other", 
+                  "Undefined")
+  
+  LUC_values <- factor(LUC_values, levels = LUC_values)
+  
+  mypalette <- colorBin(palette = "viridis", as.numeric(LUC_values), bins = 9)
+  colors <- mypalette(unclass(LUC_values))
+  colors[8] <- "#addc30"
+  
+  MyMap <- leaflet() %>%
+    addTiles() %>%
+    addProviderTiles(providers$CartoDB.Positron) %>%
     
-    GoochlandAllParcel <- read_sf("../ShinyApp/data/luParcelData/GoochAll.shp")
-    Gooch <- GoochlandAllParcel %>% filter(year == year.g)
-    
-    LUC_values <- c("Single Family Residential Urban", 
-                    "Single Family Residential Suburban", 
-                    "Multi-Family Residential", 
-                    "Commerical / Industrial", 
-                    "Agricultural / Undeveloped (20-99 Acres)", 
-                    "Agricultural / Undeveloped (100+ Acres)", 
-                    "Other", 
-                    "Undefined")
-    
-    LUC_values <- factor(LUC_values, levels = LUC_values)
-    
-    mypalette <- colorBin(palette = "viridis", as.numeric(LUC_values), bins = 9)
-    colors <- mypalette(unclass(LUC_values))
-    colors[8] <- "#addc30"
-    
-    MyMap <- leaflet() %>%
-      addTiles() %>%
-      addProviderTiles(providers$CartoDB.Positron) %>%
-      
-      addPolygons(data = Gooch %>% filter(LUC_FIN == "Single Family Residential Urban"), 
-                  fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                  group = "Single Family Urban") %>%
-      addPolygons(data=Gooch %>% filter(LUC_FIN == "Single Family Residential Suburban"), 
-                  fillColor = colors[2], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                  group = "Single Family Suburban") %>%
-      addPolygons(data=Gooch %>% filter(LUC_FIN == "Multi-Family Residential"), 
-                  fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                  group = "Multi-Family Residential") %>%
-      addPolygons(data=Gooch %>% filter(LUC_FIN == "Commerical / Industrial") ,
-                  fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                  group = "Commercial & Industrial") %>%
-      addPolygons(data=Gooch %>% filter(LUC_FIN == "Agricultural / Undeveloped (20-99 Acres)"),
-                  fillColor = colors[5], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                  group = "Agriculture/Undeveloped (20-99 Acres)") %>%
-      addPolygons(data=Gooch %>% filter(LUC_FIN == "Agricultural / Undeveloped (100+ Acres)") ,
-                  fillColor = colors[6], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                  group = "Agriculture/Undeveloped (100+ Acres)") %>%
-      addPolygons(data=Gooch %>% filter(LUC_FIN == "Other"),
-                  fillColor = colors[7], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                  group = "Other") %>%
-      addPolygons(data=Gooch %>% filter(LUC_FIN == "Undefined") ,
-                  fillColor = colors[8], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                  group = "Unknown") %>%
-      addLayersControl(
-        overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
-        position = "bottomleft",
-        options = layersControlOptions(collapsed = FALSE)
-      )
-  }
+    addPolygons(data = Gooch %>% filter(LUC_FIN == "Single Family Residential Urban"), 
+                fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Single Family Urban") %>%
+    addPolygons(data=Gooch %>% filter(LUC_FIN == "Single Family Residential Suburban"), 
+                fillColor = colors[2], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Single Family Suburban") %>%
+    addPolygons(data=Gooch %>% filter(LUC_FIN == "Multi-Family Residential"), 
+                fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Multi-Family Residential") %>%
+    addPolygons(data=Gooch %>% filter(LUC_FIN == "Commerical / Industrial") ,
+                fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Commercial & Industrial") %>%
+    addPolygons(data=Gooch %>% filter(LUC_FIN == "Agricultural / Undeveloped (20-99 Acres)"),
+                fillColor = colors[5], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Agriculture/Undeveloped (20-99 Acres)") %>%
+    addPolygons(data=Gooch %>% filter(LUC_FIN == "Agricultural / Undeveloped (100+ Acres)") ,
+                fillColor = colors[6], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Agriculture/Undeveloped (100+ Acres)") %>%
+    addPolygons(data=Gooch %>% filter(LUC_FIN == "Other"),
+                fillColor = colors[7], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Other") %>%
+    addPolygons(data=Gooch %>% filter(LUC_FIN == "Undefined") ,
+                fillColor = colors[8], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Unknown") %>%
+    addLayersControl(
+      overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
+      position = "bottomleft",
+      options = layersControlOptions(collapsed = FALSE)
+    )
+}
   
 
   
@@ -603,14 +603,15 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
-                                                                sliderInput(inputId = "luYear.g", label = "Year:", 
-                                                                            min = 2018, max = 2021, value = 2018, 
-                                                                            sep = ""),
-                                                                
+                                                                sliderInput(inputId = "luYear_input.g", label = "Year:",
+                                                                            min = 2018, max = 2021,
+                                                                            value = 2021, sep = "", width = "150%"
+                                                                            ),
+                                                                #h4(strong("Land Use Transition Matrix")),
                                                                 h4(strong("Land Uses Over the Years")),
                                                                 
-                                                                
-                                                                leafletOutput(outputId = "luPlot.g"),
+                                                                # I deleted commented out the transiton matrix so I could work on the land use through time slider.
+                                                                leafletOutput(outputId = "luYear.g", height = "500px"),
                                                                 p(tags$small("Data Source: Goochland County Administrative Data")))  ,
                                                          column(12,
                                                                 
@@ -646,8 +647,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                        br(),
                                                                        h4(strong("Crop Layer Graphs")),
                                                                        selectInput("gcrop", "Select Variable:", width = "100%", choices = c(
-                                                                         "Total Acreage by Land Type 2021" = "gcrop21",
-                                                                         "Total Acreage by Land Type 2012" = "gcrop12")
+                                                                         "Total Acreage by Land Type 2021" = "gcrop12",
+                                                                         "Total Acreage by Land Type 2012" = "gcrop21")
                                                                        ),
                                                                        
                                                                        plotOutput("gcrop_graph", height = "500px"),
@@ -1228,9 +1229,14 @@ output$harbour<- renderLeaflet({
       gcrop21
     }
   })
+  
+luYear_input.g <- reactive({
+  input$luYear.g
+})
 
-output$luPlot.g <- renderLeaflet({
-  luPlot <- g.luPlotFunction(input$luYear.g)
+output$luYear.g <- renderLeaflet({
+  year.g <- luYear_input.g()
+  luPlot <- lu_render.func(year.g)
   luPlot
 })
 
