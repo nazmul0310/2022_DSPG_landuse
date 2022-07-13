@@ -33,42 +33,9 @@ options(scipen=999)
 
     # Goochland sociodemographic
 
-popdist<-read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/popdist.csv", header = TRUE) #for Shiny app
+popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
 
-gage2017 <- popdist %>% # code for Shiny app
-  filter(county == "Goochland", year==2017) %>%
-  ggplot(aes(x=agecat , y=value, fill=agecat))+
-  geom_bar(stat="identity") + 
-  coord_flip() + 
-  scale_fill_viridis(discrete=TRUE) + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
-
-gage2018 <- popdist %>% # code for Shiny app
-  filter(county == "Goochland", year==2018) %>%
-  ggplot(aes(x=agecat , y=value, fill=agecat))+
-  geom_bar(stat="identity") + 
-  coord_flip() + 
-  scale_fill_viridis(discrete=TRUE) + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
-
-gage2019 <- popdist %>% # code for Shiny app
-  filter(county == "Goochland", year==2019) %>%
-  ggplot(aes(x=agecat , y=value, fill=agecat))+
-  geom_bar(stat="identity") + 
-  coord_flip() + 
-  scale_fill_viridis(discrete=TRUE) + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
-
-gage2020 <- popdist %>% # code for Shiny app
+gage <- popdist %>% # code for Shiny app
   filter(county == "Goochland", year==2020) %>%
   ggplot(aes(x=agecat , y=value, fill=agecat))+
   geom_bar(stat="identity") + 
@@ -79,7 +46,7 @@ gage2020 <- popdist %>% # code for Shiny app
   theme(axis.text.y = element_text(hjust=0)) +
   labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
 
-industry <- read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/industry.csv", header=TRUE) #for Shiny app
+industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
 
 gind <- industry %>% # code for Shiny app
   filter(county == "Goochland", year==2020) %>%
@@ -91,7 +58,7 @@ gind <- industry %>% # code for Shiny app
   theme(axis.text.y = element_text(hjust=0)) +
   labs(title="Employment By Industry", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
 
-inc <- read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/inc.csv", header=TRUE) #for Shiny app
+inc <- read.csv("data/inc.csv", header=TRUE) #for Shiny app
 
 ginc <- inc %>% # code for Shiny app
   filter(county == "Goochland", year==2020) %>%  mutate(inccat = fct_relevel(inccat, "<35K", "35K - 50K", "50K - 75K","75K-100K", ">100K")) %>%
@@ -105,7 +72,7 @@ ginc <- inc %>% # code for Shiny app
   labs(title = "Income Distribution", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
   coord_flip()
 
-educ_earn <- read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/educ_earn.csv", header=TRUE) #for Shiny app
+educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) #for Shiny app
 
 gedu <- educ_earn %>% # code for Shiny app
   filter(county == "Goochland", year==2020) %>%
@@ -121,7 +88,7 @@ gedu <- educ_earn %>% # code for Shiny app
 
     # Powhatan sociodemographic
 
-popdist<-read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/popdist.csv", header = TRUE) #for Shiny app
+popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
 
 page <- popdist %>% # code for Shiny app
   filter(county == "Powhatan ", year==2020) %>%
@@ -134,7 +101,7 @@ page <- popdist %>% # code for Shiny app
   theme(axis.text.y = element_text(hjust=0)) +
   labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
 
-industry <- read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/industry.csv", header=TRUE) #for Shiny app
+industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
 
 pind <- industry %>% # code for Shiny app
   filter(county == "Powhatan ", year==2020) %>%
@@ -146,7 +113,7 @@ pind <- industry %>% # code for Shiny app
   theme(axis.text.y = element_text(hjust=0)) +
   labs(title="Employment By Industry", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
 
-inc <- read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/inc.csv", header=TRUE) #for Shiny app
+inc <- read.csv("data/inc.csv", header=TRUE) #for Shiny app
 
 pinc <- inc %>% # code for Shiny app
   filter(county == "Powhatan ", year==2020) %>%  mutate(inccat = fct_relevel(inccat, "<35K", "35K - 50K", "50K - 75K","75K-100K", ">100K")) %>%
@@ -160,7 +127,7 @@ pinc <- inc %>% # code for Shiny app
   labs(title = "Income Distribution", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
   coord_flip()  
 
-educ_earn <- read.csv("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/educ_earn.csv", header=TRUE) #for Shiny app
+educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) #for Shiny app
 
 pedu <- educ_earn %>% # code for Shiny app
   filter(county == "Powhatan ", year==2020) %>%
@@ -1112,7 +1079,7 @@ server <- function(input, output){
   output$gsoc <- renderPlot({
     
     if(goochland_soc() == "gage"){
-      gage2017
+      gage
     }
     else if(goochland_soc() == "gind"){
       gind
@@ -1126,7 +1093,8 @@ server <- function(input, output){
     
   })
   
-
+  
+  
   
   powhatan_soc <- reactive({
     input$powhatan_soc
