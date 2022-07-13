@@ -32,12 +32,7 @@ options(scipen=999)
 # data --------------------------------------------------------------------------------------------------------------------
 
     # Goochland sociodemographic
-<<<<<<< HEAD
-
 popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
-=======
-popdist<-read.csv("ShinyApp/data/popdist.csv", header = TRUE) #for Shiny app
->>>>>>> 2fe576b7740461f77b721a25d30d4318cd946d75
 
 gage <- popdist %>% # code for Shiny app
   filter(county == "Goochland", year==2020) %>%
@@ -171,6 +166,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                    )
                           ),
                           fluidRow(style = "margin: 6px;",
+                                   align = "justify",
                                    column(4,
                                           h2(strong("Project Background")),
                                           p(strong("The setting:"), "Powhatan and Goochland County are two counties on the urban fringe outside of Richmond, Virginia. Both counties are known for their 
@@ -260,7 +256,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "gedu")
                                                      ),
                                                      plotOutput("gsoc", height = "500px"),
-                                                     p(tags$small("Data Source: US Census"))),
+                                                     ),
                                               column(12, 
                                                      h4("References: "), 
                                                      p(tags$small("[1] United States Department of Agriculture. Goochland County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51075.pdf")), 
@@ -313,7 +309,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      ),
                                                      
                                                      plotOutput("psoc", height = "500px"),
-                                                     p(tags$small("Data Source: US Census"))),
+                                                    ),
                                               column(12, 
                                                      h4("References: "), 
                                                      p(tags$small("United States Department of Agriculture. Powhatan County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51145.pdf")) ,
@@ -452,6 +448,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                               column(6,
                                                      h1(strong("Goochland"), align = "center"),
                                                      p("", style = "padding-top:10px;"),
+                                                     fluidRow(style = "margin: 6px;", align = "justify",
                                                      p("Goochland County runs a land use program which assesses land based on use value as opposed to market value. The program was adopted by the county in 1978. There are multiple requirements for land to be eligible for the program as established by the State Land Evaluation Advisory Council:"),
                                                      tags$ul(
                                                        
@@ -469,10 +466,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      of agricultural land and encourage agribusiness. The Goochland County 2035 Comprehensive Plan includes an agricultural commitment to maintaining approximately
                                                      85% of the county in the Rural Enhancement Land Use Designation through 2035 (source). The county also supports economic development and tourism through the
                                                      ACRES initiative which “[Supports] Goochland’s Agricultural Community through Accessibility, Connectivity, Readiness, Education, and Sustainability” (source).
-                                                     The initiative encourages the recognition of Goochland County’s agricultural history and identity and promotes rural economic development/tourism.")),
+                                                     The initiative encourages the recognition of Goochland County’s agricultural history and identity and promotes rural economic development/tourism."))),
                                               column(6,
                                                      h1(strong("Powhatan"), align = "center"),
                                                      p("", style = "padding-top:10px;"),
+                                                     fluidRow(style = "margin: 6px;", align = "justify",
                                                      p('Powhatan County land use policy includes a land use deferral program, Powhatan County code Section 70-76, which states that the purpose of land use is
                                                      to “preserve real estate devoted to agricultural, horticultural, forest and open space uses within its boundaries in the public interest....". 
                                                      The land use deferral program “offers a deferral of a portion of the real estate taxes for qualifying properties”. This ordinance was adopted by the
@@ -480,11 +478,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      Program which allows the county, with the landowner’s consent, to take land out of development in exchange for a land use tax rate as opposed to market
                                                      value tax rate. As of September/October 2020, there are approximately 5640 acres of AFD land. This program serves to protect natural lands as well as prevent
                                                      landowners from having to sell their land as market values and tax rates continue to increase. One benefit that the AFD program has over the land use deferral
-                                                     program is that it is officially included in the County’s Comprehensive Plan (source). ')),
+                                                     program is that it is officially included in the County’s Comprehensive Plan (source). '),
                                                      p('The county’s zoning ordinance categorizes rural districts into 6 groups. The main agricultural districts are A-20 (min 20 ac), A-10 (min 10 ac), and A-C.
                                                      The 3 other rural districts are largely dedicated to residential zoning. The 2010 long range comprehensive plan also includes sections on natural conservation
                                                      and rural preservation which outline land use policies to be “used when addressing development and land use issues” (source). These policies promote the
-                                                     conservation of open land and farmland and recognize agriculture as an economic driver of the community.'),
+                                                     conservation of open land and farmland and recognize agriculture as an economic driver of the community.'))),
                                               column(12, 
                                                      h4("References:"),
                                                      p(tags$small("[1] How Can You Help Protect Source Water? (n.d.). Retrieved July 29, 2021, from https://www.epa.gov/sourcewaterprotection/how-can-you-help-protect-source-water")), 
@@ -560,9 +558,16 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
                                                                 
-                                                                                leafletOutput("harbour")
-                                                                
-                                                         ),
+                                                                                leafletOutput("harbour"),
+                                                                       br(),
+                                                                       h4(strong("Crop Layer Graphs")),
+                                                                       selectInput("gcrop", "Select Variable:", width = "100%", choices = c(
+                                                                         "2012 Total Acreage by Crop Layer Type" = "gcrop12",
+                                                                         "2021 Total Acreage by Crop Layer Type" = "gcrop21")
+                                                                       ),
+                                                                       
+                                                                       plotOutput("gcrop_graph", height = "500px"),
+                                                                ),
                                                          column(12, 
                                                                 
                                                                 h4("References") , 
@@ -946,6 +951,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                    p("", style = "padding-top:10px;"),
                                    p(),
                                    h4(strong("Title")),
+                                   fluidRow(style = "margin: 6px;", align = "justify",
                                    p("The CRP is a federal land conversion program administered by the Farm Service Agency (FSA). 
                                                        The goal of this program is to reduce cropland acreage- a land retirement program that pays farmers to retire some of their crop land. 
                                                        This program has been a major driver of land retirement since it was implemented in 1985. The program is motivated by environmental 
@@ -966,7 +972,7 @@ ui <- navbarPage(title = "DSPG 2022",
                           
                           
                           
-                 ),
+                 )),
 
                  ## Tab Data Sources --------------------------------------------
                  tabPanel("Data Sources", 
@@ -1125,6 +1131,19 @@ server <- function(input, output){
 output$harbour<- renderLeaflet({
   harbour
 })
+
+  gcrop <- reactive({
+    input$gcrop
+  })
+  
+  output$gcrop_graph <- renderPlot({
+    if(gcrop() == "gcrop12"){
+      
+    }
+    else if(gcrop() == "gcrop21"){
+      
+    }
+  })
   
 }
  
