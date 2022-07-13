@@ -20,15 +20,15 @@ croplayer1 <- read_excel("C:/Users/Christopher Vest/Documents/Land_use_project/2
 croplayer2 <- read_excel("C:/Users/Christopher Vest/Documents/Land_use_project/2022_DSPG_Landuse/Review/Christopher/Croplayer/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2012")
 ```
 ```{r Powhatan 2021}
-ggplot(croplayer1, aes(x = reorder(`Powhatan Combined`, `Area Acre...2`), y = `Area Acre...2`, fill = `Area Acre...2`)) + geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
+ggplot(croplayer1, aes(x = reorder(`Powhatan Combined`, `Area Acre...2`), y = `Area Acre...2`, fill = `Area Acre...2`)) + geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + labs( title = "Total Acreage by Land Type", x = "Acreage", y = "Land type")
 ```
 ```{r Goochland 2021}
-ggplot(croplayer1, aes(x = reorder(`Goochland Combined`, `Area Acre...4`), y = `Area Acre...4`, fill = `Area Acre...4`)) + geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
+ggplot(croplayer1, aes(x = reorder(`Goochland Combined`, `Area Acre...4`), y = `Area Acre...4`, fill = `Area Acre...4`)) + geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + labs( title = "Total Acreage by Land Type", x = "Acreage", y = "Land type")
 ```
 
 ```{r Powhatan 2012}
-ggplot(croplayer2, aes(x = reorder(`Powhatan Combined`, `Area_acre...3`), y = `Area_acre...3`, fill = `Area_acre...3`)) + geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
+ggplot(croplayer2, aes(x = reorder(`Powhatan Combined`, `Area_acre...3`), y = `Area_acre...3`, fill = `Area_acre...3`)) + geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + labs( title = "Total Acreage by Land Type", x = "Acreage", y = "Land type")
 ```
 ```{r Goochland 2012}
-ggplot(croplayer2, aes(x = reorder(`Goochland Combined`, `Area_acre...5`), y = `Area_acre...5`, fill = `Area_acre...5`)) + geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
+ggplot(croplayer2, aes(x = reorder(`Goochland Combined`, `Area_acre...5`), y = `Area_acre...5`, fill = `Area_acre...5`)) + geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + labs( title = "Total Acreage by Land Type", x = "Acreage", y = "Land type")
 ```
