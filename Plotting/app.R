@@ -31,7 +31,7 @@ options(scipen=999)
 
 
 
-leafletRender.func <- function(year.g) {
+g.luPlotFunction <- function(year.g) {
   
   GoochlandAllParcel <- read_sf("../ShinyApp/data/luParcelData/GoochAll.shp")
   Gooch <- GoochlandAllParcel %>% filter(year == year.g)
@@ -95,10 +95,10 @@ leafletRender.func <- function(year.g) {
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-  sliderInput(inputId = "yearSelected", label = "Year:", 
+  sliderInput(inputId = "luYear.g", label = "Year:", 
               min = 2018, max = 2021, value = 2018, 
               sep = ""),
-  leafletOutput(outputId = "myLeaflet")
+  leafletOutput(outputId = "luPlot.g")
   
 )
 
@@ -106,8 +106,8 @@ ui <- fluidPage(
 server <- function(input, output) {
   
   
-  output$myLeaflet <- renderLeaflet({
-    luPlot <- leafletRender.func(input$yearSelected)
+  output$luPlot.g <- renderLeaflet({
+    luPlot <- g.luPlotFunction(input$luYear.g)
     luPlot
   }
   )
