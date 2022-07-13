@@ -141,6 +141,28 @@ pedu <- educ_earn %>% # code for Shiny app
   theme(legend.position="none") + 
   theme(axis.text.y = element_text(hjust=0))
 
+# Land use
+
+    #Goochland Land Use 
+
+croplayer1 <- read_excel("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2021")
+croplayer2 <- read_excel("C:/LandUse- Git Repo/2022_DSPG_landuse/ShinyApp/data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2012")
+
+gcrop21 <- ggplot(croplayer1, aes(x = reorder(`Goochland Combined`, `Area Acre...4`), y = `Area Acre...4`, fill = `Area Acre...4`)) + 
+  geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
+  labs( title = "Total Acreage by Land Type", x = "Acreage", y = "Land type")
+
+gcrop12 <- ggplot(croplayer2, aes(x = reorder(`Goochland Combined`, `Area_acre...5`), y = `Area_acre...5`, fill = `Area_acre...5`)) + 
+  geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
+  labs( title = "Total Acreage by Land Type", x = "Acreage", y = "Land type")
+
+pcrop21 <- ggplot(croplayer1, aes(x = reorder(`Powhatan Combined`, `Area Acre...2`), y = `Area Acre...2`, fill = `Area Acre...2`)) + 
+  geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
+  labs( title = "Total Acreage by Land Type", x = "Acreage", y = "Land type")
+
+pcrop12 <- ggplot(croplayer2, aes(x = reorder(`Powhatan Combined`, `Area_acre...3`), y = `Area_acre...3`, fill = `Area_acre...3`)) + 
+  geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
+  labs( title = "Total Acreage by Land Type", x = "Acreage", y = "Land type")
 
   harbour<- leaflet()
   harbour<- addTiles(harbour)
@@ -623,8 +645,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                        br(),
                                                                        h4(strong("Crop Layer Graphs")),
                                                                        selectInput("gcrop", "Select Variable:", width = "100%", choices = c(
-                                                                         "2012 Total Acreage by Crop Layer Type" = "gcrop12",
-                                                                         "2021 Total Acreage by Crop Layer Type" = "gcrop21")
+                                                                         "Total Acreage by Land Type 2021" = "gcrop21",
+                                                                         "Total Acreage by Land Type 2012" = "gcrop12")
                                                                        ),
                                                                        
                                                                        plotOutput("gcrop_graph", height = "500px"),
@@ -1200,10 +1222,10 @@ output$harbour<- renderLeaflet({
   
   output$gcrop_graph <- renderPlot({
     if(gcrop() == "gcrop12"){
-      
+      gcrop12
     }
     else if(gcrop() == "gcrop21"){
-      
+      gcrop21
     }
   })
   
