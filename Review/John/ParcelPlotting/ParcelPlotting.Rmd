@@ -49,8 +49,9 @@ LUC_values <- c("Single Family Residential Urban",
                 "Undefined")
 LUC_values <- factor(LUC_values, levels = LUC_values)
 
-mypalette <- colorBin(palette = "Paired", as.numeric(LUC_values))
+mypalette <- colorBin(palette = "viridis", as.numeric(LUC_values), bins = 9)
 colors <- mypalette(unclass(LUC_values))
+colors[8] <- "#addc30"
 
 
 

@@ -1,7 +1,8 @@
 library(sf)
 library(ggplot2)
 library(raster)
-library(leaflet) 
+library(leaflet)
+library(tigris)
 
 # Reading each year's parcellation hotspots
 
@@ -15,7 +16,7 @@ ggplot() +
   geom_sf(data = gl_hs_19, fill = "red", color = "NA", alpha = 1/10) +
   geom_sf(data = gl_hs_20, fill = "red", color = "NA", alpha = 1/10) +
   geom_sf(data = gl_hs_21, fill = "red", color = "NA", alpha = 1/10) +
-  scale_color_manual(values = road_colors) +
+ # scale_color_manual(values = road_colors) +
   scale_fill_manual(values = "black") +
   ggtitle("Parcellation Hotspots in Goochland", subtitle = "2018 ~ 2022") + 
   coord_sf()
@@ -27,16 +28,33 @@ gl_hs_20_rp <- st_transform(gl_hs_20, 4326)
 gl_hs_21_rp <- st_transform(gl_hs_21, 4326)
 gl_hs_22_rp <- st_transform(gl_hs_22, 4326)
 
+goochland.sf <- county_subdivisions(state = "VA", county = "Goochland")
 
-leaflet(gl_hs_22_rp) %>%
+leaflet() %>%
 
-  addPolygons(
+  addPolygons(data = gl_hs_22_rp, fillColor = "red",
     stroke = FALSE, # remove polygon borders
     #fillColor = ~pal_fun(gridcode), # set fill color with function from above and value
-    fillOpacity = 0.5, smoothFactor = 0.5,
-  ) %>% # Works until this point but doesn't add tiles
+    fillOpacity = 0.2, smoothFactor = 0.5,
+  ) %>%
+  addPolygons(data = gl_hs_21_rp, fillColor = "red",
+            stroke = FALSE, # remove polygon borders
+            #fillColor = ~pal_fun(gridcode), # set fill color with function from above and value
+            fillOpacity = 0.2, smoothFactor = 0.5,
+  ) %>% 
+  addPolygons(data = gl_hs_20_rp, fillColor = "red",
+              stroke = FALSE, # remove polygon borders
+              #fillColor = ~pal_fun(gridcode), # set fill color with function from above and value
+              fillOpacity = 0.2, smoothFactor = 0.5,
+  ) %>%
+  addPolygons(data = gl_hs_21_rp, fillColor = "red",
+              stroke = FALSE, # remove polygon borders
+              #fillColor = ~pal_fun(gridcode), # set fill color with function from above and value
+              fillOpacity = 0.2, smoothFactor = 0.5,
+  ) %>%
+# Works until this point but doesn't add tiles
 
   addTiles(group = "OSM") %>%
-  addProviderTiles("CartoDB.DarkMatter", group = "Carto")
+  addProviderTiles(providers$CartoDB.Positron)
   
   # Need to put multiple shapefiles with leaflet and have the tiles in the background
