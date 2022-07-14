@@ -34,19 +34,23 @@ options(shiny.maxRequestSize = 100*1024^2)
 # data --------------------------------------------------------------------------------------------------------------------
 
 # Goochland sociodemographic
-popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
+age.func <- function(inputYear, inputCounty) {
+  popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
+  
+  gage <- popdist %>% # code for Shiny app
+    filter(county == inputCounty, year==inputYear) %>%
+    ggplot(aes(x=agecat , y=value, fill=agecat))+
+    geom_bar(stat="identity") + 
+    coord_flip() + 
+    scale_fill_viridis(discrete=TRUE) + 
+    theme_light() + 
+    theme(legend.position="none") + 
+    theme(axis.text.y = element_text(hjust=0)) +
+    labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
+  gage
+}
 
-gage <- popdist %>% # code for Shiny app
-  filter(county == "Goochland", year==2020) %>%
-  ggplot(aes(x=agecat , y=value, fill=agecat))+
-  geom_bar(stat="identity") + 
-  coord_flip() + 
-  scale_fill_viridis(discrete=TRUE) + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
-
+ind.func <- function(inutYear, inputCounty) {
 industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
 
 gind <- industry %>% # code for Shiny app
@@ -58,6 +62,8 @@ gind <- industry %>% # code for Shiny app
   theme(legend.position="none") + 
   theme(axis.text.y = element_text(hjust=0)) +
   labs(title="Employment By Industry", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
+gind
+}
 
 inc <- read.csv("data/inc.csv", header=TRUE) #for Shiny app
 
@@ -340,13 +346,16 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Income Distribution" = "ginc",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "gedu")
                                                      ),
+                                                     sliderInput(inputId = "yearSelect_soc", label = "Select Year: ", 
+                                                                 width = "150%", 
+                                                                 min = 2017,
+                                                                 max = 2020,
+                                                                 value = 2020,
+                                                                 sep = ""),
                                                      plotOutput("gsoc", height = "500px"),
-<<<<<<< HEAD
-                                                     
+
                                                      ),
-=======
                                               ),
->>>>>>> 7d52f42a84b0e62a64b2ba46ad3dbbad6de4e082
                                               column(12, 
                                                      h4("References: "), 
                                                      p(tags$small("[1] United States Department of Agriculture. Goochland County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51075.pdf")), 
@@ -357,7 +366,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p(tags$small("[6] ")),
                                                      p(tags$small("[7]")),
                                                      p("", style = "padding-top:10px;")) 
-                                     )), 
+                                     ), 
                             tabPanel("Powhatan", 
                                      fluidRow(style = "margin: 6px;",
                                               h1(strong("Powhatan"), align = "center"),
@@ -1178,16 +1187,16 @@ server <- function(input, output){
   output$gsoc <- renderPlot({
     
     if(goochland_soc() == "gage"){
-      gage
+      age.func(input$yearSelect_soc, "Goochland")
     }
     else if(goochland_soc() == "gind"){
-      gind
+      ind.func(input$yearSelect_soc, "Goochland")
     }
     else if(goochland_soc() == "ginc"){
-      ginc
+      inc.func(input$yearSelect_soc, "Goochland")
     }
     else if(goochland_soc() == "gedu"){
-      gedu
+      edu.func(input$yearSelect_soc, "Goochland")
     }
     
   })
