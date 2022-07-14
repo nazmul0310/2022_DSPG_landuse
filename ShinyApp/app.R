@@ -28,18 +28,20 @@ library(stringr)
 library(viridis)
 library(readxl)
 library(RColorBrewer)
-library(readxl) #for import excel
 library(sf) #for importing shp file
 
 options(scipen=999)
 options(shiny.maxRequestSize = 100*1024^2)
 
 # data --------------------------------------------------------------------------------------------------------------------
+popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny ap
+industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
+inc <- read.csv("data/inc.csv", header=TRUE) 
+educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) 
 
 # Sociodemographic
 
 age.func <- function(inputYear, inputCounty) {
-  popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
   
   age <- popdist %>% # code for Shiny app
     filter(county == inputCounty, year==inputYear) %>%
@@ -50,13 +52,11 @@ age.func <- function(inputYear, inputCounty) {
     theme_light() + 
     theme(legend.position="none") + 
     theme(axis.text.y = element_text(hjust=0)) +
-    labs(title="Age Distribution of Population", y= "Percent", x= "Age Group")
+    labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
   age
 }
 
-
 ind.func <- function(inputYear, inputCounty) {
-  industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
   
   ind <- industry %>% 
     filter(county == inputCounty, year==inputYear) %>%
@@ -72,7 +72,6 @@ ind.func <- function(inputYear, inputCounty) {
 
 inc.func <- function(inputYear, inputCounty) {
   
-  inc <- read.csv("data/inc.csv", header=TRUE) 
   inc <- inc %>% 
     filter(county == inputCounty, year==inputYear) %>%
     mutate(inccat = fct_relevel(inccat, "<35K", "35K - 50K", "50K - 75K","75K-100K", ">100K")) %>%
@@ -83,32 +82,32 @@ inc.func <- function(inputYear, inputCounty) {
     theme_light() + 
     theme(legend.position="none") + 
     theme(axis.text.y = element_text(hjust=0)) +
-    labs(title = "Income Distribution in 2020", y = "Percent", x = "Income") +
+    labs(title = "Income Distribution in 2020", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
     coord_flip()
   inc
 }
 
 edu.func <- function(inputYear, inputCounty) {
   
-  educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) 
   edu <- educ_earn %>% 
     filter(county == inputCounty, year==inputYear) %>%
     ggplot(aes(x = name, y = values)) + 
     geom_bar(stat = "identity", mapping=(aes(fill = name))) + 
     theme(legend.position = "none") + scale_fill_viridis(discrete=TRUE) +
-    labs(title = "Median Earnings By Educational Attainment (Age > 25 years) in 2020", x = "Highest Education", y = "Median Earnings") + 
+    labs(title = "Median Earnings By Educational Attainment (Age > 25 years) in 2020", x = "Highest Education", y = "Median Earnings", caption = "Source: ACS5 2016-2020") + 
     geom_text(aes(label = values), vjust = -0.25) +
     scale_x_discrete(labels = c("Below\nhighschool", "Highschool\ngraduate", "Some college/\nAssociates'", "Bachelor's", "Graduate")) + 
     theme_light() + 
     theme(legend.position="none") + 
     theme(axis.text.y = element_text(hjust=0)) 
-  edu 
+  edu
 }
 
 
-  # Land use
-      
-      # Goochland Land Use 
+
+# Land use
+
+#Goochland Land Use 
 
 gooch_boundary<- st_read("data/cnty_bndry/Goochland_Boundary.shp")
 gooch_boundary <- st_transform(gooch_boundary, "+proj=longlat +datum=WGS84")
@@ -130,6 +129,7 @@ gcrop12 <- ggplot(croplayer2, aes(x = reorder(`Goochland Combined`, `Area_acre..
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
   labs( title = "Total Acreage by Land Type in 2012", x = "Acreage", y = "Land type")
 
+<<<<<<< HEAD
 soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
 
 gsoil <- ggplot(soil_quality, aes(x = `G_Value`, y = `G_Area_acre`, fill = `G_Area_acre`)) +
@@ -154,6 +154,8 @@ ggplotly(psoil, tooltip = "text")
 
       # Powhatan Land Use
 
+=======
+>>>>>>> 15bddf8502eeb0a2e6548b08c365e9bb1b92d45d
 pcrop21 <- ggplot(croplayer1, aes(x = reorder(`Powhatan Combined`, `Area Acre...2`), y = `Area Acre...2`, fill = `Area Acre...2`)) + 
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
   labs( title = "Total Acreage by Land Type in 2021", x = "Acreage", y = "Land type")
@@ -166,11 +168,12 @@ harbour<- leaflet() %>%
   addTiles() %>% 
   setView(lng=-77.949, lat=37.742, zoom=9)
 
+GoochlandAllParcel <- read_sf("../ShinyApp/data/luParcelData/GoochAll.shp")
+goochBoundary <- read_sf("../ShinyApp/data/luParcelData/Goochland_Boundary.shp")
+
 
 g.luPlotFunction <- function(year.g) {
   
-  GoochlandAllParcel <- read_sf("../ShinyApp/data/luParcelData/GoochAll.shp")
-  #goochBoundary <- read_sf("../ShinyApp/data/luParcelData/Goochland_Boundary.shp") thinking of add a boundary map
   Gooch <- GoochlandAllParcel %>% filter(year == year.g)
   
   LUC_values <- c("Single Family Residential Urban", 
@@ -184,14 +187,16 @@ g.luPlotFunction <- function(year.g) {
   
   LUC_values <- factor(LUC_values, levels = LUC_values)
   
-  mypalette <- colorBin(palette = "viridis", as.numeric(LUC_values), bins = 9)
+  mypalette <- colorBin(palette = "viridis", as.numeric(LUC_values), bins = 8)
   colors <- mypalette(unclass(LUC_values))
-  colors[8] <- "#addc30"
+  colors[8] <- "#ffffff" # the color is similar to 
+  legendpalette <- colorFactor(palette = colors,levels=LUC_values)
   
   MyMap <- leaflet() %>%
     addTiles() %>%
     addProviderTiles(providers$CartoDB.Positron) %>%
-    
+    addPolygons(data=goochBoundary,
+                fillColor = "transparent") %>%
     addPolygons(data = Gooch %>% filter(LUC_FIN == "Single Family Residential Urban"), 
                 fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
                 group = "Single Family Urban") %>%
@@ -219,68 +224,17 @@ g.luPlotFunction <- function(year.g) {
     addLayersControl(
       overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
       position = "bottomleft",
-      options = layersControlOptions(collapsed = FALSE)
-    )
+      options = layersControlOptions(collapsed = FALSE)) %>% 
+    addLegend("bottomright", pal = legendpalette, values = LUC_values,
+              title = "Land Use Type",
+              labFormat = labelFormat(),
+              opacity = 1,
+              data=Gooch) #need to change for show the correct label
 }
 
-
-g.luPlotFunction <- function(year.g) {
-  
-  GoochlandAllParcel <- read_sf("../ShinyApp/data/luParcelData/GoochAll.shp")
-  Gooch <- GoochlandAllParcel %>% filter(year == year.g)
-  
-  LUC_values <- c("Single Family Residential Urban", 
-                  "Single Family Residential Suburban", 
-                  "Multi-Family Residential", 
-                  "Commerical / Industrial", 
-                  "Agricultural / Undeveloped (20-99 Acres)", 
-                  "Agricultural / Undeveloped (100+ Acres)", 
-                  "Other", 
-                  "Undefined")
-  
-  LUC_values <- factor(LUC_values, levels = LUC_values)
-  
-  mypalette <- colorBin(palette = "viridis", as.numeric(LUC_values), bins = 9)
-  colors <- mypalette(unclass(LUC_values))
-  colors[8] <- "#addc30"
-  
-  MyMap <- leaflet() %>%
-    addTiles() %>%
-    addProviderTiles(providers$CartoDB.Positron) %>%
-    
-    addPolygons(data = Gooch %>% filter(LUC_FIN == "Single Family Residential Urban"), 
-                fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Single Family Urban") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Single Family Residential Suburban"), 
-                fillColor = colors[2], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Single Family Suburban") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Multi-Family Residential"), 
-                fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Multi-Family Residential") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Commerical / Industrial") ,
-                fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Commercial & Industrial") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Agricultural / Undeveloped (20-99 Acres)"),
-                fillColor = colors[5], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Agriculture/Undeveloped (20-99 Acres)") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Agricultural / Undeveloped (100+ Acres)") ,
-                fillColor = colors[6], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Agriculture/Undeveloped (100+ Acres)") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Other"),
-                fillColor = colors[7], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Other") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Undefined") ,
-                fillColor = colors[8], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Unknown") %>%
-    addLayersControl(
-      overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
-      position = "bottomleft",
-      options = layersControlOptions(collapsed = FALSE)
-    )
-}
-
-
-
+harbour<- leaflet() %>% 
+  addTiles() %>% 
+  setView(lng=-77.949, lat=37.742, zoom=9)
 
 
 # ui --------------------------------------------------------------------------------------------------------------------
@@ -399,9 +353,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                  value = 2020,
                                                                  sep = ""),
                                                      plotOutput("gsoc", height = "500px"),
-                                                     p(tags$small("Data Source: ACS5 2016-2020"))),
-
-
+                                                     
+                                              ),
+                                     ),
                                      column(12, 
                                             h4("References: "), 
                                             p(tags$small("[1] United States Department of Agriculture. Goochland County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51075.pdf")), 
@@ -412,7 +366,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                             p(tags$small("[6] ")),
                                             p(tags$small("[7]")),
                                             p("", style = "padding-top:10px;")) 
-                            )), 
+                            ), 
                             tabPanel("Powhatan", 
                                      fluidRow(style = "margin: 6px;",
                                               h1(strong("Powhatan"), align = "center"),
@@ -459,15 +413,15 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                  value = 2020,
                                                                  sep = ""),
                                                      plotOutput("psoc", height = "500px"),
-                                                     p(tags$small("Data Source: ACS5 2016-2020"))),
+                                              ),
                                               column(12, 
                                                      h4("References: "), 
                                                      p(tags$small("United States Department of Agriculture. Powhatan County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51145.pdf")) ,
                                                      p("", style = "padding-top:10px;")) 
                                      ), 
-                            ), 
+                            ) 
                             
-        
+                            
                             
                  ),
                  
@@ -1007,8 +961,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Parcellation Hot Spot Map")),
-                                                                
-                                                                #                plotlyOutput("trend1", height = "600px")
+                                                                sliderInput(inputId = "g.hotspotInput", 
+                                                                            label = "Choose the starting and ending years",
+                                                                            min = 2019,
+                                                                            max = 2022,
+                                                                            step = 1,
+                                                                            value = c(2019,2022),
+                                                                            sep = ""),
+                                                                leafletOutput("g.hotspotMap",height = 1000)
                                                                 
                                                          ),
                                                          column(12, 
@@ -1287,6 +1247,7 @@ server <- function(input, output){
     harbour
   })
   
+<<<<<<< HEAD
   output$mymap <- renderLeaflet({
     
     begin_year <- 2012
@@ -1308,6 +1269,8 @@ server <- function(input, output){
     }
     m
   })
+=======
+>>>>>>> 15bddf8502eeb0a2e6548b08c365e9bb1b92d45d
   
   gcrop <- reactive({
     input$gcrop
@@ -1335,7 +1298,37 @@ server <- function(input, output){
     luPlot
   })
   
+  output$g.hotspotMap <- renderLeaflet({
+    gl_cnty<- st_read("data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84") 
+    
+    g.hotspot.plt <- leaflet()%>%
+      addTiles() %>%
+      setView(lng=-77.885376, lat=37.684143 , zoom=10) %>%
+      addPolygons(data=gl_cnty,
+                  fillColor = "transparent")
+    begin_year <- input$g.hotspotInput[1]-2000
+    end_year <- input$g.hotspotInput[2]-2000
+    yr <- c(begin_year:end_year)
+    file_list <- paste("data/Parcel_Hotspot/gooch_hotspot_",yr,".shp",sep = "")
+    
+    for (file in file_list){
+      #import the heatspot maps of the selected years
+      gl<- st_read(file) %>% st_transform("+proj=longlat +datum=WGS84")
+      g.hotspot.plt <- g.hotspot.plt %>% addPolygons(stroke = FALSE,
+                                                     data = gl,
+                                                     weight = 1,
+                                                     smoothFactor=1,
+                                                     fillColor = "red",
+                                                     fillOpacity = 0.1)
+    }
+    g.hotspot.plt
+  })
+  
+  
+  
 }
+
+
 
 
 shinyApp(ui = ui, server = server)
