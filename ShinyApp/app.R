@@ -52,7 +52,8 @@ age.func <- function(inputYear, inputCounty) {
     theme_light() + 
     theme(legend.position="none") + 
     theme(axis.text.y = element_text(hjust=0)) +
-    labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
+    labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020") +
+    ylim(0,35)
   age
 }
 
@@ -66,7 +67,8 @@ ind.func <- function(inputYear, inputCounty) {
     theme_light() + 
     theme(legend.position="none") + 
     theme(axis.text.y = element_text(hjust=0)) +
-    labs(title="Employment By Industry", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
+    labs(title="Employment By Industry", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020") +
+    ylim(0,25)
   ind
 }
 
@@ -82,8 +84,9 @@ inc.func <- function(inputYear, inputCounty) {
     theme_light() + 
     theme(legend.position="none") + 
     theme(axis.text.y = element_text(hjust=0)) +
-    labs(title = "Income Distribution in 2020", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
-    coord_flip()
+    labs(title = "Income Distribution", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
+    coord_flip() +
+    ylim(0,50)
   inc
 }
 
@@ -94,12 +97,13 @@ edu.func <- function(inputYear, inputCounty) {
     ggplot(aes(x = name, y = values)) + 
     geom_bar(stat = "identity", mapping=(aes(fill = name))) + 
     theme(legend.position = "none") + scale_fill_viridis(discrete=TRUE) +
-    labs(title = "Median Earnings By Educational Attainment (Age > 25 years) in 2020", x = "Highest Education", y = "Median Earnings", caption = "Source: ACS5 2016-2020") + 
+    labs(title = "Median Earnings By Educational Attainment (Age > 25 years)", x = "Highest Education", y = "Median Earnings", caption = "Source: ACS5 2016-2020") + 
     geom_text(aes(label = values), vjust = -0.25) +
     scale_x_discrete(labels = c("Below\nhighschool", "Highschool\ngraduate", "Some college/\nAssociates'", "Bachelor's", "Graduate")) + 
     theme_light() + 
     theme(legend.position="none") + 
-    theme(axis.text.y = element_text(hjust=0)) 
+    theme(axis.text.y = element_text(hjust=0)) +
+    ylim(0, 200000)
   edu
 }
 
@@ -118,16 +122,29 @@ m <- leaflet()%>%
   addPolygons(data=gooch_boundary,
               fillColor = "transparent") 
 
-croplayer1 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2021")
-croplayer2 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2012")
+croplayer1 <- read.csv("data/ag_analysis.csv")
 
-gcrop21 <- ggplot(croplayer1, aes(x = reorder(`Goochland Combined`, `Area Acre...4`), y = `Area Acre...4`, fill = `Area Acre...4`)) + 
-  geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
-  labs( title = "Total Acreage by Land Type in 2021", x = "Acreage", y = "Land type")
+gcrop21 <- croplayer1 %>% 
+  filter(County == "Goochland", Year==2021) %>%
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  geom_bar(stat = "identity", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
+  coord_flip() +  
+  theme_light() +
+  theme(axis.text.y = element_text(hjust=0)) +
+  theme(legend.position = "none") +     
+  scale_fill_viridis() + 
+  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 
-gcrop12 <- ggplot(croplayer2, aes(x = reorder(`Goochland Combined`, `Area_acre...5`), y = `Area_acre...5`, fill = `Area_acre...5`)) + 
-  geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
-  labs( title = "Total Acreage by Land Type in 2012", x = "Acreage", y = "Land type")
+gcrop12 <- croplayer1 %>% 
+  filter(County == "Goochland", Year== 2012) %>%
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  geom_bar(stat = "identity", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
+  coord_flip() + 
+  theme_light() +
+  theme(axis.text.y = element_text(hjust=0)) +
+  theme(legend.position = "none") + 
+  scale_fill_viridis() + 
+  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 
 soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
 
@@ -153,13 +170,27 @@ ggplotly(psoil, tooltip = "text")
 
       # Powhatan Land Use
 
-pcrop21 <- ggplot(croplayer1, aes(x = reorder(`Powhatan Combined`, `Area Acre...2`), y = `Area Acre...2`, fill = `Area Acre...2`)) + 
-  geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
-  labs( title = "Total Acreage by Land Type in 2021", x = "Acreage", y = "Land type")
+pcrop21 <- croplayer1 %>% 
+  filter(County == "Powhatan", Year==2021) %>%
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  geom_bar(stat = "identity", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
+  coord_flip() + 
+  theme_light() +
+  theme(axis.text.y = element_text(hjust=0)) +
+  theme(legend.position = "none") + 
+  scale_fill_viridis() + 
+  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 
-pcrop12 <- ggplot(croplayer2, aes(x = reorder(`Powhatan Combined`, `Area_acre...3`), y = `Area_acre...3`, fill = `Area_acre...3`)) + 
-  geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
-  labs( title = "Total Acreage by Land Type in 2012", x = "Acreage", y = "Land type")
+pcrop12 <- croplayer1 %>% 
+  filter(County == "Powhatan", Year== 2012) %>%
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  geom_bar(stat = "identity", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
+  coord_flip() + 
+  theme_light() +
+  theme(axis.text.y = element_text(hjust=0)) +
+  theme(legend.position = "none") + 
+  scale_fill_viridis() + 
+  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 
 harbour<- leaflet() %>% 
   addTiles() %>% 
@@ -816,6 +847,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 h4(strong("Crop Layer Map")),
                                                                 
                                                                 #                plotlyOutput("trend1", height = "600px")
+                                                                h4(strong("Crop Layer Graphs")),
+                                                                selectInput("pcrop", "Select Variable:", width = "100%", choices = c(
+                                                                  "Total Acreage by Land Type 2021" = "pcrop21",
+                                                                  "Total Acreage by Land Type 2012" = "pcrop12")
+                                                                ),
+                                                                
+                                                                plotOutput("pcrop_graph", height = "500px"),
                                                                 
                                                          ),
                                                          column(12, 
@@ -910,7 +948,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                               h1(strong("Land Parcellation                 "), align = "center"),
                                               p("", style = "padding-top:10px;"),
                                               tabsetPanel(
-                                                tabPanel("Land Parcels",
+                                                tabPanel("Parcels",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Parcels in Goochland County")),
@@ -943,7 +981,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          
                                                 ), 
                                                 
-                                                tabPanel("Parcellation Hot Spots",
+                                                tabPanel("Hot Spots",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Parcellation Hot Spots in Goochland County")),
@@ -987,7 +1025,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                               h1(strong("Land Parcellation"), align = "center"),
                                               p("", style = "padding-top:10px;"),
                                               tabsetPanel(
-                                                tabPanel("Land Parcels",
+                                                tabPanel("Parcels",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Parcels in Powhatan County")),
@@ -1020,7 +1058,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          
                                                 ), 
                                                 
-                                                tabPanel("Parcellation Hot Spots",
+                                                tabPanel("Hot Spots",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Parcellation Hot Spots in Powhatan County")),
@@ -1276,6 +1314,15 @@ server <- function(input, output){
     }
     else if(gcrop() == "gcrop21"){
       gcrop21
+    }
+  })
+  
+  output$pcrop_graph <- renderPlot({
+    if(pcrop() == "pcrop12"){
+      pcrop12
+    }
+    else if(pcrop() == "pcrop21"){
+      pcrop21
     }
   })
   
