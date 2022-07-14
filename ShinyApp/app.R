@@ -341,6 +341,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "gedu")
                                                      ),
                                                      plotOutput("gsoc", height = "500px"),
+                                                     
                                                      ),
                                               column(12, 
                                                      h4("References: "), 
