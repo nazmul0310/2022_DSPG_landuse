@@ -371,8 +371,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                  value = 2020,
                                                                  sep = ""),
                                                      plotOutput("gsoc", height = "500px"),
+<<<<<<< HEAD
+=======
 
                                                      ),
+>>>>>>> 74c9b2d0a4515bd9aed03c9e9be3f3588a2e3009
                                               ),
                                               column(12, 
                                                      h4("References: "), 
