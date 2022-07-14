@@ -28,18 +28,20 @@ library(stringr)
 library(viridis)
 library(readxl)
 library(RColorBrewer)
-library(readxl) #for import excel
 library(sf) #for importing shp file
 
 options(scipen=999)
 options(shiny.maxRequestSize = 100*1024^2)
 
 # data --------------------------------------------------------------------------------------------------------------------
+popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny ap
+industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
+inc <- read.csv("data/inc.csv", header=TRUE) 
+educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) 
 
 # Sociodemographic
 
 age.func <- function(inputYear, inputCounty) {
-  popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
   
   age <- popdist %>% # code for Shiny app
     filter(county == inputCounty, year==inputYear) %>%
@@ -54,9 +56,7 @@ age.func <- function(inputYear, inputCounty) {
   age
 }
 
-
 ind.func <- function(inputYear, inputCounty) {
-  industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
   
   ind <- industry %>% 
     filter(county == inputCounty, year==inputYear) %>%
@@ -71,7 +71,6 @@ ind.func <- function(inputYear, inputCounty) {
 }
 
 inc.func <- function(inputYear, inputCounty) {
-  inc <- read.csv("data/inc.csv", header=TRUE) 
   
   inc <- inc %>% 
     filter(county == inputCounty, year==inputYear) %>%
@@ -89,7 +88,6 @@ inc.func <- function(inputYear, inputCounty) {
 }
 
 edu.func <- function(inputYear, inputCounty) {
-  educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) 
   
   edu <- educ_earn %>% 
     filter(county == inputCounty, year==inputYear) %>%
@@ -111,6 +109,15 @@ edu.func <- function(inputYear, inputCounty) {
 
 #Goochland Land Use 
 
+gooch_boundary<- st_read("data/cnty_bndry/Goochland_Boundary.shp")
+gooch_boundary <- st_transform(gooch_boundary, "+proj=longlat +datum=WGS84")
+
+m <- leaflet()%>%
+  addTiles() %>%
+  setView(lng=-77.949, lat=37.742, zoom=10.48) %>% 
+  addPolygons(data=gooch_boundary,
+              fillColor = "transparent") 
+
 croplayer1 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2021")
 croplayer2 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2012")
 
@@ -121,6 +128,30 @@ gcrop21 <- ggplot(croplayer1, aes(x = reorder(`Goochland Combined`, `Area Acre..
 gcrop12 <- ggplot(croplayer2, aes(x = reorder(`Goochland Combined`, `Area_acre...5`), y = `Area_acre...5`, fill = `Area_acre...5`)) + 
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
   labs( title = "Total Acreage by Land Type in 2012", x = "Acreage", y = "Land type")
+
+soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
+
+gsoil <- ggplot(soil_quality, aes(x = `G_Value`, y = `G_Area_acre`, fill = `G_Area_acre`)) +
+  geom_bar(stat = "identity", aes(text = paste0(`G_Value`, "\n", "Total Acres: ", round(`G_Area_acre`, 0))))+
+  coord_flip() +
+  theme(legend.position = "none") +
+  scale_x_discrete(limits = rev) +
+  scale_fill_viridis() + 
+  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification")
+ggplotly(gsoil, tooltip = "text")
+
+psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Area_acre`)) +
+  geom_bar(stat = "identity", aes(text = paste0(`P_Value`, "\n", "Total Acres: ", round(`P_Area_acre`, 0))))+
+  geom_errorbarh(aes(xmax=as.numeric(`P_Value`)+0.45,xmin=as.numeric(`P_Value`)-0.45,height=0),position=position_dodge(width=0.9)) +
+  coord_flip() +
+  theme(legend.position = "none") +
+  scale_x_discrete(limits = rev) +
+  scale_fill_viridis() +
+  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification")
+ggplotly(psoil, tooltip = "text")
+
+
+      # Powhatan Land Use
 
 pcrop21 <- ggplot(croplayer1, aes(x = reorder(`Powhatan Combined`, `Area Acre...2`), y = `Area Acre...2`, fill = `Area Acre...2`)) + 
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
@@ -134,11 +165,12 @@ harbour<- leaflet() %>%
   addTiles() %>% 
   setView(lng=-77.949, lat=37.742, zoom=9)
 
+GoochlandAllParcel <- read_sf("../ShinyApp/data/luParcelData/GoochAll.shp")
+goochBoundary <- read_sf("../ShinyApp/data/luParcelData/Goochland_Boundary.shp")
+
 
 g.luPlotFunction <- function(year.g) {
   
-  GoochlandAllParcel <- read_sf("../ShinyApp/data/luParcelData/GoochAll.shp")
-  #goochBoundary <- read_sf("../ShinyApp/data/luParcelData/Goochland_Boundary.shp") thinking of add a boundary map
   Gooch <- GoochlandAllParcel %>% filter(year == year.g)
   
   LUC_values <- c("Single Family Residential Urban", 
@@ -152,14 +184,16 @@ g.luPlotFunction <- function(year.g) {
   
   LUC_values <- factor(LUC_values, levels = LUC_values)
   
-  mypalette <- colorBin(palette = "viridis", as.numeric(LUC_values), bins = 9)
+  mypalette <- colorBin(palette = "viridis", as.numeric(LUC_values), bins = 8)
   colors <- mypalette(unclass(LUC_values))
-  colors[8] <- "#addc30"
+  colors[8] <- "#ffffff" # the color is similar to 
+  legendpalette <- colorFactor(palette = colors,levels=LUC_values)
   
   MyMap <- leaflet() %>%
     addTiles() %>%
     addProviderTiles(providers$CartoDB.Positron) %>%
-    
+    addPolygons(data=goochBoundary,
+                fillColor = "transparent") %>%
     addPolygons(data = Gooch %>% filter(LUC_FIN == "Single Family Residential Urban"), 
                 fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
                 group = "Single Family Urban") %>%
@@ -187,73 +221,17 @@ g.luPlotFunction <- function(year.g) {
     addLayersControl(
       overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
       position = "bottomleft",
-      options = layersControlOptions(collapsed = FALSE)
-    )
+      options = layersControlOptions(collapsed = FALSE)) %>% 
+    addLegend("bottomright", pal = legendpalette, values = LUC_values,
+              title = "Land Use Type",
+              labFormat = labelFormat(),
+              opacity = 1,
+              data=Gooch) #need to change for show the correct label
 }
 
-harbour<- leaflet()
-harbour<- addTiles(harbour)
-harbour<- setView(harbour, lng=-77.949, lat=37.742, zoom=9)
-
-
-
-g.luPlotFunction <- function(year.g) {
-  
-  GoochlandAllParcel <- read_sf("../ShinyApp/data/luParcelData/GoochAll.shp")
-  Gooch <- GoochlandAllParcel %>% filter(year == year.g)
-  
-  LUC_values <- c("Single Family Residential Urban", 
-                  "Single Family Residential Suburban", 
-                  "Multi-Family Residential", 
-                  "Commerical / Industrial", 
-                  "Agricultural / Undeveloped (20-99 Acres)", 
-                  "Agricultural / Undeveloped (100+ Acres)", 
-                  "Other", 
-                  "Undefined")
-  
-  LUC_values <- factor(LUC_values, levels = LUC_values)
-  
-  mypalette <- colorBin(palette = "viridis", as.numeric(LUC_values), bins = 9)
-  colors <- mypalette(unclass(LUC_values))
-  colors[8] <- "#addc30"
-  
-  MyMap <- leaflet() %>%
-    addTiles() %>%
-    addProviderTiles(providers$CartoDB.Positron) %>%
-    
-    addPolygons(data = Gooch %>% filter(LUC_FIN == "Single Family Residential Urban"), 
-                fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Single Family Urban") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Single Family Residential Suburban"), 
-                fillColor = colors[2], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Single Family Suburban") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Multi-Family Residential"), 
-                fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Multi-Family Residential") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Commerical / Industrial") ,
-                fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Commercial & Industrial") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Agricultural / Undeveloped (20-99 Acres)"),
-                fillColor = colors[5], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Agriculture/Undeveloped (20-99 Acres)") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Agricultural / Undeveloped (100+ Acres)") ,
-                fillColor = colors[6], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Agriculture/Undeveloped (100+ Acres)") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Other"),
-                fillColor = colors[7], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Other") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Undefined") ,
-                fillColor = colors[8], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Unknown") %>%
-    addLayersControl(
-      overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
-      position = "bottomleft",
-      options = layersControlOptions(collapsed = FALSE)
-    )
-}
-
-
-
+harbour<- leaflet() %>% 
+  addTiles() %>% 
+  setView(lng=-77.949, lat=37.742, zoom=9)
 
 
 # ui --------------------------------------------------------------------------------------------------------------------
@@ -372,9 +350,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                  value = 2020,
                                                                  sep = ""),
                                                      plotOutput("gsoc", height = "500px"),
-
-
-                                                     ),
+                                                     
                                               ),
                                      ),
                                      column(12, 
@@ -442,7 +418,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                      ), 
                             ) 
                             
-        
+                            
                             
                  ),
                  
@@ -682,6 +658,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
                                                                 
+                                                                
                                                                 leafletOutput("harbour"),
                                                                 br(),
                                                                 h4(strong("Crop Layer Graphs")),
@@ -719,9 +696,16 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
                                                                 
-                                                                #                plotlyOutput("trend1", height = "600px")
-                                                                
-                                                         ),
+                                                                sliderInput(inputId = "year", 
+                                                                            label = "Choose the starting and ending years",
+                                                                            min = 2012,
+                                                                            max = 2021,
+                                                                            step = 9,
+                                                                            value = 2021,
+                                                                            sep = "", ticks = FALSE),
+                                                                leafletOutput("mymap",height = 500),                                                                h4(strong("Soil Quality Graph")),
+                                                                plotlyOutput("gsoil", height = "500px"),
+                                                                p(tags$small("Data Source: National Cooperative Soil Survey"))),
                                                          column(12, 
                                                                 
                                                                 h4("References") , 
@@ -862,8 +846,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 h4(strong("Soil Quality Map")),
                                                                 
                                                                 #                plotlyOutput("trend1", height = "600px")
-                                                                
-                                                         ),
+                                                                h4(strong("Soil Quality Graph")),
+                                                                plotlyOutput("psoil", heigh = "500px"),
+                                                                p(tags$small("Data Source: National Cooperative Soil Survey"))),
                                                          column(12, 
                                                                 
                                                                 h4("References") , 
@@ -973,8 +958,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Parcellation Hot Spot Map")),
-                                                                
-                                                                #                plotlyOutput("trend1", height = "600px")
+                                                                sliderInput(inputId = "g.hotspotInput", 
+                                                                            label = "Choose the starting and ending years",
+                                                                            min = 2019,
+                                                                            max = 2022,
+                                                                            step = 1,
+                                                                            value = c(2019,2022),
+                                                                            sep = ""),
+                                                                leafletOutput("g.hotspotMap",height = 1000)
                                                                 
                                                          ),
                                                          column(12, 
@@ -1228,7 +1219,6 @@ server <- function(input, output){
   })
   
   
-  
   powhatan_soc <- reactive({
     input$powhatan_soc
   })
@@ -1254,6 +1244,27 @@ server <- function(input, output){
     harbour
   })
   
+  output$mymap <- renderLeaflet({
+    
+    begin_year <- 2012
+    end_year <- 2021
+    yr <- c(begin_year,end_year)
+    file_list <- paste(getwd(),"/data/Cropland/Gooch/Gooch_Ag_",yr,".shp",sep = "")
+    
+    for (file in file_list){
+      #import the cropdata maps of the selected years
+      gl<- st_read(file) 
+      gl <- st_transform(gl, "+proj=longlat +datum=WGS84")
+      m <- addPolygons(m,
+                       stroke = FALSE,
+                       data = gl,
+                       weight = 1,
+                       smoothFactor=1,
+                       fillColor = "red",
+                       fillOpacity = 0.1)
+    }
+    m
+  })
   
   gcrop <- reactive({
     input$gcrop
@@ -1268,12 +1279,50 @@ server <- function(input, output){
     }
   })
   
+  output$gsoil <- renderPlotly({
+    gsoil
+  })
+  
+  output$psoil <- renderPlotly({
+    psoil
+  })
+  
   output$luPlot.g <- renderLeaflet({
     luPlot <- g.luPlotFunction(input$luYear.g)
     luPlot
   })
   
+  output$g.hotspotMap <- renderLeaflet({
+    gl_cnty<- st_read("data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84") 
+    
+    g.hotspot.plt <- leaflet()%>%
+      addTiles() %>%
+      setView(lng=-77.885376, lat=37.684143 , zoom=10) %>%
+      addPolygons(data=gl_cnty,
+                  fillColor = "transparent")
+    begin_year <- input$g.hotspotInput[1]-2000
+    end_year <- input$g.hotspotInput[2]-2000
+    yr <- c(begin_year:end_year)
+    file_list <- paste("data/Parcel_Hotspot/gooch_hotspot_",yr,".shp",sep = "")
+    
+    for (file in file_list){
+      #import the heatspot maps of the selected years
+      gl<- st_read(file) %>% st_transform("+proj=longlat +datum=WGS84")
+      g.hotspot.plt <- g.hotspot.plt %>% addPolygons(stroke = FALSE,
+                                                     data = gl,
+                                                     weight = 1,
+                                                     smoothFactor=1,
+                                                     fillColor = "red",
+                                                     fillOpacity = 0.1)
+    }
+    g.hotspot.plt
+  })
+  
+  
+  
 }
+
+
 
 
 shinyApp(ui = ui, server = server)
