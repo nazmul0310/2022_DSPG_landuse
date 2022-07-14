@@ -54,7 +54,7 @@ age.func <- function(inputYear, inputCounty) {
   age
 }
 
-ind.func <- function(inutYear, inputCounty) {
+ind.func <- function(inputYear, inputCounty) {
 industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
 
 ind <- industry %>% 
@@ -371,11 +371,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                  value = 2020,
                                                                  sep = ""),
                                                      plotOutput("gsoc", height = "500px"),
-<<<<<<< HEAD
-=======
 
                                                      ),
->>>>>>> 74c9b2d0a4515bd9aed03c9e9be3f3588a2e3009
                                               ),
                                               column(12, 
                                                      h4("References: "), 
