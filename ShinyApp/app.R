@@ -28,18 +28,20 @@ library(stringr)
 library(viridis)
 library(readxl)
 library(RColorBrewer)
-library(readxl) #for import excel
 library(sf) #for importing shp file
 
 options(scipen=999)
 options(shiny.maxRequestSize = 100*1024^2)
 
 # data --------------------------------------------------------------------------------------------------------------------
+popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny ap
+industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
+inc <- read.csv("data/inc.csv", header=TRUE) 
+educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) 
 
 # Sociodemographic
 
 age.func <- function(inputYear, inputCounty) {
-  popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
   
   age <- popdist %>% # code for Shiny app
     filter(county == inputCounty, year==inputYear) %>%
@@ -54,6 +56,10 @@ age.func <- function(inputYear, inputCounty) {
   age
 }
 
+<<<<<<< HEAD
+ind.func <- function(inputYear, inputCounty) {
+=======
+>>>>>>> 7d5f3fa9828f26ff59be22decc6df7e73a5792ab
 
 ind.func <- function(inputYear, inputCounty) {
   industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
@@ -71,6 +77,38 @@ ind.func <- function(inputYear, inputCounty) {
 }
 
 inc.func <- function(inputYear, inputCounty) {
+<<<<<<< HEAD
+
+inc <- inc %>% 
+  filter(county == inputCounty, year==inputYear) %>%
+  mutate(inccat = fct_relevel(inccat, "<35K", "35K - 50K", "50K - 75K","75K-100K", ">100K")) %>%
+  ggplot(aes(x = inccat, y = estimate, fill = inccat))+ 
+  geom_bar(stat = "identity") + 
+  theme(legend.position = "none") + 
+  scale_fill_viridis(discrete=TRUE) + 
+  theme_light() + 
+  theme(legend.position="none") + 
+  theme(axis.text.y = element_text(hjust=0)) +
+  labs(title = "Income Distribution in 2020", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
+  coord_flip()
+inc
+}
+
+edu.func <- function(inputYear, inputCounty) {
+
+edu <- educ_earn %>% 
+  filter(county == inputCounty, year==inputYear) %>%
+  ggplot(aes(x = name, y = values)) + 
+  geom_bar(stat = "identity", mapping=(aes(fill = name))) + 
+  theme(legend.position = "none") + scale_fill_viridis(discrete=TRUE) +
+  labs(title = "Median Earnings By Educational Attainment (Age > 25 years) in 2020", x = "Highest Education", y = "Median Earnings", caption = "Source: ACS5 2016-2020") + 
+  geom_text(aes(label = values), vjust = -0.25) +
+  scale_x_discrete(labels = c("Below\nhighschool", "Highschool\ngraduate", "Some college/\nAssociates'", "Bachelor's", "Graduate")) + 
+  theme_light() + 
+  theme(legend.position="none") + 
+  theme(axis.text.y = element_text(hjust=0)) 
+edu
+=======
   
   inc <- read.csv("data/inc.csv", header=TRUE) 
   inc <- inc %>% 
@@ -103,6 +141,7 @@ edu.func <- function(inputYear, inputCounty) {
     theme(legend.position="none") + 
     theme(axis.text.y = element_text(hjust=0)) 
   edu 
+>>>>>>> 7d5f3fa9828f26ff59be22decc6df7e73a5792ab
 }
 
 
@@ -134,6 +173,78 @@ pcrop12 <- ggplot(croplayer2, aes(x = reorder(`Powhatan Combined`, `Area_acre...
   labs( title = "Total Acreage by Land Type in 2012", x = "Acreage", y = "Land type")
 
 harbour<- leaflet() %>% 
+<<<<<<< HEAD
+          addTiles() %>% 
+          setView(lng=-77.949, lat=37.742, zoom=9)
+
+GoochlandAllParcel <- read_sf("../ShinyApp/data/luParcelData/GoochAll.shp")
+goochBoundary <- read_sf("../ShinyApp/data/luParcelData/Goochland_Boundary.shp")
+  
+  
+  g.luPlotFunction <- function(year.g) {
+    
+    Gooch <- GoochlandAllParcel %>% filter(year == year.g)
+    
+    LUC_values <- c("Single Family Residential Urban", 
+                    "Single Family Residential Suburban", 
+                    "Multi-Family Residential", 
+                    "Commerical / Industrial", 
+                    "Agricultural / Undeveloped (20-99 Acres)", 
+                    "Agricultural / Undeveloped (100+ Acres)", 
+                    "Other", 
+                    "Undefined")
+    
+    LUC_values <- factor(LUC_values, levels = LUC_values)
+    
+    mypalette <- colorBin(palette = "viridis", as.numeric(LUC_values), bins = 8)
+    colors <- mypalette(unclass(LUC_values))
+    colors[8] <- "#addc30" # the color is similar to 
+    legendpalette <- colorFactor(palette = colors,levels=LUC_values)
+    
+    MyMap <- leaflet() %>%
+      addTiles() %>%
+      addProviderTiles(providers$CartoDB.Positron) %>%
+      addPolygons(data=goochBoundary,
+                  fillColor = "transparent") %>%
+      addPolygons(data = Gooch %>% filter(LUC_FIN == "Single Family Residential Urban"), 
+                  fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                  group = "Single Family Urban") %>%
+      addPolygons(data=Gooch %>% filter(LUC_FIN == "Single Family Residential Suburban"), 
+                  fillColor = colors[2], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                  group = "Single Family Suburban") %>%
+      addPolygons(data=Gooch %>% filter(LUC_FIN == "Multi-Family Residential"), 
+                  fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                  group = "Multi-Family Residential") %>%
+      addPolygons(data=Gooch %>% filter(LUC_FIN == "Commerical / Industrial") ,
+                  fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                  group = "Commercial & Industrial") %>%
+      addPolygons(data=Gooch %>% filter(LUC_FIN == "Agricultural / Undeveloped (20-99 Acres)"),
+                  fillColor = colors[5], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                  group = "Agriculture/Undeveloped (20-99 Acres)") %>%
+      addPolygons(data=Gooch %>% filter(LUC_FIN == "Agricultural / Undeveloped (100+ Acres)") ,
+                  fillColor = colors[6], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                  group = "Agriculture/Undeveloped (100+ Acres)") %>%
+      addPolygons(data=Gooch %>% filter(LUC_FIN == "Other"),
+                  fillColor = colors[7], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                  group = "Other") %>%
+      addPolygons(data=Gooch %>% filter(LUC_FIN == "Undefined") ,
+                  fillColor = colors[8], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                  group = "Unknown") %>%
+      addLayersControl(
+        overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
+        position = "bottomleft",
+        options = layersControlOptions(collapsed = FALSE)) %>% 
+      addLegend("bottomright", pal = legendpalette, values = LUC_values,
+                title = "Land Use Type",
+                labFormat = labelFormat(),
+                opacity = 1,
+                data=Gooch) #need to change for show the correct label
+  }
+  
+harbour<- leaflet() %>% 
+          addTiles() %>% 
+          setView(lng=-77.949, lat=37.742, zoom=9)
+=======
   addTiles() %>% 
   setView(lng=-77.949, lat=37.742, zoom=9)
 
@@ -252,6 +363,7 @@ g.luPlotFunction <- function(year.g) {
 
 
 
+>>>>>>> 7d5f3fa9828f26ff59be22decc6df7e73a5792ab
 
 
 # ui --------------------------------------------------------------------------------------------------------------------
