@@ -1040,8 +1040,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Parcellation Map")),
-                                                                
-                                                                #          plotlyOutput("trend1", height = "600px")
+                                                                sliderInput(inputId = "p.parcellationRange",
+                                                                            label = "Years of Parcellation:",
+                                                                            min = 2012,
+                                                                            max = 2020,
+                                                                            value = c(2012, 2020),
+                                                                            sep = "", 
+                                                                            width = "150%"),
+                                                                leafletOutput("p.parcellationPlot")
                                                                 
                                                          ),
                                                          column(12, 
@@ -1363,6 +1369,47 @@ server <- function(input, output){
                                                      fillOpacity = 0.1)
     }
     g.hotspot.plt
+  })
+  
+  
+  output$p.parcellationPlot <- renderLeaflet({
+    pow_parcellation <- read_sf("data/parcellationData/Powhatan_Parcellation_LT.shp") %>%
+      st_transform(crs = st_crs("EPSG:4326"))
+    pow_parcellation$year <- substr(pow_parcellation$UNIQ_ID_12, 1, 4)
+    
+    yearRange <- input$p.parcellationRange[1]:input$p.parcellationRange[2]
+    
+    
+    
+    parc.func <- function(data, range){
+      
+      # Declares initial leaflet, nothing added to it.
+      cnty<- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84") 
+      my.parc.plt <- leaflet()%>%
+        addTiles() %>%
+        addProviderTiles(providers$CartoDB.Positron) %>%
+        setView(lng=-77.9188, lat=37.5415 , zoom=10) %>%
+        addPolygons(data = cnty, fillColor = "transparent")
+      
+      # for loop to add polygons based on what the max year is vs. subsequent years prior
+      for(i in range){
+        # Adds most recent year's parcellations
+        if(i == max(range)){
+          my.parc.plt <- my.parc.plt %>%
+            addPolygons(data = data %>% filter(year == i), 
+                        fillColor = "red", smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+        }
+        # Adds subsequent year's parcellations
+        else {
+          my.parc.plt <- my.parc.plt %>%
+            addPolygons(data = data %>% filter(year == i), 
+                        fillColor = "red", smoothFactor = 0.1, fillOpacity = .25, stroke = FALSE)
+        }
+      }
+      my.parc.plt
+    }
+    parc.func(pow_parcellation, yearRange)
+    
   })
   
   
