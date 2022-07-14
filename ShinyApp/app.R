@@ -54,6 +54,7 @@ age.func <- function(inputYear, inputCounty) {
   age
 }
 
+<<<<<<< HEAD
 ind.func <- function(inutYear, inputCounty) {
   industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
   
@@ -67,6 +68,21 @@ ind.func <- function(inutYear, inputCounty) {
     theme(axis.text.y = element_text(hjust=0)) +
     labs(title="Employment By Industry", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
   ind
+=======
+ind.func <- function(inputYear, inputCounty) {
+industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
+
+ind <- industry %>% 
+  filter(county == inputCounty, year==inputYear) %>%
+  ggplot(aes(x = reorder(name, -val2), y = value, fill = value)) + 
+  geom_bar(stat = "identity") + theme(legend.position = "none") +
+  coord_flip() + scale_fill_viridis()  + 
+  theme_light() + 
+  theme(legend.position="none") + 
+  theme(axis.text.y = element_text(hjust=0)) +
+  labs(title="Employment By Industry", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
+ind
+>>>>>>> 0fd4a0e13ffc42a6aaadb57f2b7fcea20d8db3cf
 }
 
 inc.func <- function(inputYear, inputCounty) {
@@ -371,7 +387,12 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                  value = 2020,
                                                                  sep = ""),
                                                      plotOutput("gsoc", height = "500px"),
+<<<<<<< HEAD
                                                      
+=======
+
+                                                     ),
+>>>>>>> 0fd4a0e13ffc42a6aaadb57f2b7fcea20d8db3cf
                                               ),
                                      ),
                                      column(12, 
