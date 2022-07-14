@@ -106,15 +106,10 @@ edu.func <- function(inputYear, inputCounty) {
 }
 
 
-<<<<<<< HEAD
-# Land use
 
-# Goochland Land Use 
-=======
   # Land use
       
       # Goochland Land Use 
->>>>>>> cffb147cd23f99d2ec923e34a74799b9f27fb2db
 
 croplayer1 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2021")
 croplayer2 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2012")
@@ -127,11 +122,8 @@ gcrop12 <- ggplot(croplayer2, aes(x = reorder(`Goochland Combined`, `Area_acre..
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
   labs( title = "Total Acreage by Land Type in 2012", x = "Acreage", y = "Land type")
 
-<<<<<<< HEAD
-# Powhatan Land Use
-=======
+
       # Powhatan Land Use
->>>>>>> cffb147cd23f99d2ec923e34a74799b9f27fb2db
 
 pcrop21 <- ggplot(croplayer1, aes(x = reorder(`Powhatan Combined`, `Area Acre...2`), y = `Area Acre...2`, fill = `Area Acre...2`)) + 
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
@@ -379,21 +371,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                  sep = ""),
                                                      plotOutput("gsoc", height = "500px"),
                                                      p(tags$small("Data Source: ACS5 2016-2020"))),
-<<<<<<< HEAD
-                                              
-                                              
-                                              column(12, 
-                                                     h4("References: "), 
-                                                     p(tags$small("[1] United States Department of Agriculture. Goochland County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51075.pdf")), 
-                                                     p(tags$small("[2] United States Department of Agriculture. Goochland County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51075.pdf")), 
-                                                     p(tags$small("[3] U.S. Census Bureau (2022). Age and Sex, 2020: ACS 5-Year Estimates Subject Tables. Retrieved from https://data.census.gov/cedsci/table?t=Populations%20and%20People&g=0500000US51075&tid=ACSST5Y2020.S0101.")), 
-                                                     p(tags$small("[4] U.S. Census Bureau (2022). Race, 2020: DEC Redistricting Data (PL 94-171). Retrieved from https://data.census.gov/cedsci/table?t=Populations%20and%20People&g=0500000US51075.")) ,
-                                                     p(tags$small("[5] U.S. Census Bureau (2022). Employment Status, 2020: ACS 5-Year Estimates Subject Tables. Retrieved from https://data.census.gov/cedsci/table?t=Employment%3AEmployment%20and%20Labor%20Force%20Status&g=0500000US51075&y=2020&tid=ACSST5Y2020.S2301&moe=false.")) ,
-                                                     p(tags$small("[6] ")),
-                                                     p(tags$small("[7]")),
-                                                     p("", style = "padding-top:10px;")) 
-                                     )), 
-=======
+
 
 
                                      column(12, 
@@ -407,7 +385,6 @@ ui <- navbarPage(title = "DSPG 2022",
                                             p(tags$small("[7]")),
                                             p("", style = "padding-top:10px;")) 
                             )), 
->>>>>>> cffb147cd23f99d2ec923e34a74799b9f27fb2db
                             tabPanel("Powhatan", 
                                      fluidRow(style = "margin: 6px;",
                                               h1(strong("Powhatan"), align = "center"),
@@ -461,10 +438,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p("", style = "padding-top:10px;")) 
                                      ), 
                             ), 
-<<<<<<< HEAD
-                            
-=======
->>>>>>> cffb147cd23f99d2ec923e34a74799b9f27fb2db
+
                             
                             
                  ),
@@ -996,8 +970,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Parcellation Hot Spot Map")),
-                                                                
-                                                                #                plotlyOutput("trend1", height = "600px")
+                                                                sliderInput(inputId = "g.hotspotInput", 
+                                                                            label = "Choose the starting and ending years",
+                                                                            min = 2019,
+                                                                            max = 2022,
+                                                                            step = 1,
+                                                                            value = c(2019,2022),
+                                                                            sep = ""),
+                                                                leafletOutput("g.hotspotMap",height = 1000)
                                                                 
                                                          ),
                                                          column(12, 
@@ -1295,6 +1275,32 @@ server <- function(input, output){
   output$luPlot.g <- renderLeaflet({
     luPlot <- g.luPlotFunction(input$luYear.g)
     luPlot
+  })
+  
+  output$g.hotspotMap <- renderLeaflet({
+    gl_cnty<- st_read("data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84") 
+    
+    g.hotspot.plt <- leaflet()%>%
+      addTiles() %>%
+      setView(lng=-77.885376, lat=37.684143 , zoom=10) %>%
+      addPolygons(data=gl_cnty,
+                  fillColor = "transparent")
+    begin_year <- input$g.hotspotInput[1]-2000
+    end_year <- input$g.hotspotInput[2]-2000
+    yr <- c(begin_year:end_year)
+    file_list <- paste("data/Parcel_Hotspot/gooch_hotspot_",yr,".shp",sep = "")
+    
+    for (file in file_list){
+      #import the heatspot maps of the selected years
+      gl<- st_read(file) %>% st_transform("+proj=longlat +datum=WGS84")
+      g.hotspot.plt <- g.hotspot.plt %>% addPolygons(stroke = FALSE,
+                                                     data = gl,
+                                                     weight = 1,
+                                                     smoothFactor=1,
+                                                     fillColor = "red",
+                                                     fillOpacity = 0.1)
+    }
+    g.hotspot.plt
   })
   
 }
