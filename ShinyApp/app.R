@@ -341,12 +341,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "gedu")
                                                      ),
                                                      plotOutput("gsoc", height = "500px"),
-<<<<<<< HEAD
-                                                     
-                                                     ),
-=======
                                               ),
->>>>>>> 7d52f42a84b0e62a64b2ba46ad3dbbad6de4e082
                                               column(12, 
                                                      h4("References: "), 
                                                      p(tags$small("[1] United States Department of Agriculture. Goochland County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51075.pdf")), 
