@@ -28,13 +28,12 @@ library(stringr)
 library(viridis)
 library(readxl)
 library(RColorBrewer)
-library(readxl)
 options(scipen=999)
 options(shiny.maxRequestSize = 100*1024^2)
 
 # data --------------------------------------------------------------------------------------------------------------------
 
-    # Goochland sociodemographic
+# Goochland sociodemographic
 popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
 
 gage <- popdist %>% # code for Shiny app
@@ -88,7 +87,7 @@ gedu <- educ_earn %>% # code for Shiny app
   theme(legend.position="none") + 
   theme(axis.text.y = element_text(hjust=0)) 
 
-    # Powhatan sociodemographic
+# Powhatan sociodemographic
 
 popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
 
@@ -145,7 +144,7 @@ pedu <- educ_earn %>% # code for Shiny app
 
 # Land use
 
-    #Goochland Land Use 
+#Goochland Land Use 
 
 croplayer1 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2021")
 croplayer2 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2012")
@@ -166,15 +165,16 @@ pcrop12 <- ggplot(croplayer2, aes(x = reorder(`Powhatan Combined`, `Area_acre...
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
   labs( title = "Total Acreage by Land Type", x = "Acreage", y = "Land type")
 
-  harbour<- leaflet()
-  harbour<- addTiles(harbour)
-  harbour<- setView(harbour, lng=-77.949, lat=37.742, zoom=9)
+harbour<- leaflet()
+harbour<- addTiles(harbour)
+harbour<- setView(harbour, lng=-77.949, lat=37.742, zoom=9)
 
+
+
+
+g.luPlotFunction <- function(year.g) {
   
-
-
-lu_render.func <- function(year.g) {
-  GoochlandAllParcel <- read_sf("data/luParcelData/GoochAll.shp")
+  GoochlandAllParcel <- read_sf("../ShinyApp/data/luParcelData/GoochAll.shp")
   Gooch <- GoochlandAllParcel %>% filter(year == year.g)
   
   LUC_values <- c("Single Family Residential Urban", 
@@ -226,13 +226,13 @@ lu_render.func <- function(year.g) {
       options = layersControlOptions(collapsed = FALSE)
     )
 }
-  
 
-  
-  
-  
+
+
+
+
 # ui --------------------------------------------------------------------------------------------------------------------
-  
+
 ui <- navbarPage(title = "DSPG 2022",
                  selected = "overview",
                  theme = shinytheme("lumen"),
@@ -341,7 +341,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "gedu")
                                                      ),
                                                      plotOutput("gsoc", height = "500px"),
-                                                     ),
+                                              ),
                                               column(12, 
                                                      h4("References: "), 
                                                      p(tags$small("[1] United States Department of Agriculture. Goochland County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51075.pdf")), 
@@ -394,7 +394,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      ),
                                                      
                                                      plotOutput("psoc", height = "500px"),
-                                                    ),
+                                              ),
                                               column(12, 
                                                      h4("References: "), 
                                                      p(tags$small("United States Department of Agriculture. Powhatan County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51145.pdf")) ,
@@ -472,7 +472,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p("ARC program is an “income support program that provides payments when actual crop revenue declines below a specified guaranteed level” (source). PLC program “provides 
                                                      income support payments when the effective price for a covered commodity falls below its effective reference price” (source). Both programs provide financial protection 
                                                        to farmers. They serve as a safety net from drops in crop revenues and prices."),
-                                     )), 
+                                              )), 
                                      tabPanel("State",
                                               p(),
                                               p('State level officials work within the confines of both federal and local policy. They aim to simultaneously enhance federal policy, while enabling local officials to make comprehensive 
@@ -534,20 +534,20 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      h1(strong("Goochland"), align = "center"),
                                                      p("", style = "padding-top:10px;"),
                                                      fluidRow(style = "margin: 6px;", align = "justify",
-                                                     p("Goochland County runs a land use program which assesses land based on use value as opposed to market value. The program was adopted by the county in 1978. There are multiple requirements for land to be eligible for the program as established by the State Land Evaluation Advisory Council:"),
-                                                     tags$ul(
-                                                       
-                                                       tags$li("Land must be in production for sale 5 years prior to entering the program as agriculture or horticulture"),
-                                                       
-                                                       tags$li("Land must be zoned as agricultural"),
-                                                       
-                                                       tags$li("Land must meet minimum acreages for each land use category "),
-                                                       
-                                                       tags$li("All real estate taxes have been paid on parcel "),
-                                                       
-                                                     ),
-                                                     p("There are also multiple land use categories including agriculture, horticulture, and forest use (source)."),
-                                                     p("The main agricultural districts in the county include A1 (General), A2 (Limited), and A3 (Intensive) (source). These districts promote the protection
+                                                              p("Goochland County runs a land use program which assesses land based on use value as opposed to market value. The program was adopted by the county in 1978. There are multiple requirements for land to be eligible for the program as established by the State Land Evaluation Advisory Council:"),
+                                                              tags$ul(
+                                                                
+                                                                tags$li("Land must be in production for sale 5 years prior to entering the program as agriculture or horticulture"),
+                                                                
+                                                                tags$li("Land must be zoned as agricultural"),
+                                                                
+                                                                tags$li("Land must meet minimum acreages for each land use category "),
+                                                                
+                                                                tags$li("All real estate taxes have been paid on parcel "),
+                                                                
+                                                              ),
+                                                              p("There are also multiple land use categories including agriculture, horticulture, and forest use (source)."),
+                                                              p("The main agricultural districts in the county include A1 (General), A2 (Limited), and A3 (Intensive) (source). These districts promote the protection
                                                      of agricultural land and encourage agribusiness. The Goochland County 2035 Comprehensive Plan includes an agricultural commitment to maintaining approximately
                                                      85% of the county in the Rural Enhancement Land Use Designation through 2035 (source). The county also supports economic development and tourism through the
                                                      ACRES initiative which “[Supports] Goochland’s Agricultural Community through Accessibility, Connectivity, Readiness, Education, and Sustainability” (source).
@@ -556,7 +556,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      h1(strong("Powhatan"), align = "center"),
                                                      p("", style = "padding-top:10px;"),
                                                      fluidRow(style = "margin: 6px;", align = "justify",
-                                                     p('Powhatan County land use policy includes a land use deferral program, Powhatan County code Section 70-76, which states that the purpose of land use is
+                                                              p('Powhatan County land use policy includes a land use deferral program, Powhatan County code Section 70-76, which states that the purpose of land use is
                                                      to “preserve real estate devoted to agricultural, horticultural, forest and open space uses within its boundaries in the public interest....". 
                                                      The land use deferral program “offers a deferral of a portion of the real estate taxes for qualifying properties”. This ordinance was adopted by the
                                                      county in 1976 and approximately 40% of the county is in land use today (source). Powhatan County also has an Agricultural and Forestal District (AFD)
@@ -564,7 +564,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      value tax rate. As of September/October 2020, there are approximately 5640 acres of AFD land. This program serves to protect natural lands as well as prevent
                                                      landowners from having to sell their land as market values and tax rates continue to increase. One benefit that the AFD program has over the land use deferral
                                                      program is that it is officially included in the County’s Comprehensive Plan (source). '),
-                                                     p('The county’s zoning ordinance categorizes rural districts into 6 groups. The main agricultural districts are A-20 (min 20 ac), A-10 (min 10 ac), and A-C.
+                                                              p('The county’s zoning ordinance categorizes rural districts into 6 groups. The main agricultural districts are A-20 (min 20 ac), A-10 (min 10 ac), and A-C.
                                                      The 3 other rural districts are largely dedicated to residential zoning. The 2010 long range comprehensive plan also includes sections on natural conservation
                                                      and rural preservation which outline land use policies to be “used when addressing development and land use issues” (source). These policies promote the
                                                      conservation of open land and farmland and recognize agriculture as an economic driver of the community.'))),
@@ -581,7 +581,7 @@ ui <- navbarPage(title = "DSPG 2022",
                           
                  ),
                  ## Tab Land Use --------------------------------------------
-
+                 
                  navbarMenu("Land Use" , 
                             tabPanel("Goochland", 
                                      fluidRow(style = "margin: 6px;",
@@ -603,15 +603,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
-                                                                sliderInput(inputId = "luYear_input.g", label = "Year:",
-                                                                            min = 2018, max = 2021,
-                                                                            value = 2021, sep = "", width = "150%"
-                                                                            ),
-                                                                #h4(strong("Land Use Transition Matrix")),
+                                                                sliderInput(inputId = "luYear.g", label = "Year:", 
+                                                                            min = 2018, max = 2021, value = 2018, 
+                                                                            sep = ""),
+                                                                
                                                                 h4(strong("Land Uses Over the Years")),
                                                                 
-                                                                # I deleted commented out the transiton matrix so I could work on the land use through time slider.
-                                                                leafletOutput(outputId = "luYear.g", height = "500px"),
+                                                                
+                                                                leafletOutput(outputId = "luPlot.g"),
                                                                 p(tags$small("Data Source: Goochland County Administrative Data")))  ,
                                                          column(12,
                                                                 
@@ -643,16 +642,16 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
                                                                 
-                                                                                leafletOutput("harbour"),
-                                                                       br(),
-                                                                       h4(strong("Crop Layer Graphs")),
-                                                                       selectInput("gcrop", "Select Variable:", width = "100%", choices = c(
-                                                                         "Total Acreage by Land Type 2021" = "gcrop12",
-                                                                         "Total Acreage by Land Type 2012" = "gcrop21")
-                                                                       ),
-                                                                       
-                                                                       plotOutput("gcrop_graph", height = "500px"),
+                                                                leafletOutput("harbour"),
+                                                                br(),
+                                                                h4(strong("Crop Layer Graphs")),
+                                                                selectInput("gcrop", "Select Variable:", width = "100%", choices = c(
+                                                                  "Total Acreage by Land Type 2021" = "gcrop21",
+                                                                  "Total Acreage by Land Type 2012" = "gcrop12")
                                                                 ),
+                                                                
+                                                                plotOutput("gcrop_graph", height = "500px"),
+                                                         ),
                                                          column(12, 
                                                                 
                                                                 h4("References") , 
@@ -764,7 +763,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 h4(strong("Land Use Transition Matrix")),
                                                                 #withSpinner(leafletOutput("mines")),
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
-                                                                
+                                                         
                                                          column(12, 
                                                                 
                                                                 h4("References") , 
@@ -790,7 +789,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   There is a heavy concentration of row crops on the north boundary of Powhatan. The James River also creates the boundary between Powhatan County and Goochland County.")
                                                          ), 
                                                          column(8, 
-                                                              h4(strong("Crop Layer Map")),
+                                                                h4(strong("Crop Layer Map")),
                                                                 
                                                                 #                plotlyOutput("trend1", height = "600px")
                                                                 
@@ -1037,16 +1036,16 @@ ui <- navbarPage(title = "DSPG 2022",
                                    p(),
                                    h4(strong("Title")),
                                    fluidRow(style = "margin: 6px;", align = "justify",
-                                   p("The CRP is a federal land conversion program administered by the Farm Service Agency (FSA). 
+                                            p("The CRP is a federal land conversion program administered by the Farm Service Agency (FSA). 
                                                        The goal of this program is to reduce cropland acreage- a land retirement program that pays farmers to retire some of their crop land. 
                                                        This program has been a major driver of land retirement since it was implemented in 1985. The program is motivated by environmental 
                                                        protection goals. To get approved for the land retirement program, your land must hit specific criteria based on targeted environmental 
                                                        factors. There is then a bidding process. To farmers, this is an incentive to retire land. Studies show that this policy has led to farmers 
                                                        retire their less productive land. In 2005, “CRP paid $1.7 billion to keep a land area almost the size of Iowa out of production” (source). 
                                                        This federal land conversion program incentivizes farmers to retire their land- and lower production. The goal is to protect the environment."),
-                                   br(),
-                                   h4(strong("Title 2")),
-                                   p("The CRP is a federal land conversion program administered by the Farm Service Agency (FSA). 
+                                            br(),
+                                            h4(strong("Title 2")),
+                                            p("The CRP is a federal land conversion program administered by the Farm Service Agency (FSA). 
                                                        The goal of this program is to reduce cropland acreage- a land retirement program that pays farmers to retire some of their crop land. 
                                                        This program has been a major driver of land retirement since it was implemented in 1985. The program is motivated by environmental 
                                                        protection goals. To get approved for the land retirement program, your land must hit specific criteria based on targeted environmental 
@@ -1054,11 +1053,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        retire their less productive land. In 2005, “CRP paid $1.7 billion to keep a land area almost the size of Iowa out of production” (source). 
                                                        This federal land conversion program incentivizes farmers to retire their land- and lower production. The goal is to protect the environment."),
                                    ), 
-                          
-                          
-                          
-                 )),
-
+                                   
+                                   
+                                   
+                          )),
+                 
                  ## Tab Data Sources --------------------------------------------
                  tabPanel("Data Sources", 
                           fluidRow(style = "margin: 6px;",
@@ -1088,7 +1087,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                           img(src = "powhatan.jpg", style = "display: inline; float: left;", width = "150px"),
                                           p(strong("Powhatan County Administrative Data"), "Powhatan County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
                                             that has occured over a 8 year period (2014 - 2021). We used this data to create visualizations, specifically focusing on the distribution and change in land use in the county.") 
-                                           
+                                          
                                           
                                    ),
                                    
@@ -1158,15 +1157,15 @@ ui <- navbarPage(title = "DSPG 2022",
                                             br(), 
                                             a(href = '', 'Nichole Shuman', target = '_blank'), "(Virginia Cooperative Extension, Goochland County)."),
                                           p("", style = "padding-top:10px;")
-                          )
-                 )) ,
+                                   )
+                          )) ,
                  inverse = T)
 
 
 # server --------------------------------------------------------------------------------------------------------------------
-  
+
 server <- function(input, output){
- 
+  
   goochland_soc <- reactive({
     input$goochland_soc
   })
@@ -1212,11 +1211,11 @@ server <- function(input, output){
     
   })
   
-output$harbour<- renderLeaflet({
-  harbour
-})
-
-
+  output$harbour<- renderLeaflet({
+    harbour
+  })
+  
+  
   gcrop <- reactive({
     input$gcrop
   })
@@ -1230,17 +1229,12 @@ output$harbour<- renderLeaflet({
     }
   })
   
-luYear_input.g <- reactive({
-  input$luYear.g
-})
-
-output$luYear.g <- renderLeaflet({
-  year.g <- luYear_input.g()
-  luPlot <- lu_render.func(year.g)
-  luPlot
-})
-
+  output$luPlot.g <- renderLeaflet({
+    luPlot <- g.luPlotFunction(input$luYear.g)
+    luPlot
+  })
+  
 }
- 
+
 
 shinyApp(ui = ui, server = server)
