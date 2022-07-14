@@ -40,7 +40,7 @@ server <- function(input,output){
     end_year <- 2021
     yr <- c(begin_year,end_year)
     file_list <- paste(getwd(),"/data/Cropland/Gooch/Gooch_Ag_",yr,".shp",sep = "")
-    
+
     for (file in file_list){
       #import the cropdata maps of the selected years
       gl<- st_read(file) 

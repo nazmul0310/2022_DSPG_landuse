@@ -50,7 +50,7 @@ age.func <- function(inputYear, inputCounty) {
     theme_light() + 
     theme(legend.position="none") + 
     theme(axis.text.y = element_text(hjust=0)) +
-    labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
+    labs(title="Age Distribution of Population", y= "Percent", x= "Age Group")
   age
 }
 
@@ -71,8 +71,8 @@ ind.func <- function(inputYear, inputCounty) {
 }
 
 inc.func <- function(inputYear, inputCounty) {
-  inc <- read.csv("data/inc.csv", header=TRUE) 
   
+  inc <- read.csv("data/inc.csv", header=TRUE) 
   inc <- inc %>% 
     filter(county == inputCounty, year==inputYear) %>%
     mutate(inccat = fct_relevel(inccat, "<35K", "35K - 50K", "50K - 75K","75K-100K", ">100K")) %>%
@@ -83,33 +83,32 @@ inc.func <- function(inputYear, inputCounty) {
     theme_light() + 
     theme(legend.position="none") + 
     theme(axis.text.y = element_text(hjust=0)) +
-    labs(title = "Income Distribution in 2020", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
+    labs(title = "Income Distribution in 2020", y = "Percent", x = "Income") +
     coord_flip()
   inc
 }
 
 edu.func <- function(inputYear, inputCounty) {
-  educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) 
   
+  educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) 
   edu <- educ_earn %>% 
     filter(county == inputCounty, year==inputYear) %>%
     ggplot(aes(x = name, y = values)) + 
     geom_bar(stat = "identity", mapping=(aes(fill = name))) + 
     theme(legend.position = "none") + scale_fill_viridis(discrete=TRUE) +
-    labs(title = "Median Earnings By Educational Attainment (Age > 25 years) in 2020", x = "Highest Education", y = "Median Earnings", caption = "Source: ACS5 2016-2020") + 
+    labs(title = "Median Earnings By Educational Attainment (Age > 25 years) in 2020", x = "Highest Education", y = "Median Earnings") + 
     geom_text(aes(label = values), vjust = -0.25) +
     scale_x_discrete(labels = c("Below\nhighschool", "Highschool\ngraduate", "Some college/\nAssociates'", "Bachelor's", "Graduate")) + 
     theme_light() + 
     theme(legend.position="none") + 
     theme(axis.text.y = element_text(hjust=0)) 
-  edu
+  edu 
 }
-
 
 
 # Land use
 
-#Goochland Land Use 
+# Goochland Land Use 
 
 croplayer1 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2021")
 croplayer2 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2012")
@@ -121,6 +120,8 @@ gcrop21 <- ggplot(croplayer1, aes(x = reorder(`Goochland Combined`, `Area Acre..
 gcrop12 <- ggplot(croplayer2, aes(x = reorder(`Goochland Combined`, `Area_acre...5`), y = `Area_acre...5`, fill = `Area_acre...5`)) + 
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
   labs( title = "Total Acreage by Land Type in 2012", x = "Acreage", y = "Land type")
+
+# Powhatan Land Use
 
 pcrop21 <- ggplot(croplayer1, aes(x = reorder(`Powhatan Combined`, `Area Acre...2`), y = `Area Acre...2`, fill = `Area Acre...2`)) + 
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
@@ -190,11 +191,6 @@ g.luPlotFunction <- function(year.g) {
       options = layersControlOptions(collapsed = FALSE)
     )
 }
-
-harbour<- leaflet()
-harbour<- addTiles(harbour)
-harbour<- setView(harbour, lng=-77.949, lat=37.742, zoom=9)
-
 
 
 g.luPlotFunction <- function(year.g) {
@@ -372,22 +368,20 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                  value = 2020,
                                                                  sep = ""),
                                                      plotOutput("gsoc", height = "500px"),
-
-
-                                                     ),
-                                              ),
-                                     ),
-                                     column(12, 
-                                            h4("References: "), 
-                                            p(tags$small("[1] United States Department of Agriculture. Goochland County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51075.pdf")), 
-                                            p(tags$small("[2] United States Department of Agriculture. Goochland County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51075.pdf")), 
-                                            p(tags$small("[3] U.S. Census Bureau (2022). Age and Sex, 2020: ACS 5-Year Estimates Subject Tables. Retrieved from https://data.census.gov/cedsci/table?t=Populations%20and%20People&g=0500000US51075&tid=ACSST5Y2020.S0101.")), 
-                                            p(tags$small("[4] U.S. Census Bureau (2022). Race, 2020: DEC Redistricting Data (PL 94-171). Retrieved from https://data.census.gov/cedsci/table?t=Populations%20and%20People&g=0500000US51075.")) ,
-                                            p(tags$small("[5] U.S. Census Bureau (2022). Employment Status, 2020: ACS 5-Year Estimates Subject Tables. Retrieved from https://data.census.gov/cedsci/table?t=Employment%3AEmployment%20and%20Labor%20Force%20Status&g=0500000US51075&y=2020&tid=ACSST5Y2020.S2301&moe=false.")) ,
-                                            p(tags$small("[6] ")),
-                                            p(tags$small("[7]")),
-                                            p("", style = "padding-top:10px;")) 
-                            ), 
+                                                     p(tags$small("Data Source: ACS5 2016-2020"))),
+                                              
+                                              
+                                              column(12, 
+                                                     h4("References: "), 
+                                                     p(tags$small("[1] United States Department of Agriculture. Goochland County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51075.pdf")), 
+                                                     p(tags$small("[2] United States Department of Agriculture. Goochland County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51075.pdf")), 
+                                                     p(tags$small("[3] U.S. Census Bureau (2022). Age and Sex, 2020: ACS 5-Year Estimates Subject Tables. Retrieved from https://data.census.gov/cedsci/table?t=Populations%20and%20People&g=0500000US51075&tid=ACSST5Y2020.S0101.")), 
+                                                     p(tags$small("[4] U.S. Census Bureau (2022). Race, 2020: DEC Redistricting Data (PL 94-171). Retrieved from https://data.census.gov/cedsci/table?t=Populations%20and%20People&g=0500000US51075.")) ,
+                                                     p(tags$small("[5] U.S. Census Bureau (2022). Employment Status, 2020: ACS 5-Year Estimates Subject Tables. Retrieved from https://data.census.gov/cedsci/table?t=Employment%3AEmployment%20and%20Labor%20Force%20Status&g=0500000US51075&y=2020&tid=ACSST5Y2020.S2301&moe=false.")) ,
+                                                     p(tags$small("[6] ")),
+                                                     p(tags$small("[7]")),
+                                                     p("", style = "padding-top:10px;")) 
+                                     )), 
                             tabPanel("Powhatan", 
                                      fluidRow(style = "margin: 6px;",
                                               h1(strong("Powhatan"), align = "center"),
@@ -434,15 +428,15 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                  value = 2020,
                                                                  sep = ""),
                                                      plotOutput("psoc", height = "500px"),
-                                              ),
+                                                     p(tags$small("Data Source: ACS5 2016-2020"))),
                                               column(12, 
                                                      h4("References: "), 
                                                      p(tags$small("United States Department of Agriculture. Powhatan County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51145.pdf")) ,
                                                      p("", style = "padding-top:10px;")) 
                                      ), 
-                            ) 
+                            ), 
                             
-        
+                            
                             
                  ),
                  
@@ -1253,6 +1247,7 @@ server <- function(input, output){
   output$harbour<- renderLeaflet({
     harbour
   })
+  
   
   
   gcrop <- reactive({
