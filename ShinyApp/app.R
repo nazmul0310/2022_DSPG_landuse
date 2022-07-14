@@ -110,6 +110,15 @@ edu.func <- function(inputYear, inputCounty) {
       
       # Goochland Land Use 
 
+gooch_boundary<- st_read("data/cnty_bndry/Goochland_Boundary.shp")
+gooch_boundary <- st_transform(gooch_boundary, "+proj=longlat +datum=WGS84")
+
+m <- leaflet()%>%
+  addTiles() %>%
+  setView(lng=-77.949, lat=37.742, zoom=10.48) %>% 
+  addPolygons(data=gooch_boundary,
+              fillColor = "transparent") 
+
 croplayer1 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2021")
 croplayer2 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2012")
 
@@ -120,6 +129,28 @@ gcrop21 <- ggplot(croplayer1, aes(x = reorder(`Goochland Combined`, `Area Acre..
 gcrop12 <- ggplot(croplayer2, aes(x = reorder(`Goochland Combined`, `Area_acre...5`), y = `Area_acre...5`, fill = `Area_acre...5`)) + 
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
   labs( title = "Total Acreage by Land Type in 2012", x = "Acreage", y = "Land type")
+
+soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
+
+gsoil <- ggplot(soil_quality, aes(x = `G_Value`, y = `G_Area_acre`, fill = `G_Area_acre`)) +
+  geom_bar(stat = "identity", aes(text = paste0(`G_Value`, "\n", "Total Acres: ", round(`G_Area_acre`, 0))))+
+  coord_flip() +
+  theme(legend.position = "none") +
+  scale_x_discrete(limits = rev) +
+  scale_fill_viridis() + 
+  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification")
+ggplotly(gsoil, tooltip = "text")
+
+psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Area_acre`)) +
+  geom_bar(stat = "identity", aes(text = paste0(`P_Value`, "\n", "Total Acres: ", round(`P_Area_acre`, 0))))+
+  geom_errorbarh(aes(xmax=as.numeric(`P_Value`)+0.45,xmin=as.numeric(`P_Value`)-0.45,height=0),position=position_dodge(width=0.9)) +
+  coord_flip() +
+  theme(legend.position = "none") +
+  scale_x_discrete(limits = rev) +
+  scale_fill_viridis() +
+  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification")
+ggplotly(psoil, tooltip = "text")
+
 
       # Powhatan Land Use
 
@@ -676,6 +707,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
                                                                 
+                                                                
                                                                 leafletOutput("harbour"),
                                                                 br(),
                                                                 h4(strong("Crop Layer Graphs")),
@@ -713,9 +745,16 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
                                                                 
-                                                                #                plotlyOutput("trend1", height = "600px")
-                                                                
-                                                         ),
+                                                                sliderInput(inputId = "year", 
+                                                                            label = "Choose the starting and ending years",
+                                                                            min = 2012,
+                                                                            max = 2021,
+                                                                            step = 9,
+                                                                            value = 2021,
+                                                                            sep = "", ticks = FALSE),
+                                                                leafletOutput("mymap",height = 500),                                                                h4(strong("Soil Quality Graph")),
+                                                                plotlyOutput("gsoil", height = "500px"),
+                                                                p(tags$small("Data Source: National Cooperative Soil Survey"))),
                                                          column(12, 
                                                                 
                                                                 h4("References") , 
@@ -856,8 +895,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 h4(strong("Soil Quality Map")),
                                                                 
                                                                 #                plotlyOutput("trend1", height = "600px")
-                                                                
-                                                         ),
+                                                                h4(strong("Soil Quality Graph")),
+                                                                plotlyOutput("psoil", heigh = "500px"),
+                                                                p(tags$small("Data Source: National Cooperative Soil Survey"))),
                                                          column(12, 
                                                                 
                                                                 h4("References") , 
@@ -1222,7 +1262,6 @@ server <- function(input, output){
   })
   
   
-  
   powhatan_soc <- reactive({
     input$powhatan_soc
   })
@@ -1248,7 +1287,27 @@ server <- function(input, output){
     harbour
   })
   
-  
+  output$mymap <- renderLeaflet({
+    
+    begin_year <- 2012
+    end_year <- 2021
+    yr <- c(begin_year,end_year)
+    file_list <- paste(getwd(),"/data/Cropland/Gooch/Gooch_Ag_",yr,".shp",sep = "")
+    
+    for (file in file_list){
+      #import the cropdata maps of the selected years
+      gl<- st_read(file) 
+      gl <- st_transform(gl, "+proj=longlat +datum=WGS84")
+      m <- addPolygons(m,
+                       stroke = FALSE,
+                       data = gl,
+                       weight = 1,
+                       smoothFactor=1,
+                       fillColor = "red",
+                       fillOpacity = 0.1)
+    }
+    m
+  })
   
   gcrop <- reactive({
     input$gcrop
@@ -1261,6 +1320,14 @@ server <- function(input, output){
     else if(gcrop() == "gcrop21"){
       gcrop21
     }
+  })
+  
+  output$gsoil <- renderPlotly({
+    gsoil
+  })
+  
+  output$psoil <- renderPlotly({
+    psoil
   })
   
   output$luPlot.g <- renderLeaflet({
