@@ -50,7 +50,7 @@ age.func <- function(inputYear, inputCounty) {
     theme_light() + 
     theme(legend.position="none") + 
     theme(axis.text.y = element_text(hjust=0)) +
-    labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
+    labs(title="Age Distribution of Population", y= "Percent", x= "Age Group")
   age
 }
 
@@ -65,7 +65,7 @@ ind <- industry %>%
   theme_light() + 
   theme(legend.position="none") + 
   theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Employment By Industry", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
+  labs(title="Employment By Industry", y = "Percent", x = "Industry")
 ind
 }
 
@@ -82,7 +82,7 @@ inc <- inc %>%
   theme_light() + 
   theme(legend.position="none") + 
   theme(axis.text.y = element_text(hjust=0)) +
-  labs(title = "Income Distribution in 2020", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
+  labs(title = "Income Distribution in 2020", y = "Percent", x = "Income") +
   coord_flip()
 inc
 }
@@ -95,20 +95,21 @@ edu <- educ_earn %>%
   ggplot(aes(x = name, y = values)) + 
   geom_bar(stat = "identity", mapping=(aes(fill = name))) + 
   theme(legend.position = "none") + scale_fill_viridis(discrete=TRUE) +
-  labs(title = "Median Earnings By Educational Attainment (Age > 25 years) in 2020", x = "Highest Education", y = "Median Earnings", caption = "Source: ACS5 2016-2020") + 
+  labs(title = "Median Earnings By Educational Attainment (Age > 25 years) in 2020", x = "Highest Education", y = "Median Earnings") + 
   geom_text(aes(label = values), vjust = -0.25) +
   scale_x_discrete(labels = c("Below\nhighschool", "Highschool\ngraduate", "Some college/\nAssociates'", "Bachelor's", "Graduate")) + 
   theme_light() + 
   theme(legend.position="none") + 
   theme(axis.text.y = element_text(hjust=0)) 
-edu
+edu 
 }
 
 
+  # Land use
+      
+      # Goochland Land Use 
 
-# Land use
 
-    #Goochland Land Use 
 
 croplayer1 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2021")
 croplayer2 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2012")
@@ -120,6 +121,8 @@ gcrop21 <- ggplot(croplayer1, aes(x = reorder(`Goochland Combined`, `Area Acre..
 gcrop12 <- ggplot(croplayer2, aes(x = reorder(`Goochland Combined`, `Area_acre...5`), y = `Area_acre...5`, fill = `Area_acre...5`)) + 
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
   labs( title = "Total Acreage by Land Type in 2012", x = "Acreage", y = "Land type")
+
+      # Powhatan Land Use
 
 pcrop21 <- ggplot(croplayer1, aes(x = reorder(`Powhatan Combined`, `Area Acre...2`), y = `Area Acre...2`, fill = `Area Acre...2`)) + 
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
@@ -371,8 +374,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                  value = 2020,
                                                                  sep = ""),
                                                      plotOutput("gsoc", height = "500px"),
-
-                                                     ),
+                                                     p(tags$small("Data Source: ACS5 2016-2020"))),
                                               ),
                                               column(12, 
                                                      h4("References: "), 
@@ -431,7 +433,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                  value = 2020,
                                                                  sep = ""),
                                                      plotOutput("psoc", height = "500px"),
-                                              ),
+                                                     p(tags$small("Data Source: ACS5 2016-2020"))),
                                               column(12, 
                                                      h4("References: "), 
                                                      p(tags$small("United States Department of Agriculture. Powhatan County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51145.pdf")) ,
@@ -1250,6 +1252,7 @@ server <- function(input, output){
   output$harbour<- renderLeaflet({
     harbour
   })
+  
   
   
   gcrop <- reactive({
