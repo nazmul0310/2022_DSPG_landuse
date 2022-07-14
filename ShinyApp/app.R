@@ -129,7 +129,6 @@ gcrop12 <- ggplot(croplayer2, aes(x = reorder(`Goochland Combined`, `Area_acre..
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
   labs( title = "Total Acreage by Land Type in 2012", x = "Acreage", y = "Land type")
 
-<<<<<<< HEAD
 soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
 
 gsoil <- ggplot(soil_quality, aes(x = `G_Value`, y = `G_Area_acre`, fill = `G_Area_acre`)) +
@@ -154,8 +153,6 @@ ggplotly(psoil, tooltip = "text")
 
       # Powhatan Land Use
 
-=======
->>>>>>> 15bddf8502eeb0a2e6548b08c365e9bb1b92d45d
 pcrop21 <- ggplot(croplayer1, aes(x = reorder(`Powhatan Combined`, `Area Acre...2`), y = `Area Acre...2`, fill = `Area Acre...2`)) + 
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
   labs( title = "Total Acreage by Land Type in 2021", x = "Acreage", y = "Land type")
@@ -1247,7 +1244,6 @@ server <- function(input, output){
     harbour
   })
   
-<<<<<<< HEAD
   output$mymap <- renderLeaflet({
     
     begin_year <- 2012
@@ -1269,8 +1265,6 @@ server <- function(input, output){
     }
     m
   })
-=======
->>>>>>> 15bddf8502eeb0a2e6548b08c365e9bb1b92d45d
   
   gcrop <- reactive({
     input$gcrop
