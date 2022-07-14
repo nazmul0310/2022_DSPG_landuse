@@ -3,7 +3,7 @@ library(leaflet)
 library(dplyr)
 library(sf)
 
-setwd("C:/DSPG/LUSE_RSTUDIO/2022_DSPG_landuse/Review/Huda/data") # you can change it. It only affects import county boundary data
+setwd("C:/LandUse- Git Repo/2022_DSPG_landuse/Review/Huda/data") # you can change it. It only affects import county boundary data
 
 #Read Cropland Data for Goochland
 
@@ -24,7 +24,7 @@ ui <- fluidPage(
               min = 2012,
               max = 2021,
               step = 9,
-              value = c(2012,2021)),
+              value = 2021),
   leafletOutput("mymap",height = 1000),
   
   sliderInput("year", "Sample Size:", min = 2012, max = 2021, value = 2012)
