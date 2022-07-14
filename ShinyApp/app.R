@@ -28,15 +28,43 @@ library(stringr)
 library(viridis)
 library(readxl)
 library(RColorBrewer)
+library(readxl) #for import excel
+library(sf) #for importing shp file
+
 options(scipen=999)
 options(shiny.maxRequestSize = 100*1024^2)
 
 # data --------------------------------------------------------------------------------------------------------------------
 
+<<<<<<< HEAD
+    # Goochland sociodemographic
+popdist<-read.csv("data/popdist.csv", header = TRUE)
+=======
 # Goochland sociodemographic
-popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
+<<<<<<< HEAD
+age.func <- function(inputYear, inputCounty) {
+  popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
+  
+  gage <- popdist %>% # code for Shiny app
+    filter(county == inputCounty, year==inputYear) %>%
+    ggplot(aes(x=agecat , y=value, fill=agecat))+
+    geom_bar(stat="identity") + 
+    coord_flip() + 
+    scale_fill_viridis(discrete=TRUE) + 
+    theme_light() + 
+    theme(legend.position="none") + 
+    theme(axis.text.y = element_text(hjust=0)) +
+    labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
+  gage
+}
 
-gage <- popdist %>% # code for Shiny app
+ind.func <- function(inutYear, inputCounty) {
+industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
+=======
+popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
+>>>>>>> a2ba9a06e24979d96369c3ce7ff9ac0abb24579f
+
+gage <- popdist %>% 
   filter(county == "Goochland", year==2020) %>%
   ggplot(aes(x=agecat , y=value, fill=agecat))+
   geom_bar(stat="identity") + 
@@ -45,11 +73,12 @@ gage <- popdist %>% # code for Shiny app
   theme_light() + 
   theme(legend.position="none") + 
   theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
+  labs(title="Age Distribution of Population in 2020", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
 
-industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
+industry <- read.csv("data/industry.csv", header=TRUE) 
+>>>>>>> b462a95ef2c1c772e4e9ded8293b70c6e6a537e4
 
-gind <- industry %>% # code for Shiny app
+gind <- industry %>% 
   filter(county == "Goochland", year==2020) %>%
   ggplot(aes(x = reorder(name, -val2), y = value, fill = value)) + 
   geom_bar(stat = "identity") + theme(legend.position = "none") +
@@ -57,11 +86,17 @@ gind <- industry %>% # code for Shiny app
   theme_light() + 
   theme(legend.position="none") + 
   theme(axis.text.y = element_text(hjust=0)) +
+<<<<<<< HEAD
   labs(title="Employment By Industry", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
+gind
+}
+=======
+  labs(title="Employment By Industry in 2020", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
+>>>>>>> b462a95ef2c1c772e4e9ded8293b70c6e6a537e4
 
-inc <- read.csv("data/inc.csv", header=TRUE) #for Shiny app
+inc <- read.csv("data/inc.csv", header=TRUE) 
 
-ginc <- inc %>% # code for Shiny app
+ginc <- inc %>% 
   filter(county == "Goochland", year==2020) %>%  mutate(inccat = fct_relevel(inccat, "<35K", "35K - 50K", "50K - 75K","75K-100K", ">100K")) %>%
   ggplot(aes(x = inccat, y = estimate, fill = inccat))+ 
   geom_bar(stat = "identity") + 
@@ -70,28 +105,33 @@ ginc <- inc %>% # code for Shiny app
   theme_light() + 
   theme(legend.position="none") + 
   theme(axis.text.y = element_text(hjust=0)) +
-  labs(title = "Income Distribution", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
+  labs(title = "Income Distribution in 2020", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
   coord_flip()
 
-educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) #for Shiny app
+educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) 
 
-gedu <- educ_earn %>% # code for Shiny app
+gedu <- educ_earn %>% 
   filter(county == "Goochland", year==2020) %>%
   ggplot(aes(x = name, y = values)) + 
   geom_bar(stat = "identity", mapping=(aes(fill = name))) + 
   theme(legend.position = "none") + scale_fill_viridis(discrete=TRUE) +
-  labs(title = "Median Earnings By Educational Attainment (Age > 25 years)", x = "Highest Education", y = "Median Earnings", caption = "Source: ACS5 2016-2020") + 
+  labs(title = "Median Earnings By Educational Attainment (Age > 25 years) in 2020", x = "Highest Education", y = "Median Earnings", caption = "Source: ACS5 2016-2020") + 
   geom_text(aes(label = values), vjust = -0.25) +
   scale_x_discrete(labels = c("Below\nhighschool", "Highschool\ngraduate", "Some college/\nAssociates'", "Bachelor's", "Graduate")) + 
   theme_light() + 
   theme(legend.position="none") + 
   theme(axis.text.y = element_text(hjust=0)) 
 
+<<<<<<< HEAD
+    # Powhatan sociodemographic
+page <- popdist %>% 
+=======
 # Powhatan sociodemographic
 
 popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
 
 page <- popdist %>% # code for Shiny app
+>>>>>>> a2ba9a06e24979d96369c3ce7ff9ac0abb24579f
   filter(county == "Powhatan ", year==2020) %>%
   ggplot(aes(x=agecat , y=value, fill=agecat))+
   geom_bar(stat="identity") + 
@@ -100,11 +140,9 @@ page <- popdist %>% # code for Shiny app
   theme_light() + 
   theme(legend.position="none") + 
   theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
+  labs(title="Age Distribution of Population in 2020", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
 
-industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
-
-pind <- industry %>% # code for Shiny app
+pind <- industry %>% 
   filter(county == "Powhatan ", year==2020) %>%
   ggplot(aes(x = reorder(name, -val2), y = value, fill = value)) + 
   geom_bar(stat = "identity") + theme(legend.position = "none") +
@@ -112,11 +150,9 @@ pind <- industry %>% # code for Shiny app
   theme_light() + 
   theme(legend.position="none") + 
   theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Employment By Industry", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
+  labs(title="Employment By Industry in 2020", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
 
-inc <- read.csv("data/inc.csv", header=TRUE) #for Shiny app
-
-pinc <- inc %>% # code for Shiny app
+pinc <- inc %>% 
   filter(county == "Powhatan ", year==2020) %>%  mutate(inccat = fct_relevel(inccat, "<35K", "35K - 50K", "50K - 75K","75K-100K", ">100K")) %>%
   ggplot(aes(x = inccat, y = estimate, fill = inccat))+ 
   geom_bar(stat = "identity") + 
@@ -125,17 +161,15 @@ pinc <- inc %>% # code for Shiny app
   theme_light() + 
   theme(legend.position="none") + 
   theme(axis.text.y = element_text(hjust=0)) +
-  labs(title = "Income Distribution", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
+  labs(title = "Income Distribution in 2020", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
   coord_flip()  
 
-educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) #for Shiny app
-
-pedu <- educ_earn %>% # code for Shiny app
+pedu <- educ_earn %>% 
   filter(county == "Powhatan ", year==2020) %>%
   ggplot(aes(x = name, y = values)) + 
   geom_bar(stat = "identity", mapping=(aes(fill = name))) + 
   theme(legend.position = "none") + scale_fill_viridis(discrete=TRUE) +
-  labs(title = "Median Earnings By Educational Attainment (Age > 25 years)", x = "Highest Education", y = "Median Earnings", caption = "Source: ACS5 2016-2020") + 
+  labs(title = "Median Earnings By Educational Attainment (Age > 25 years) in 2020", x = "Highest Education", y = "Median Earnings", caption = "Source: ACS5 2016-2020") + 
   geom_text(aes(label = values), vjust = -0.25) +
   scale_x_discrete(labels = c("Below\nhighschool", "Highschool\ngraduate", "Some college/\nAssociates'", "Bachelor's", "Graduate")) + 
   theme_light() + 
@@ -144,32 +178,100 @@ pedu <- educ_earn %>% # code for Shiny app
 
 # Land use
 
+<<<<<<< HEAD
+    #Goochland Land Use 
+=======
 #Goochland Land Use 
 
+>>>>>>> a2ba9a06e24979d96369c3ce7ff9ac0abb24579f
 croplayer1 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2021")
 croplayer2 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2012")
 
 gcrop21 <- ggplot(croplayer1, aes(x = reorder(`Goochland Combined`, `Area Acre...4`), y = `Area Acre...4`, fill = `Area Acre...4`)) + 
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
-  labs( title = "Total Acreage by Land Type", x = "Acreage", y = "Land type")
+  labs( title = "Total Acreage by Land Type in 2021", x = "Acreage", y = "Land type")
 
 gcrop12 <- ggplot(croplayer2, aes(x = reorder(`Goochland Combined`, `Area_acre...5`), y = `Area_acre...5`, fill = `Area_acre...5`)) + 
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
-  labs( title = "Total Acreage by Land Type", x = "Acreage", y = "Land type")
+  labs( title = "Total Acreage by Land Type in 2012", x = "Acreage", y = "Land type")
 
 pcrop21 <- ggplot(croplayer1, aes(x = reorder(`Powhatan Combined`, `Area Acre...2`), y = `Area Acre...2`, fill = `Area Acre...2`)) + 
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
-  labs( title = "Total Acreage by Land Type", x = "Acreage", y = "Land type")
+  labs( title = "Total Acreage by Land Type in 2021", x = "Acreage", y = "Land type")
 
 pcrop12 <- ggplot(croplayer2, aes(x = reorder(`Powhatan Combined`, `Area_acre...3`), y = `Area_acre...3`, fill = `Area_acre...3`)) + 
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
-  labs( title = "Total Acreage by Land Type", x = "Acreage", y = "Land type")
+  labs( title = "Total Acreage by Land Type in 2012", x = "Acreage", y = "Land type")
 
+<<<<<<< HEAD
+  harbour<- leaflet() %>% 
+            addTiles() %>% 
+            setView(lng=-77.949, lat=37.742, zoom=9)
+
+  
+  g.luPlotFunction <- function(year.g) {
+    
+    GoochlandAllParcel <- read_sf("../ShinyApp/data/luParcelData/GoochAll.shp")
+    #goochBoundary <- read_sf("../ShinyApp/data/luParcelData/Goochland_Boundary.shp") thinking of add a boundary map
+    Gooch <- GoochlandAllParcel %>% filter(year == year.g)
+    
+    LUC_values <- c("Single Family Residential Urban", 
+                    "Single Family Residential Suburban", 
+                    "Multi-Family Residential", 
+                    "Commerical / Industrial", 
+                    "Agricultural / Undeveloped (20-99 Acres)", 
+                    "Agricultural / Undeveloped (100+ Acres)", 
+                    "Other", 
+                    "Undefined")
+    
+    LUC_values <- factor(LUC_values, levels = LUC_values)
+    
+    mypalette <- colorBin(palette = "viridis", as.numeric(LUC_values), bins = 9)
+    colors <- mypalette(unclass(LUC_values))
+    colors[8] <- "#addc30"
+    
+    MyMap <- leaflet() %>%
+      addTiles() %>%
+      addProviderTiles(providers$CartoDB.Positron) %>%
+      
+      addPolygons(data = Gooch %>% filter(LUC_FIN == "Single Family Residential Urban"), 
+                  fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                  group = "Single Family Urban") %>%
+      addPolygons(data=Gooch %>% filter(LUC_FIN == "Single Family Residential Suburban"), 
+                  fillColor = colors[2], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                  group = "Single Family Suburban") %>%
+      addPolygons(data=Gooch %>% filter(LUC_FIN == "Multi-Family Residential"), 
+                  fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                  group = "Multi-Family Residential") %>%
+      addPolygons(data=Gooch %>% filter(LUC_FIN == "Commerical / Industrial") ,
+                  fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                  group = "Commercial & Industrial") %>%
+      addPolygons(data=Gooch %>% filter(LUC_FIN == "Agricultural / Undeveloped (20-99 Acres)"),
+                  fillColor = colors[5], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                  group = "Agriculture/Undeveloped (20-99 Acres)") %>%
+      addPolygons(data=Gooch %>% filter(LUC_FIN == "Agricultural / Undeveloped (100+ Acres)") ,
+                  fillColor = colors[6], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                  group = "Agriculture/Undeveloped (100+ Acres)") %>%
+      addPolygons(data=Gooch %>% filter(LUC_FIN == "Other"),
+                  fillColor = colors[7], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                  group = "Other") %>%
+      addPolygons(data=Gooch %>% filter(LUC_FIN == "Undefined") ,
+                  fillColor = colors[8], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                  group = "Unknown") %>%
+      addLayersControl(
+        overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
+        position = "bottomleft",
+        options = layersControlOptions(collapsed = FALSE)
+      )
+  }
+  
+=======
 harbour<- leaflet()
 harbour<- addTiles(harbour)
 harbour<- setView(harbour, lng=-77.949, lat=37.742, zoom=9)
 
 
+>>>>>>> a2ba9a06e24979d96369c3ce7ff9ac0abb24579f
 
 
 g.luPlotFunction <- function(year.g) {
@@ -340,7 +442,18 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Income Distribution" = "ginc",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "gedu")
                                                      ),
+                                                     sliderInput(inputId = "yearSelect_soc", label = "Select Year: ", 
+                                                                 width = "150%", 
+                                                                 min = 2017,
+                                                                 max = 2020,
+                                                                 value = 2020,
+                                                                 sep = ""),
                                                      plotOutput("gsoc", height = "500px"),
+<<<<<<< HEAD
+=======
+
+                                                     ),
+>>>>>>> 74c9b2d0a4515bd9aed03c9e9be3f3588a2e3009
                                               ),
                                               column(12, 
                                                      h4("References: "), 
@@ -352,7 +465,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p(tags$small("[6] ")),
                                                      p(tags$small("[7]")),
                                                      p("", style = "padding-top:10px;")) 
-                                     )), 
+                                     ), 
                             tabPanel("Powhatan", 
                                      fluidRow(style = "margin: 6px;",
                                               h1(strong("Powhatan"), align = "center"),
@@ -1173,16 +1286,16 @@ server <- function(input, output){
   output$gsoc <- renderPlot({
     
     if(goochland_soc() == "gage"){
-      gage
+      age.func(input$yearSelect_soc, "Goochland")
     }
     else if(goochland_soc() == "gind"){
-      gind
+      ind.func(input$yearSelect_soc, "Goochland")
     }
     else if(goochland_soc() == "ginc"){
-      ginc
+      inc.func(input$yearSelect_soc, "Goochland")
     }
     else if(goochland_soc() == "gedu"){
-      gedu
+      edu.func(input$yearSelect_soc, "Goochland")
     }
     
   })
