@@ -36,16 +36,12 @@ options(shiny.maxRequestSize = 100*1024^2)
 
 # data --------------------------------------------------------------------------------------------------------------------
 
-<<<<<<< HEAD
-    # Goochland sociodemographic
-popdist<-read.csv("data/popdist.csv", header = TRUE)
-=======
-# Goochland sociodemographic
-<<<<<<< HEAD
+  # Sociodemographic
+
 age.func <- function(inputYear, inputCounty) {
   popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
   
-  gage <- popdist %>% # code for Shiny app
+  age <- popdist %>% # code for Shiny app
     filter(county == inputCounty, year==inputYear) %>%
     ggplot(aes(x=agecat , y=value, fill=agecat))+
     geom_bar(stat="identity") + 
@@ -55,49 +51,30 @@ age.func <- function(inputYear, inputCounty) {
     theme(legend.position="none") + 
     theme(axis.text.y = element_text(hjust=0)) +
     labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
-  gage
+  age
 }
 
 ind.func <- function(inutYear, inputCounty) {
 industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
-=======
-popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
->>>>>>> a2ba9a06e24979d96369c3ce7ff9ac0abb24579f
 
-gage <- popdist %>% 
-  filter(county == "Goochland", year==2020) %>%
-  ggplot(aes(x=agecat , y=value, fill=agecat))+
-  geom_bar(stat="identity") + 
-  coord_flip() + 
-  scale_fill_viridis(discrete=TRUE) + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Age Distribution of Population in 2020", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
-
-industry <- read.csv("data/industry.csv", header=TRUE) 
->>>>>>> b462a95ef2c1c772e4e9ded8293b70c6e6a537e4
-
-gind <- industry %>% 
-  filter(county == "Goochland", year==2020) %>%
+ind <- industry %>% 
+  filter(county == inputCounty, year==inputYear) %>%
   ggplot(aes(x = reorder(name, -val2), y = value, fill = value)) + 
   geom_bar(stat = "identity") + theme(legend.position = "none") +
   coord_flip() + scale_fill_viridis()  + 
   theme_light() + 
   theme(legend.position="none") + 
   theme(axis.text.y = element_text(hjust=0)) +
-<<<<<<< HEAD
   labs(title="Employment By Industry", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
-gind
+ind
 }
-=======
-  labs(title="Employment By Industry in 2020", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
->>>>>>> b462a95ef2c1c772e4e9ded8293b70c6e6a537e4
 
-inc <- read.csv("data/inc.csv", header=TRUE) 
+inc.func <- function(inputYear, inputCounty) {
+  inc <- read.csv("data/inc.csv", header=TRUE) 
 
-ginc <- inc %>% 
-  filter(county == "Goochland", year==2020) %>%  mutate(inccat = fct_relevel(inccat, "<35K", "35K - 50K", "50K - 75K","75K-100K", ">100K")) %>%
+inc <- inc %>% 
+  filter(county == inputCounty, year==inputYear) %>%
+  mutate(inccat = fct_relevel(inccat, "<35K", "35K - 50K", "50K - 75K","75K-100K", ">100K")) %>%
   ggplot(aes(x = inccat, y = estimate, fill = inccat))+ 
   geom_bar(stat = "identity") + 
   theme(legend.position = "none") + 
@@ -107,11 +84,14 @@ ginc <- inc %>%
   theme(axis.text.y = element_text(hjust=0)) +
   labs(title = "Income Distribution in 2020", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
   coord_flip()
+inc
+}
 
-educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) 
+edu.func <- function(inputYear, inputCounty) {
+  educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) 
 
-gedu <- educ_earn %>% 
-  filter(county == "Goochland", year==2020) %>%
+edu <- educ_earn %>% 
+  filter(county == inputCounty, year==inputYear) %>%
   ggplot(aes(x = name, y = values)) + 
   geom_bar(stat = "identity", mapping=(aes(fill = name))) + 
   theme(legend.position = "none") + scale_fill_viridis(discrete=TRUE) +
@@ -121,69 +101,15 @@ gedu <- educ_earn %>%
   theme_light() + 
   theme(legend.position="none") + 
   theme(axis.text.y = element_text(hjust=0)) 
+edu
+}
 
-<<<<<<< HEAD
-    # Powhatan sociodemographic
-page <- popdist %>% 
-=======
-# Powhatan sociodemographic
 
-popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny app
-
-page <- popdist %>% # code for Shiny app
->>>>>>> a2ba9a06e24979d96369c3ce7ff9ac0abb24579f
-  filter(county == "Powhatan ", year==2020) %>%
-  ggplot(aes(x=agecat , y=value, fill=agecat))+
-  geom_bar(stat="identity") + 
-  coord_flip() + 
-  scale_fill_viridis(discrete=TRUE) + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Age Distribution of Population in 2020", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
-
-pind <- industry %>% 
-  filter(county == "Powhatan ", year==2020) %>%
-  ggplot(aes(x = reorder(name, -val2), y = value, fill = value)) + 
-  geom_bar(stat = "identity") + theme(legend.position = "none") +
-  coord_flip() + scale_fill_viridis()  + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) +
-  labs(title="Employment By Industry in 2020", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
-
-pinc <- inc %>% 
-  filter(county == "Powhatan ", year==2020) %>%  mutate(inccat = fct_relevel(inccat, "<35K", "35K - 50K", "50K - 75K","75K-100K", ">100K")) %>%
-  ggplot(aes(x = inccat, y = estimate, fill = inccat))+ 
-  geom_bar(stat = "identity") + 
-  theme(legend.position = "none") + 
-  scale_fill_viridis(discrete=TRUE) + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0)) +
-  labs(title = "Income Distribution in 2020", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
-  coord_flip()  
-
-pedu <- educ_earn %>% 
-  filter(county == "Powhatan ", year==2020) %>%
-  ggplot(aes(x = name, y = values)) + 
-  geom_bar(stat = "identity", mapping=(aes(fill = name))) + 
-  theme(legend.position = "none") + scale_fill_viridis(discrete=TRUE) +
-  labs(title = "Median Earnings By Educational Attainment (Age > 25 years) in 2020", x = "Highest Education", y = "Median Earnings", caption = "Source: ACS5 2016-2020") + 
-  geom_text(aes(label = values), vjust = -0.25) +
-  scale_x_discrete(labels = c("Below\nhighschool", "Highschool\ngraduate", "Some college/\nAssociates'", "Bachelor's", "Graduate")) + 
-  theme_light() + 
-  theme(legend.position="none") + 
-  theme(axis.text.y = element_text(hjust=0))
 
 # Land use
 
-<<<<<<< HEAD
     #Goochland Land Use 
-=======
-#Goochland Land Use 
 
->>>>>>> a2ba9a06e24979d96369c3ce7ff9ac0abb24579f
 croplayer1 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2021")
 croplayer2 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2012")
 
@@ -203,7 +129,6 @@ pcrop12 <- ggplot(croplayer2, aes(x = reorder(`Powhatan Combined`, `Area_acre...
   geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
   labs( title = "Total Acreage by Land Type in 2012", x = "Acreage", y = "Land type")
 
-<<<<<<< HEAD
   harbour<- leaflet() %>% 
             addTiles() %>% 
             setView(lng=-77.949, lat=37.742, zoom=9)
@@ -265,13 +190,10 @@ pcrop12 <- ggplot(croplayer2, aes(x = reorder(`Powhatan Combined`, `Area_acre...
       )
   }
   
-=======
 harbour<- leaflet()
 harbour<- addTiles(harbour)
 harbour<- setView(harbour, lng=-77.949, lat=37.742, zoom=9)
 
-
->>>>>>> a2ba9a06e24979d96369c3ce7ff9ac0abb24579f
 
 
 g.luPlotFunction <- function(year.g) {
@@ -442,7 +364,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Income Distribution" = "ginc",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "gedu")
                                                      ),
-                                                     sliderInput(inputId = "yearSelect_soc", label = "Select Year: ", 
+                                                     sliderInput(inputId = "yearSelect_gsoc", label = "Select Year: ", 
                                                                  width = "150%", 
                                                                  min = 2017,
                                                                  max = 2020,
@@ -502,7 +424,12 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Income Distribution" = "pinc",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "pedu")
                                                      ),
-                                                     
+                                                     sliderInput(inputId = "yearSelect_psoc", label = "Select Year: ", 
+                                                                 width = "150%", 
+                                                                 min = 2017,
+                                                                 max = 2020,
+                                                                 value = 2020,
+                                                                 sep = ""),
                                                      plotOutput("psoc", height = "500px"),
                                               ),
                                               column(12, 
@@ -1283,20 +1210,19 @@ server <- function(input, output){
   output$gsoc <- renderPlot({
     
     if(goochland_soc() == "gage"){
-      age.func(input$yearSelect_soc, "Goochland")
+      age.func(input$yearSelect_gsoc, "Goochland")
     }
     else if(goochland_soc() == "gind"){
-      ind.func(input$yearSelect_soc, "Goochland")
+      ind.func(input$yearSelect_gsoc, "Goochland")
     }
     else if(goochland_soc() == "ginc"){
-      inc.func(input$yearSelect_soc, "Goochland")
+      inc.func(input$yearSelect_gsoc, "Goochland")
     }
     else if(goochland_soc() == "gedu"){
-      edu.func(input$yearSelect_soc, "Goochland")
+      edu.func(input$yearSelect_gsoc, "Goochland")
     }
     
   })
-  
   
   
   
@@ -1307,16 +1233,16 @@ server <- function(input, output){
   output$psoc <- renderPlot({
     
     if(powhatan_soc() == "page"){
-      page
+      age.func(input$yearSelect_psoc, "Powhatan ")
     }
     else if(powhatan_soc() == "pind"){
-      pind
+      ind.func(input$yearSelect_psoc, "Powhatan ")
     }
     else if(powhatan_soc() == "pinc"){
-      pinc
+      inc.func(input$yearSelect_psoc, "Powhatan ")
     }
     else if(powhatan_soc() == "pedu"){
-      pedu
+      edu.func(input$yearSelect_psoc, "Powhatan ")
     }
     
   })
