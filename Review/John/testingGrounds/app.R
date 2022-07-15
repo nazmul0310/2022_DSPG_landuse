@@ -29,71 +29,77 @@ library(readxl)
 library(RColorBrewer)
 options(scipen=999)
 
+setwd("../")
+
+travelTimes <- st_read("Powhatan_Parcel_Data/Powhatan_Travel_Time/Powhatan_Travel_Times.shp")
+Rmnd30 <- st_read("Powhatan_Parcel_Data/Richmond_Travel_Times/30MinuteTravelTime.shp")
+Rmnd45 <- st_read("Powhatan_Parcel_Data/Richmond_Travel_Times/45MinuteTravelTime.shp")
+Rmnd60 <- st_read("Powhatan_Parcel_Data/Richmond_Travel_Times/60MinuteTravelTime.shp")
+
+
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-
-    # Application title
-    titlePanel("Test Grounds for Current Project Implementations"),
-
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput(inputId = "p.parcellationRange",
-                        label = "Years of Parcellation:",
-                        min = 2012,
-                        max = 2020,
-                        value = c(2012, 2020),
-                        sep = "", 
-                        width = "150%")
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-           leafletOutput("p.parcellationPlot")
-        )
-    )
+  radioButtons(inputId = "drivingTimeInput", label = "Select Time from Richmond: ", 
+                       choices = c("Within 30 minutes", "Within 45 minutes", "Within 60 minutes", "More than 60 mintues"), 
+                       selected = "More than 60 minutes"),
+          
+  leafletOutput("p.drivingPlot")
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-  output$p.parcellationPlot <- renderLeaflet({
-    pow_parcellation <- read_sf("../Powhatan_Parcel_Data/Powhatan_all_parcellation_Lite/Powhatan_Parcellation_LT.shp") %>%
-      st_transform(crs = st_crs("EPSG:4326"))
-    pow_parcellation$year <- substr(pow_parcellation$UNIQ_ID_12, 1, 4)
+  # Driving Time
+  # ==================================================================
+  
+  drvTimeInput <- reactive({
+    input$drivingTimeInput
+  })
+  
+  driveRange <- drvTimeInput()
+  
+  if(driveRange == "Within 30 minutes"){
+    travelTimes <- travelTimes %>% filter(Trv2RcMnd == "30 minutes")
+    drv.color <- "#35b779"
+    iso.file <- Rmnd30
+  }
+  else if(driveRange == "Within 45 minutes"){
+    travelTimes <- travelTimes %>% filter(Trv2RcMnd == c("30 minutes", "45 minutes"))
+    drv.color <- "#31688e"
+    iso.file <- Rmnd45
+  }
+  else if(driveRange == "Within 60 minutes"){
+    travelTimes <- travelTimes %>% filter(Trv2RcMnd == c("30 minutes", "45 minutes", "One hour"))
+    drv.color <- "#440154"
+    iso.file <- Rmnd60
+  }
+  
+  
+  # Function============
+  drivingPlot.func <- function(data, county, richmondISO, lnColor){
     
-    yearRange <- input$p.parcellationRange[1]:input$p.parcellationRange[2]
+    driving.plt <- leaflet() %>%
+      addTiles() %>%
+      addProviderTiles("Esri") %>%
+      addPolygons(richmondISO, fillColor = "transparent") %>%
+      addPolygons(data, color = lnColor)
+    driving.plt
+
+  }
+  
+  
+  # Output=========
+  output$p.drivingPlot <- renderLeaflet({
     
-    
-    
-    parc.func <- function(data, range){
-      
-      # Declares initial leaflet, nothing added to it.
-      my.parc.plt <- leaflet()%>%
-        addTiles() %>%
-        addProviderTiles(providers$CartoDB.Positron) %>%
-        setView(lng=-77.9188, lat=37.5415 , zoom=10)
-      
-      # for loop to add polygons based on what the max year is vs. subsequent years prior
-      for(i in range){
-        # Adds most recent year's parcellations
-        if(i == max(range)){
-          my.parc.plt <- my.parc.plt %>%
-            addPolygons(data = data %>% filter(year == i), 
-                        fillColor = "red", smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
-        }
-        # Adds subsequent year's parcellations
-        else {
-          my.parc.plt <- my.parc.plt %>%
-            addPolygons(data = data %>% filter(year == i), 
-                        fillColor = "red", smoothFactor = 0.1, fillOpacity = .25, stroke = FALSE)
-        }
-      }
-      my.parc.plt
-    }
-    parc.func(pow_parcellation, yearRange)
+    drivingPlot.func(travelTimes, "Powhatan", iso.file, drv.color)
     
   })
+  
+  
+  
+  # ==================================================================
+  
 }
 
 # Run the application 

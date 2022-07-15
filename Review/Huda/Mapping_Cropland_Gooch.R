@@ -25,7 +25,7 @@ ui <- fluidPage(
               max = 2021,
               step = 9,
               value = 2021,
-              sep = "", ticks = FALSE, width = "100%"),
+              sep = "", ticks = FALSE, width = "5%"),
   leafletOutput("mymap",height = 1000)
 )
 

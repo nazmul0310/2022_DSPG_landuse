@@ -52,7 +52,8 @@ age.func <- function(inputYear, inputCounty) {
     theme_light() + 
     theme(legend.position="none") + 
     theme(axis.text.y = element_text(hjust=0)) +
-    labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020")
+    labs(title="Age Distribution of Population", y= "Percent", x= "Age Group", caption="Source: ACS5 2016-2020") +
+    ylim(0,35)
   age
 }
 
@@ -60,13 +61,14 @@ ind.func <- function(inputYear, inputCounty) {
   
   ind <- industry %>% 
     filter(county == inputCounty, year==inputYear) %>%
-    ggplot(aes(x = reorder(name, -val2), y = value, fill = value)) + 
+    ggplot(aes(x = reorder(name, desc(name)), y = value, fill = value)) + 
     geom_bar(stat = "identity") + theme(legend.position = "none") +
     coord_flip() + scale_fill_viridis()  + 
     theme_light() + 
     theme(legend.position="none") + 
     theme(axis.text.y = element_text(hjust=0)) +
-    labs(title="Employment By Industry", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020")
+    labs(title="Employment By Industry", y = "Percent", x = "Industry", caption="Source: ACS5 2016-2020") +
+    ylim(0,25)
   ind
 }
 
@@ -82,8 +84,9 @@ inc.func <- function(inputYear, inputCounty) {
     theme_light() + 
     theme(legend.position="none") + 
     theme(axis.text.y = element_text(hjust=0)) +
-    labs(title = "Income Distribution in 2020", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
-    coord_flip()
+    labs(title = "Income Distribution", y = "Percent", x = "Income", caption="Source: ACS5 2016-2020") +
+    coord_flip() +
+    ylim(0,50)
   inc
 }
 
@@ -94,12 +97,13 @@ edu.func <- function(inputYear, inputCounty) {
     ggplot(aes(x = name, y = values)) + 
     geom_bar(stat = "identity", mapping=(aes(fill = name))) + 
     theme(legend.position = "none") + scale_fill_viridis(discrete=TRUE) +
-    labs(title = "Median Earnings By Educational Attainment (Age > 25 years) in 2020", x = "Highest Education", y = "Median Earnings", caption = "Source: ACS5 2016-2020") + 
+    labs(title = "Median Earnings By Educational Attainment (Age > 25 years)", x = "Highest Education", y = "Median Earnings", caption = "Source: ACS5 2016-2020") + 
     geom_text(aes(label = values), vjust = -0.25) +
     scale_x_discrete(labels = c("Below\nhighschool", "Highschool\ngraduate", "Some college/\nAssociates'", "Bachelor's", "Graduate")) + 
     theme_light() + 
     theme(legend.position="none") + 
-    theme(axis.text.y = element_text(hjust=0)) 
+    theme(axis.text.y = element_text(hjust=0)) +
+    ylim(0, 200000)
   edu
 }
 
@@ -118,48 +122,82 @@ m <- leaflet()%>%
   addPolygons(data=gooch_boundary,
               fillColor = "transparent") 
 
-croplayer1 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2021")
-croplayer2 <- read_excel("data/Ag_Analysis_Gooch_Powhatan.xlsx", sheet = "2012")
+croplayer1 <- read.csv("data/ag_analysis.csv")
 
-gcrop21 <- ggplot(croplayer1, aes(x = reorder(`Goochland Combined`, `Area Acre...4`), y = `Area Acre...4`, fill = `Area Acre...4`)) + 
-  geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
-  labs( title = "Total Acreage by Land Type in 2021", x = "Acreage", y = "Land type")
+gcrop21 <- croplayer1 %>% 
+  filter(County == "Goochland", Year==2021) %>%
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
+  coord_flip() +  
+  theme_light() +
+  theme(axis.text.y = element_text(hjust=0)) +
+  theme(legend.position = "none") +     
+  scale_fill_viridis() + 
+  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type") 
+gcrop21 <-ggplotly(gcrop21, tooltip = c("text")) 
 
-gcrop12 <- ggplot(croplayer2, aes(x = reorder(`Goochland Combined`, `Area_acre...5`), y = `Area_acre...5`, fill = `Area_acre...5`)) + 
-  geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
-  labs( title = "Total Acreage by Land Type in 2012", x = "Acreage", y = "Land type")
+gcrop12 <- croplayer1 %>% 
+  filter(County == "Goochland", Year== 2012) %>%
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
+  coord_flip() + 
+  theme_light() +
+  theme(axis.text.y = element_text(hjust=0)) +
+  theme(legend.position = "none") + 
+  scale_fill_viridis() + 
+  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
+gcrop12 <-ggplotly(gcrop12, tooltip = c("text"))
+
+pcrop21 <- croplayer1 %>% 
+  filter(County == "Powhatan", Year==2021) %>%
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
+  coord_flip() + 
+  theme_light() +
+  theme(axis.text.y = element_text(hjust=0)) +
+  theme(legend.position = "none") + 
+  scale_fill_viridis() + 
+  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
+pcrop21 <-ggplotly(pcrop21, tooltip = c("text"))
+
+pcrop12 <- croplayer1 %>% 
+  filter(County == "Powhatan", Year== 2012) %>%
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
+  coord_flip() + 
+  theme_light() +
+  theme(axis.text.y = element_text(hjust=0)) +
+  theme(legend.position = "none") + 
+  scale_fill_viridis() + 
+  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
+pcrop12 <- ggplotly(pcrop12, tooltip = c("text"))
+
 
 soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
 
 gsoil <- ggplot(soil_quality, aes(x = `G_Value`, y = `G_Area_acre`, fill = `G_Area_acre`)) +
-  geom_bar(stat = "identity", aes(text = paste0(`G_Value`, "\n", "Total Acres: ", round(`G_Area_acre`, 0))))+
+  geom_bar(stat = "identity",hoverinfo = "text", aes(text = paste0(`G_Value`, "\n", "Total Acres: ", round(`G_Area_acre`, 0))))+
   coord_flip() +
   theme(legend.position = "none") +
   scale_x_discrete(limits = rev) +
   scale_fill_viridis() + 
   labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification")
-ggplotly(gsoil, tooltip = "text")
+gsoil <-ggplotly(gsoil, tooltip = "text")
 
 psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Area_acre`)) +
-  geom_bar(stat = "identity", aes(text = paste0(`P_Value`, "\n", "Total Acres: ", round(`P_Area_acre`, 0))))+
+  geom_bar(stat = "identity",hoverinfo ="text", aes(text = paste0(`P_Value`, "\n", "Total Acres: ", round(`P_Area_acre`, 0))))+
   geom_errorbarh(aes(xmax=as.numeric(`P_Value`)+0.45,xmin=as.numeric(`P_Value`)-0.45,height=0),position=position_dodge(width=0.9)) +
   coord_flip() +
   theme(legend.position = "none") +
   scale_x_discrete(limits = rev) +
   scale_fill_viridis() +
-  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification")
-ggplotly(psoil, tooltip = "text")
+  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") 
+psoil <-ggplotly(psoil, tooltip = "text")
 
 
       # Powhatan Land Use
 
-pcrop21 <- ggplot(croplayer1, aes(x = reorder(`Powhatan Combined`, `Area Acre...2`), y = `Area Acre...2`, fill = `Area Acre...2`)) + 
-  geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
-  labs( title = "Total Acreage by Land Type in 2021", x = "Acreage", y = "Land type")
 
-pcrop12 <- ggplot(croplayer2, aes(x = reorder(`Powhatan Combined`, `Area_acre...3`), y = `Area_acre...3`, fill = `Area_acre...3`)) + 
-  geom_bar(stat = "identity") + coord_flip() + theme(legend.position = "none") +     scale_fill_viridis() + 
-  labs( title = "Total Acreage by Land Type in 2012", x = "Acreage", y = "Land type")
 
 harbour<- leaflet() %>% 
   addTiles() %>% 
@@ -232,6 +270,28 @@ g.luPlotFunction <- function(year.g) {
 harbour<- leaflet() %>% 
   addTiles() %>% 
   setView(lng=-77.949, lat=37.742, zoom=9)
+
+
+
+      # Land Parcellation Imports
+
+# gooch
+gooch_parcellation <- st_read("data/parcellationData/Gooch_Parcellation_LT.shp") %>%
+  st_transform(crs = st_crs("EPSG:4326"))
+gooch_parcellation$year <- substr(gooch_parcellation$UNIQID_1, 1, 4)
+gooch_bndry <- st_read("data/cnty_bndry/Goochland_Boundary.shp" )%>%
+  st_transform(crs = st_crs("EPSG:4326"))
+
+# pow
+pow_parcellation <- read_sf("data/parcellationData/Powhatan_Parcellation_LT.shp") %>%
+  st_transform(crs = st_crs("EPSG:4326"))
+pow_parcellation$year <- substr(pow_parcellation$UNIQ_ID_12, 1, 4)
+pow_bndry <- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>%
+  st_transform(crs = st_crs("EPSG:4326"))
+
+
+
+
 
 
 # ui --------------------------------------------------------------------------------------------------------------------
@@ -312,27 +372,27 @@ ui <- navbarPage(title = "DSPG 2022",
                                               column(4, 
                                                      h4(strong("County Background")),
                                                      p("Goochland County is located in the Piedmont of the Commonwealth of Virginia. It covers 281.42 square miles. This makes Goochland the 71st biggest
-                                                       county in Virginia. The country is known for its fertile land and mineral deposits. The James River flows through the center of county which
-                                                       supplied water to farmlands and to mills. In the east side of the county coal was mined and in the west gold.  Today, agriculture is still 
+                                                       county in Virginia. The county is known for its fertile land and mineral deposits. The James River flows through the center of the county which
+                                                       supplied water to farmlands and to mills. Coal was mined in the east and gold in the west. Today, agriculture is still 
                                                        important to the county economy. Goochland has updated its voting districts in 2022 to better represent the population of all 5 districts. 
-                                                       Goochland Country also has a huge summer program with plenty of activates. The activities are located all over the county at different facilities 
+                                                       Goochland Country also has a vast summer program with plenty of activates. The activities are located all over the county at different facilities 
                                                        including the skate park, gymnasium, the baseball fields, weight room, trails, and many more [1][2]. "),
                                                      
                                                      h4(strong("Summary Statistics")),
-                                                     p("Goochland County’s population is 23,472 people, which is split between 49.8% male (11,698), and 50.2% female (11,774) [3]. 23,524 identify as one 
-                                                       race, where 19,302 are white, 3,267 are African American, 75 American Indian and Alaska Native, 494 Asian, 3 Native Hawaiian and Other Pacific Islander, 
+                                                     p("Goochland County’s population is 23,472, which is split between 49.8% male (11,698), and 50.2% female (11,774) [3]. 23,524 identify as one 
+                                                       race, where 19,302 are white, 3,267 are African American, 75 are American Indian and Alaska Native, 494 Asian, 3 are Native Hawaiian and Other Pacific Islander, 
                                                        and 383 are some other race [4]." ),
                                                      p("57.9% of the population within Goochland County is employed. The unemployment rate is 3.7% [5]."),
-                                                     p("There are 11,001 civilian employed population, 418 are employed under agriculture, forestry, fishing and hunting, and mining [6]."),
-                                                     p("There are a total of 8,711 households in Goochland County. The median income is $97,146 with a margin of error of around 8,582. Around 24.1% of the 6,600 
-                                                       family have one earner, while 46.1% have two earners [7]. The greatest proportion (20.5%) of earners in Goochland earn between $100,000 to $149,999. 18.4% 
-                                                       of earners in Goochland earn $200,000 plus [8]."),
-                                                     p("Nearly 93.1% of the population 25 and over have graduate high school and gone to further their academic career. The highest level of education, a graduate or 
-                                                       professional degree has been attained by around 3,531 people, or 20.1% of the population over 25 years old [9]."),
-                                                     p("There were 355 farms with an average farm size of 160. This makes the total land coverage of farms to be 56,739 acres. $ 11,740,000 was generated from products 
-                                                       sold to market. 46% of farms sold less than $2,500, and 3% of farms sold between over $100,000. Grains, oilseeds, dry beans, and dry peas were the main crop that 
-                                                       was sold ($2,846,000) and Milk from cows were the main Livestock, poultry, and products sold ($4,936,000) [10]."),
-                                                     p("1.0% of Goochland’s population moved within the county, 8.4% moved into the county from a different county in VA, .7% moved from a completely different state, .3% 
+                                                     p("There are 11,001 civilian employed citizens with 418 employed under agriculture, forestry, fishing and hunting, and mining [6]."),
+                                                     p("There are a total of 8,711 households in Goochland County. The median income is $97,146 with a margin of error of around 8,582. Approximately 24.1% of the 6,600 
+                                                       households have one earner, while 46.1% have two earners [7]. The greatest proportion (20.5%) of earners in Goochland make between $100,000 to $149,999. 18.4% 
+                                                       of earners in Goochland earn over $200,000 [8]."),
+                                                     p("Nearly 93.1% of the population 25 and over have graduated high school and gone to further their academic career. The highest level of education, a graduate or 
+                                                       professional degree, has been attained by around 3,531 people, or 20.1% of the population over 25 years old [9]."),
+                                                     p("According to the 2017 agricultural census, there were approximately 355 farms with an average farm size of 160 acres. This makes the total land coverage of farms to be 56,739 acres. 
+                                                     $11,740,000 was generated from agricultural products sold to market. 46% of farms sold less than $2,500, and 3% of farms sold over $100,000. Grains, oilseeds, dry beans, and dry peas were the main crops that 
+                                                       were sold ($2,846,000) and milk from cows were the main livestock and poultry products sold ($4,936,000) [10]."),
+                                                     p("1.0% of Goochland’s population moved within the county, 8.4% moved into the county from a different county in VA, .7% moved from a completely different state, and .3% 
                                                        moved from abroad [11]."),
                                               ) ,
                                               column(8, 
@@ -343,13 +403,20 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Income Distribution" = "ginc",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "gedu")
                                                      ),
-                                                     sliderInput(inputId = "yearSelect_gsoc", label = "Select Year: ", 
-                                                                 width = "150%", 
-                                                                 min = 2017,
-                                                                 max = 2020,
-                                                                 value = 2020,
-                                                                 sep = ""),
+                                                     radioButtons(inputId = "yearSelect_gsoc", label = "Select Year: ", 
+                                                                 choices = c("2017", "2018", "2019", "2020"), 
+                                                                 selected = "2020"),
                                                      plotOutput("gsoc", height = "500px"),
+                                                     h4(strong("Visualization Summaries")),
+                                                     p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. 
+                                                       The 25-44 age group has been the second largest, but has faced more inconsistency and has seen a decrease since 2019."),
+                                                     p("The", strong("employment"), "graphs indicates that the education, health, and social services industry group has been the largest by a wide margin, and specifically saw a large 
+                                                       increase between 2018 and 2019. The agricultural, forestal, fishing, hunting, and mining industry group has consistently been the smallest, employing less than 5% of 
+                                                       the population every year."),
+                                                     p("The" ,strong("income distribution"), "graph illustrates the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied 
+                                                       by a decrease in earnings below $75,000. It is also notable that earnings above $100,000 and below $35,000 are the largest categories throughout all years."),
+                                                     p("The" ,strong("median earnings"), "graphs highlight the fact that those with a highest educational attainment of Some college/Associates earn the most. The median earnings for this 
+                                                       group were significantly higher than others in 2017 and 2018, but saw a significant decrease to $65,890 in 2019. This number goes back up to $75,313 in 2020; still much lower than the first two years."),
                                                      
                                               ),
                                      ),
@@ -370,30 +437,29 @@ ui <- navbarPage(title = "DSPG 2022",
                                               p("", style = "padding-top:10px;"), 
                                               column(4, 
                                                      h4(strong("County Background")),
-                                                     p("Powhatan, located in the Virginia’s Central Piedmont, was founded in 1777 by the Virginia General Assembly. It is 272 mi2 and is home to a population 
-                                                       of 29,253. The James River borders the North end of the country, contributing to the formation of many creeks stretching southward throughout the county. 
+                                                     p("Powhatan County, located in the Virginia’s Central Piedmont, was founded in 1777 by the Virginia General Assembly. It is 272 square miles and is home to a population 
+                                                       of 29,253. The county is approximately 20 miles from Richmond and 2 hours from Washington, D.C. The James River borders the north end of the county, contributing to the formation of many creeks stretching southward. 
                                                        There are five districts within the county and 12 polling places interspersed through them. Powhatan is rich in history and offers an abundance of tourist 
                                                        attractions contributing to its thriving economy. There are three parks/wildlife management areas within the county: Powhatan Wildlife Management Area, Fighting Creek Park, 
-                                                       and Powhatan State Park. Where once were several farms, the Powhatan Wildlife Management Area is 4462 acres that provide many experiences such as hunting, fishing and other 
-                                                       forested activities that aim to maintain the diversity of its natural wildlife species."),
+                                                       and Powhatan State Park. Where once were several farms, the Powhatan Wildlife Management Area is 4,462 acres that provide many experiences such as hunting, fishing and other 
+                                                       forested activities that aim to maintain the diversity of its natural wildlife species. [1][2]"),
                                                      
                                                      h4(strong("Summary Statistics")),
-                                                     p("The total population is 29,253 people, split between 51% male (15,188), and 49% female (14,065). [Link] 28,762 identify as one race, where 25,732 are white, 2,505 are African 
-                                                       American, 64 American Indian and Alaska Native, 169 Asian, 24 Native Hawaiian and Other Pacific Islander, and 268 are some other race.[Link]."),
-                                                     p("24,715 or 57.3% of the population within Powhatan County is employed, along with an unemployment rate of 1.4%."),
+                                                     p("The total population  of Powhatan County is 29,253, split between 51% male (15,188), and 49% female (14,065) [3]. 28,762 identify as one race, where 25,732 are white, 2,505 are African 
+                                                       American, 64 are American Indian and Alaska Native, 169 are Asian, 24 are Native Hawaiian and Other Pacific Islander, and 268 are some other race [4]."),
+                                                     p("24,715 or 57.3% of the population within Powhatan County is employed. The unemployment rate is 1.4%. [5]"),
                                                      p("Of the 13,938 civilian employed population, there are very few that are employed in agriculture, forestry, fishing, hunting, and mining. Around .94% of the civilian employed 
                                                        population fall under that category. Of that .94% of the workers, around half of them serve roles in management, business, science, and art occupations while 14.5% of that 
-                                                       population work in natural resources, construction, and maintenance occupations. [Link]"),
-                                                     p("There were 263 farms with an average farm size of 132. This makes the total land coverage of farms to be 34,585 acres. $11,249,000 was generated from products sold to market. 
-                                                       54% of farms sold less than $2,500, and 13% of farms sold between $25,000 and $24,999. Grains, oilseeds, dry beans, and dry peas were the main crop that was sold ($2,542,000) 
-                                                       and poultry and eggs were the main Livestock, poultry, and products sold ($6,056,000). [Link]"),
-                                                     p("Of the 10,392 households, the median income is $93,833 with a margin of error of around 5,342. Around 30.2% of the 8,220 family have one earner, while 44.8% have two earners. [Link] 
-                                                       The greatest proportion (23.4%) of earners in Powhatan earn between $100,000 to $149,999. [Link]"),
-                                                     p("Nearly 89.6% of the population 25 and over have graduate high school and gone to further their academic career. The highest level of education, a graduate or professional degree has 
-                                                       been attained by around 2,032 people, or 9.3% of the population over 25 years old. [Link]"),
-                                                     p("1.9% of Powhatan’s population moved within the county, 7.4% moved into the county from a different county in VA, .8% moved from a completely different state, .1% moved from abroad. [Link]"),
-                                                     p("As of the 2020, For both the male and female population, the highest proportion of the population are ages 55-59 making up 8.63% of the population, while the smallest percent of the population 
-                                                       make up the senior citizens that are 85 years and older, which is 1.35% of the population. [Link]"),
+                                                       population work in natural resources, construction, and maintenance occupations [6]."),
+                                                     p("Of the 10,392 households, the median income is $93,833 with a margin of error of around 5,342. Approximately 30.2% of the 8,220 family have one earner, while 44.8% have two earners [7]. 
+                                                       The greatest proportion (23.4%) of earners in Powhatan make between $100,000 to $149,999 [8]."),
+                                                     p("Nearly 89.6% of the population 25 and over have graduated high school and gone to further their academic career. The highest level of education, a graduate or professional degree, has 
+                                                       been attained by around 2,032 people, or 9.3% of the population over 25 years old [9]."),
+                                                     p("According to the 2017 agricultural census, there were approximately 263 farms with an average farm size of 132 acres in 2017. This makes the total land coverage of farms to be 34,585 acres. $11,249,000 was generated from agriultural products sold to market. 
+                                                       54% of farms sold less than $2,500, and 13% of farms sold between $25,000 and $24,999. Grains, oilseeds, dry beans, and dry peas were the main crops that were sold ($2,542,000) 
+                                                       and poultry and eggs were the main livestock and poultry products sold ($6,056,000) [10]."),
+                                                     p("1.9% of Powhatan’s population moved within the county, 7.4% moved into the county from a different county in VA, .8% moved from a completely different state, and .1% moved from abroad [11]."),
+                                                     
                                               ) ,
                                               column(8, 
                                                      h4(strong("Sociodemographics")),
@@ -403,16 +469,24 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Income Distribution" = "pinc",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "pedu")
                                                      ),
-                                                     sliderInput(inputId = "yearSelect_psoc", label = "Select Year: ", 
-                                                                 width = "150%", 
-                                                                 min = 2017,
-                                                                 max = 2020,
-                                                                 value = 2020,
-                                                                 sep = ""),
+                                                     radioButtons(inputId = "yearSelect_psoc", label = "Select Year: ", 
+                                                                 choices = c("2017", "2018", "2019", "2020"), 
+                                                                 selected = "2020"),
                                                      plotOutput("psoc", height = "500px"),
+                                                     h4(strong("Visualization Summaries")),
+                                                     p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. The 25-44 age group has been 
+                                                       the second largest, but has faced more inconsistency and has seen a decrease since 2018."),
+                                                     p("The", strong("employment"), "graphs indicates that the education, health, and social services industry group has been the largest by a wide margin, and specifically saw a large increase in 2019. The agricultural, forestal,
+                                                       fishing, hunting, and mining industry group has consistently been the smallest with the exception of 2018 when the information industry was smaller."),
+                                                     p("The", strong("income distribution"), "graph illustrates the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied by a consistent decrease in earnings below $75,000."),
+                                                     p("The", strong("median earnings"), "graphs highlight the fact that those with a highest educational attainment of Some college/Associates earn the most. The median earnings for this group were significantly higher than others up until 2019, but saw 
+                                                       a significant decrease to $66,915 in 2020. This number is nearly identical to the median earnings for those with less than a high school education at $66,716."),
                                               ),
                                               column(12, 
                                                      h4("References: "), 
+                                                     p(tags$small("[1] About Powhatan. About Powhatan | Powhatan County, VA - Official Website. (n.d.). Retrieved July 15, 2022, from http://www.powhatanva.gov/317/About-Powhatan")),
+                                                     p(tags$small("[2] Powhatan WMA. Virginia Department of Wildlife Resources. (n.d.). Retrieved July 15, 2022, from https://dwr.virginia.gov/wma/powhatan/")),
+                                                     p(tags$small("[3] American Community Survey 5-Year Estimates 2016/2020")),
                                                      p(tags$small("United States Department of Agriculture. Powhatan County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51145.pdf")) ,
                                                      p("", style = "padding-top:10px;")) 
                                      ), 
@@ -646,14 +720,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Crops Grown in Goochland County")),
-                                                                p("The map and histogram on the right show the crop layer data for Goochland County. Goochland County is heavily forested. 
-                                                                  Forested lands account for 63.94% of all land in Goochland County. This number is a decrease from the 69.63% in 2012. 
-                                                                  Developed land in Goochland increased from 7.28% to 9.29% in 10 years. Most of their developed land in the east side of 
+                                                                p("The map and histogram on the right show the crop layer data for Goochland County. Goochland County is heavily forested, 
+                                                                with forested lands accounting for 63.94% of all land. This number is a decrease from the 69.63% in 2012. 
+                                                                  Developed land in Goochland increased from 7.28% to 9.29% in 10 years. Most of the developed land is in the east side of 
                                                                   the county closer to Richmond, VA. Forages is the second biggest crop layer category with 14.99%. Forage is bulky food 
-                                                                  such as grass or hay for horses and cattle. Croplands are spread out throughout the county. Croplands only use 4.1% of 
-                                                                  the land in the county. From an agricultural perspective, the land is most likely used for raising livestock instead of 
-                                                                  growing crops. There is a heavy concentration of row crops on the south boundary of Goochland. The James River also creates 
-                                                                  the boundary between Powhatan County and Goochland County.")
+                                                                  such as grass or hay for horses and cattle. Croplands are spread out throughout the county and only make up 4.1% of 
+                                                                  the land. From an agricultural perspective, the land is more often used for raising livestock instead of 
+                                                                  growing crops. There is a heavy concentration of row crops on the south boundary of county. The James River also acts as a 
+                                                                   boundary between Powhatan County and Goochland County.")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
@@ -667,7 +741,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   "Total Acreage by Land Type 2012" = "gcrop12")
                                                                 ),
                                                                 
-                                                                plotOutput("gcrop_graph", height = "500px"),
+                                                                plotlyOutput("gcrop_graph", height = "500px"),
                                                          ),
                                                          column(12, 
                                                                 
@@ -703,7 +777,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             step = 9,
                                                                             value = 2021,
                                                                             sep = "", ticks = FALSE),
-                                                                leafletOutput("mymap",height = 500),                                                                h4(strong("Soil Quality Graph")),
+                                                                leafletOutput("mymap",height = 500), 
+                                                                h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("gsoil", height = "500px"),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
                                                          column(12, 
@@ -805,17 +880,24 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Crops Grown in Powhatan County")),
-                                                                p("The map and histogram on the right show the crop layer data for Powhatan County. Powhatan County is heavily forested. Forested lands account for 67.84% of all 
-                                                                  land in Powhatan County. This number is a decrease from the 75.82% in 2012. A big reason why that number is reduced is that Powhatan is rapidly developing. 
-                                                                  Developed land in Powhatan increased from 3.46% to 6.88% in 10 yearsost of their developed land in the east side of the county closer to Richmond, VA. Forages 
+                                                                p("The map and histogram on the right show the crop layer data for Powhatan County. Powhatan County is heavily forested with forested lands account for 67.84% of all 
+                                                                  land. This number is a decrease from the 75.82% in 2012. A big reason why that number is reduced is that Powhatan is rapidly developing. 
+                                                                  Developed land in Powhatan increased from 3.46% to 6.88% in 10 years. Most of this developed land is in the east side of the county closer to Richmond, VA. Forages 
                                                                   is the second biggest crop layer category with 15.42%. Forage is bulky food such as grass or hay for horses and cattle. Croplands are spread out throughout the 
-                                                                  county. Croplands only use 4.1% of the land in the county. From an agricultural perspective, the land is most likely used for raising livestock instead of growing crops. 
-                                                                  There is a heavy concentration of row crops on the north boundary of Powhatan. The James River also creates the boundary between Powhatan County and Goochland County.")
+                                                                  county andmake up only use 4.1% of the land in the county. From an agricultural perspective, the land is most often used for raising livestock instead of growing crops. 
+                                                                  There is a heavy concentration of row crops on the north boundary of Powhatan. The James River also acts as a boundary between Powhatan County and Goochland County.")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
                                                                 
-                                                                #                plotlyOutput("trend1", height = "600px")
+                                                                #                leafletOutput("trend1", height = "600px")
+                                                                h4(strong("Crop Layer Graphs")),
+                                                                selectInput("pcrop", "Select Variable:", width = "100%", choices = c(
+                                                                  "Total Acreage by Land Type 2021" = "pcrop21",
+                                                                  "Total Acreage by Land Type 2012" = "pcrop12")
+                                                                ),
+                                                                
+                                                                plotlyOutput("pcrop_graph", height = "500px"),
                                                                 
                                                          ),
                                                          column(12, 
@@ -910,7 +992,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                               h1(strong("Land Parcellation                 "), align = "center"),
                                               p("", style = "padding-top:10px;"),
                                               tabsetPanel(
-                                                tabPanel("Land Parcels",
+                                                tabPanel("Parcels",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Parcels in Goochland County")),
@@ -925,8 +1007,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Parcellation Map")),
-                                                                
-                                                                #          plotlyOutput("trend1", height = "600px")
+                                                                sliderInput(inputId = "g.parcellationRange",
+                                                                            label = "Years of Parcellation:",
+                                                                            min = 2019,
+                                                                            max = 2022,
+                                                                            value = c(2019, 2022),
+                                                                            sep = "", 
+                                                                            width = "150%"),
+                                                                leafletOutput("g.parcellationPlot")
                                                                 
                                                          ),
                                                          column(12, 
@@ -943,7 +1031,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          
                                                 ), 
                                                 
-                                                tabPanel("Parcellation Hot Spots",
+                                                tabPanel("Hot Spots",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Parcellation Hot Spots in Goochland County")),
@@ -964,8 +1052,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             max = 2022,
                                                                             step = 1,
                                                                             value = c(2019,2022),
+                                                                            width = "150%",
                                                                             sep = ""),
-                                                                leafletOutput("g.hotspotMap",height = 1000)
+                                                                leafletOutput("g.hotspotMap")
                                                                 
                                                          ),
                                                          column(12, 
@@ -987,7 +1076,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                               h1(strong("Land Parcellation"), align = "center"),
                                               p("", style = "padding-top:10px;"),
                                               tabsetPanel(
-                                                tabPanel("Land Parcels",
+                                                tabPanel("Parcels",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Parcels in Powhatan County")),
@@ -1002,8 +1091,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Parcellation Map")),
-                                                                
-                                                                #          plotlyOutput("trend1", height = "600px")
+                                                                sliderInput(inputId = "p.parcellationRange",
+                                                                            label = "Years of Parcellation:",
+                                                                            min = 2012,
+                                                                            max = 2020,
+                                                                            value = c(2012, 2020),
+                                                                            sep = "", 
+                                                                            width = "150%", ticks = FALSE),
+                                                                leafletOutput("p.parcellationPlot")
                                                                 
                                                          ),
                                                          column(12, 
@@ -1020,7 +1115,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          
                                                 ), 
                                                 
-                                                tabPanel("Parcellation Hot Spots",
+                                                tabPanel("Hot Spots",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Parcellation Hot Spots in Powhatan County")),
@@ -1149,11 +1244,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                           img(src = "chris.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           br(), 
                                           img(src = "rache.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'John Malla', target = '_blank'), "(Virginia Tech, Undergraduate in Computational Modeling and Data Analytics);",
+                                          p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Rachel Inman', target = '_blank'), "(Virginia Tech, Undergraduate in Smart and Sustainable Cities and Minoring in Landscape Architecture);",
                                             br(), 
-                                            a(href = 'https://www.linkedin.com/in/julie-rebstock', 'Christopher Vest', target = '_blank'), "(Jacksonville State University, Undergraduate in Finance);",
+                                            a(href = 'https://www.linkedin.com/in/julie-rebstock', 'John Malla', target = '_blank'), "(Virginia Tech, Undergraduate in Computational Modeling and Data Analytics);",
                                             br(), 
-                                            a(href = 'www.linkedin.com/in/rachelinman21', 'Rachel Inman', target = '_blank'), "(Virginia Tech, Undergraduate in Smart and Sustainable Cities and Minoring in Landscape Architecture)."),
+                                            a(href = 'www.linkedin.com/in/rachelinman21', 'Christopher Vest', target = '_blank'), "(Jacksonville State University, Undergraduate in Finance)."),
                                           p("", style = "padding-top:10px;") 
                                    ),
                                    column(6, align = "center",
@@ -1270,12 +1365,25 @@ server <- function(input, output){
     input$gcrop
   })
   
-  output$gcrop_graph <- renderPlot({
+  output$gcrop_graph <- renderPlotly({
     if(gcrop() == "gcrop12"){
       gcrop12
     }
     else if(gcrop() == "gcrop21"){
       gcrop21
+    }
+  })
+  
+  pcrop <- reactive({
+    input$pcrop
+  })
+  
+  output$pcrop_graph <- renderPlotly({
+    if(pcrop() == "pcrop12"){
+      pcrop12
+    }
+    else if(pcrop() == "pcrop21"){
+      pcrop21
     }
   })
   
@@ -1313,11 +1421,59 @@ server <- function(input, output){
                                                      weight = 1,
                                                      smoothFactor=1,
                                                      fillColor = "red",
-                                                     fillOpacity = 0.1)
+                                                     fillOpacity = 0.2)
     }
     g.hotspot.plt
   })
   
+  
+  # Plotting Parcellations
+  
+  parc.func <- function(data, range, county, cnty){
+    
+    # Declares initial leaflet, nothing added to it.
+    my.parc.plt <- leaflet()%>%
+      addTiles() %>%
+      addProviderTiles(providers$CartoDB.Positron) %>%
+      addPolygons(data = cnty, fillColor = "transparent")
+    
+    # Sets view based on county
+    if(county == "Powhatan"){
+      my.parc.plt <- my.parc.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
+    }
+    else{
+      my.parc.plt <- my.parc.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
+    }
+    
+    # for loop to add polygons based on what the max year is vs. subsequent years prior
+    for(i in range){
+      # Adds most recent year's parcellations
+      if(i == max(range)){
+        my.parc.plt <- my.parc.plt %>%
+          addPolygons(data = data %>% filter(year == i), 
+                      fillColor = "red", smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+      }
+      # Adds subsequent year's parcellations
+      else {
+        my.parc.plt <- my.parc.plt %>%
+          addPolygons(data = data %>% filter(year == i), 
+                      fillColor = "red", smoothFactor = 0.1, fillOpacity = .25, stroke = FALSE)
+      }
+    }
+    my.parc.plt
+  }
+  
+  
+  output$g.parcellationPlot <- renderLeaflet({
+    yearRange <- input$g.parcellationRange[1]:input$g.parcellationRange[2]
+    parc.func(gooch_parcellation, yearRange, "Goochland", gooch_bndry)
+  })
+  
+  output$p.parcellationPlot <- renderLeaflet({
+    yearRange <- input$p.parcellationRange[1]:input$p.parcellationRange[2]
+    parc.func(pow_parcellation, yearRange, "Powhatan", pow_bndry)
+    
+  })
   
   
 }

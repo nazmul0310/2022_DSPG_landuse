@@ -22,6 +22,7 @@ p <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Area_a
   theme(legend.position = "none") +
   scale_x_discrete(limits = rev) +
   scale_fill_viridis() +
-  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification")
-ggplotly(p, tooltip = "text")
+  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") 
+ggplotly(p, tooltip = "text") 
+
  
