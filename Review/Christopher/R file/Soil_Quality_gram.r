@@ -12,9 +12,8 @@ g <- ggplot(soil_quality, aes(x = `G_Value`, y = `G_Area_acre`, fill = `G_Area_a
   theme(legend.position = "none") +
   scale_x_discrete(limits = rev) +
   scale_fill_viridis() + 
-  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") %>% 
-plot_ly(g, tooltip = "text")
-g + theme(axis.text.y = element_text(hjust = 0))
+  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification")
+ggplotly(g, tooltip = "text")
 
 p <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Area_acre`)) +
   geom_bar(stat = "identity", aes(text = paste0(`P_Value`, "\n", "Total Acres: ", round(`P_Area_acre`, 0))))+
@@ -23,7 +22,7 @@ p <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Area_a
   theme(legend.position = "none") +
   scale_x_discrete(limits = rev) +
   scale_fill_viridis() +
-  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") %>%
-plot_ly(p, tooltip = "text")
-p + theme(axis.text.y = element_text(hjust = 0))
+  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") 
+ggplotly(p, tooltip = "text") 
+
  
