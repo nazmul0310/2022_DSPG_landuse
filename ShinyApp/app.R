@@ -61,7 +61,7 @@ ind.func <- function(inputYear, inputCounty) {
   
   ind <- industry %>% 
     filter(county == inputCounty, year==inputYear) %>%
-    ggplot(aes(x = reorder(name, -val2), y = value, fill = value)) + 
+    ggplot(aes(x = reorder(name, desc(name)), y = value, fill = value)) + 
     geom_bar(stat = "identity") + theme(legend.position = "none") +
     coord_flip() + scale_fill_viridis()  + 
     theme_light() + 
@@ -374,12 +374,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Income Distribution" = "ginc",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "gedu")
                                                      ),
-                                                     sliderInput(inputId = "yearSelect_gsoc", label = "Select Year: ", 
-                                                                 width = "150%", 
-                                                                 min = 2017,
-                                                                 max = 2020,
-                                                                 value = 2020,
-                                                                 sep = ""),
+                                                     radioButtons(inputId = "yearSelect_gsoc", label = "Select Year: ", 
+                                                                 choices = c("2017", "2018", "2019", "2020"), 
+                                                                 selected = "2020"),
                                                      plotOutput("gsoc", height = "500px"),
                                                      
                                               ),
@@ -434,12 +431,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Income Distribution" = "pinc",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "pedu")
                                                      ),
-                                                     sliderInput(inputId = "yearSelect_psoc", label = "Select Year: ", 
-                                                                 width = "150%", 
-                                                                 min = 2017,
-                                                                 max = 2020,
-                                                                 value = 2020,
-                                                                 sep = ""),
+                                                     radioButtons(inputId = "yearSelect_psoc", label = "Select Year: ", 
+                                                                 choices = c("2017", "2018", "2019", "2020"), 
+                                                                 selected = "2020"),
                                                      plotOutput("psoc", height = "500px"),
                                               ),
                                               column(12, 
