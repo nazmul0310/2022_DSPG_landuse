@@ -265,6 +265,28 @@ harbour<- leaflet() %>%
   setView(lng=-77.949, lat=37.742, zoom=9)
 
 
+
+      # Land Parcellation Imports
+
+# gooch
+gooch_parcellation <- st_read("data/parcellationData/Gooch_Parcellation_LT.shp") %>%
+  st_transform(crs = st_crs("EPSG:4326"))
+gooch_parcellation$year <- substr(gooch_parcellation$UNIQID_1, 1, 4)
+gooch_bndry <- st_read("data/cnty_bndry/Goochland_Boundary.shp" )%>%
+  st_transform(crs = st_crs("EPSG:4326"))
+
+# pow
+pow_parcellation <- read_sf("data/parcellationData/Powhatan_Parcellation_LT.shp") %>%
+  st_transform(crs = st_crs("EPSG:4326"))
+pow_parcellation$year <- substr(pow_parcellation$UNIQ_ID_12, 1, 4)
+pow_bndry <- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>%
+  st_transform(crs = st_crs("EPSG:4326"))
+
+
+
+
+
+
 # ui --------------------------------------------------------------------------------------------------------------------
 
 ui <- navbarPage(title = "DSPG 2022",
@@ -963,8 +985,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Parcellation Map")),
-                                                                
-                                                                #          plotlyOutput("trend1", height = "600px")
+                                                                sliderInput(inputId = "g.parcellationRange",
+                                                                            label = "Years of Parcellation:",
+                                                                            min = 2019,
+                                                                            max = 2022,
+                                                                            value = c(2019, 2022),
+                                                                            sep = "", 
+                                                                            width = "150%"),
+                                                                leafletOutput("g.parcellationPlot")
                                                                 
                                                          ),
                                                          column(12, 
@@ -1046,7 +1074,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             max = 2020,
                                                                             value = c(2012, 2020),
                                                                             sep = "", 
-                                                                            width = "150%"),
+                                                                            width = "150%", ticks = FALSE),
                                                                 leafletOutput("p.parcellationPlot")
                                                                 
                                                          ),
@@ -1372,46 +1400,53 @@ server <- function(input, output){
   })
   
   
-  output$p.parcellationPlot <- renderLeaflet({
-    pow_parcellation <- read_sf("data/parcellationData/Powhatan_Parcellation_LT.shp") %>%
-      st_transform(crs = st_crs("EPSG:4326"))
-    pow_parcellation$year <- substr(pow_parcellation$UNIQ_ID_12, 1, 4)
+  # Plotting Parcellations
+  
+  parc.func <- function(data, range, county, cnty){
     
-    yearRange <- input$p.parcellationRange[1]:input$p.parcellationRange[2]
+    # Declares initial leaflet, nothing added to it.
+    my.parc.plt <- leaflet()%>%
+      addTiles() %>%
+      addProviderTiles(providers$CartoDB.Positron) %>%
+      addPolygons(data = cnty, fillColor = "transparent")
     
-    
-    
-    parc.func <- function(data, range){
-      
-      # Declares initial leaflet, nothing added to it.
-      cnty<- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84") 
-      my.parc.plt <- leaflet()%>%
-        addTiles() %>%
-        addProviderTiles(providers$CartoDB.Positron) %>%
-        setView(lng=-77.9188, lat=37.5415 , zoom=10) %>%
-        addPolygons(data = cnty, fillColor = "transparent")
-      
-      # for loop to add polygons based on what the max year is vs. subsequent years prior
-      for(i in range){
-        # Adds most recent year's parcellations
-        if(i == max(range)){
-          my.parc.plt <- my.parc.plt %>%
-            addPolygons(data = data %>% filter(year == i), 
-                        fillColor = "red", smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
-        }
-        # Adds subsequent year's parcellations
-        else {
-          my.parc.plt <- my.parc.plt %>%
-            addPolygons(data = data %>% filter(year == i), 
-                        fillColor = "red", smoothFactor = 0.1, fillOpacity = .25, stroke = FALSE)
-        }
-      }
-      my.parc.plt
+    # Sets view based on county
+    if(county == "Powhatan"){
+      my.parc.plt <- my.parc.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
     }
-    parc.func(pow_parcellation, yearRange)
+    else{
+      my.parc.plt <- my.parc.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
+    }
     
+    # for loop to add polygons based on what the max year is vs. subsequent years prior
+    for(i in range){
+      # Adds most recent year's parcellations
+      if(i == max(range)){
+        my.parc.plt <- my.parc.plt %>%
+          addPolygons(data = data %>% filter(year == i), 
+                      fillColor = "red", smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+      }
+      # Adds subsequent year's parcellations
+      else {
+        my.parc.plt <- my.parc.plt %>%
+          addPolygons(data = data %>% filter(year == i), 
+                      fillColor = "red", smoothFactor = 0.1, fillOpacity = .25, stroke = FALSE)
+      }
+    }
+    my.parc.plt
+  }
+  
+  
+  output$g.parcellationPlot <- renderLeaflet({
+    yearRange <- input$g.parcellationRange[1]:input$g.parcellationRange[2]
+    parc.func(gooch_parcellation, yearRange, "Goochland", gooch_bndry)
   })
   
+  output$p.parcellationPlot <- renderLeaflet({
+    yearRange <- input$p.parcellationRange[1]:input$p.parcellationRange[2]
+    parc.func(pow_parcellation, yearRange, "Powhatan", pow_bndry)
+    
+  })
   
   
 }
