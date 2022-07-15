@@ -682,14 +682,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Use in Goochland County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Insert text ")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
@@ -758,14 +751,30 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Soil Quality in Goochland County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Good quality soil is essential for crops to produce. Which makes soil quality a factor that could result in land conversion. 
+                                                                  The National Cooperative Soil Survey is a survey done to classify soil into classes based on its usefulness. Those classes are: "),
+                                                                tags$ul(
+                                                                  
+                                                                  tags$li(strong("Class 1"), "soils have few limitations that restrict their use."),
+                                                                  
+                                                                  tags$li(strong("Class 2"), "soils have moderate limitations that reduce the choice of plants or that require moderate conservation practices."),
+                                                                  
+                                                                  tags$li(strong("Class 3"), "soils have severe limitations that reduce the choice of plants, require special conservation practices, or both."),
+                                                                  
+                                                                  tags$li(strong("Class 4"), "soils have very severe limitations that reduce the choice of plants, require very careful management, or both."),
+                                                                  
+                                                                  tags$li(strong("Class 5"), "soils are subject to little or no erosion but have other limitations, impractical to remove, that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
+                                                                  
+                                                                  tags$li(strong("Class 6"), "soils have severe limitations that make them generally suitable for cultivation and that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
+                                                                  
+                                                                  tags$li(strong("Class 7"), "soils have very severe limitations that make them unsuitable for cultivation and that restrict their use mainly to grazing, forestland, or wildlife habitat."),
+                                                                  
+                                                                  tags$li(strong("Class 8"), "soils and miscellaneous areas have limitations that preclude commercial plant production and that restrict their use to recreational purposes, wildlife habitat, watershed, or esthetic purposes."),
+                                                                  
+                                                                ),
+                                                                p("Most of Goochland County’s soil is in Class 2 or 3. This means that most of the land in Goochland is farmable, but it has limitations that reduce the choice of plants or that require very careful 
+                                                                  management, or both.  On the other end of the spectrum, Goochland has zero acres of land in Class 8. Goochland also has a low number of acres with no data with 5,237 acres. Despite the limitations, 
+                                                                  it still is possible to farm and for Goochland to be mostly agricultural."),
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
@@ -796,14 +805,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Traffic in Goochland County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Insert text")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Traffic Visualizations")),
@@ -837,14 +839,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Use in Powhatan County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Insert Text")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
@@ -898,7 +893,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 ),
                                                                 
                                                                 plotlyOutput("pcrop_graph", height = "500px"),
-                                                                
+                                                                p(tags$small("Data Source: ACS 2016-2020")),
                                                          ),
                                                          column(12, 
                                                                 
@@ -915,14 +910,30 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Soil Quality in Powhatan County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Good quality soil is essential for crops to produce. Which makes soil quality a factor that could result in land conversion. 
+                                                                  The National Cooperative Soil Survey is a survey done to classify soil into classes based on its usefulness. Those classes are: "),
+                                                                tags$ul(
+                                                                  
+                                                                  tags$li(strong("Class 1"), "soils have few limitations that restrict their use."),
+                                                                  
+                                                                  tags$li(strong("Class 2"), "soils have moderate limitations that reduce the choice of plants or that require moderate conservation practices."),
+                                                                  
+                                                                  tags$li(strong("Class 3"), "soils have severe limitations that reduce the choice of plants, require special conservation practices, or both."),
+                                                                  
+                                                                  tags$li(strong("Class 4"), "soils have very severe limitations that reduce the choice of plants, require very careful management, or both."),
+                                                                  
+                                                                  tags$li(strong("Class 5"), "soils are subject to little or no erosion but have other limitations, impractical to remove, that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
+                                                                  
+                                                                  tags$li(strong("Class 6"), "soils have severe limitations that make them generally suitable for cultivation and that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
+                                                                  
+                                                                  tags$li(strong("Class 7"), "soils have very severe limitations that make them unsuitable for cultivation and that restrict their use mainly to grazing, forestland, or wildlife habitat."),
+                                                                  
+                                                                  tags$li(strong("Class 8"), "soils and miscellaneous areas have limitations that preclude commercial plant production and that restrict their use to recreational purposes, wildlife habitat, watershed, or esthetic purposes."),
+                                                                  
+                                                                ),
+                                                                p("Powhatan County soil is mostly in Class 2. As mentioned above, Class 2 has moderate limitations so crops can be grown here. Powhatan also has land that is in Class 1. This is the best land
+                                                                  in the county, but it only makes up 1,686 acres. Class 4 soil is also prevalent in Powhatan. However, this soil class is unfavorable for farming as it has very severe limitations. The graph 
+                                                                  on the right can be zoomed in on Class 8. This class is the least suitable soil class for any activity. Powhatan has 29 acres in the class. Overall, Powhatan has good farmland and can remain agricultural. "),
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
@@ -946,14 +957,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Traffic in Powhatan County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Insert text")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Traffic Visualizations")),
@@ -996,14 +1000,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Parcels in Goochland County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Insert text")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Parcellation Map")),
@@ -1035,14 +1032,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Parcellation Hot Spots in Goochland County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Insert text")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Parcellation Hot Spot Map")),
@@ -1054,9 +1044,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             value = c(2019,2022),
                                                                             width = "150%",
                                                                             sep = ""),
-                                                                leafletOutput("g.hotspotMap")
-                                                                
-                                                         ),
+                                                                leafletOutput("g.hotspotMap"),
+                                                                p(tags$small("Data Source: Goochland County Administrative Data"))),
                                                          column(12, 
                                                                 
                                                                 h4("References") , 
@@ -1080,14 +1069,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Parcels in Powhatan County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Insert text")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Parcellation Map")),
@@ -1119,14 +1101,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Parcellation Hot Spots in Powhatan County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Insert text")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Parcellation Hot Spot Map")),
