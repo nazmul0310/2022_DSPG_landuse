@@ -134,7 +134,7 @@ gcrop21 <- croplayer1 %>%
   theme(legend.position = "none") +     
   scale_fill_viridis() + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type") 
-ggplotly(gcrop21, tooltip = c("text")) 
+gcrop21 <-ggplotly(gcrop21, tooltip = c("text")) 
 
 gcrop12 <- croplayer1 %>% 
   filter(County == "Goochland", Year== 2012) %>%
@@ -146,7 +146,7 @@ gcrop12 <- croplayer1 %>%
   theme(legend.position = "none") + 
   scale_fill_viridis() + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
-ggplotly(gcrop12, tooltip = c("text"))
+gcrop12 <-ggplotly(gcrop12, tooltip = c("text"))
 
 pcrop21 <- croplayer1 %>% 
   filter(County == "Powhatan", Year==2021) %>%
@@ -158,7 +158,7 @@ pcrop21 <- croplayer1 %>%
   theme(legend.position = "none") + 
   scale_fill_viridis() + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
-ggplotly(pcrop21, tooltip = c("text"))
+pcrop21 <-ggplotly(pcrop21, tooltip = c("text"))
 
 pcrop12 <- croplayer1 %>% 
   filter(County == "Powhatan", Year== 2012) %>%
@@ -170,29 +170,29 @@ pcrop12 <- croplayer1 %>%
   theme(legend.position = "none") + 
   scale_fill_viridis() + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
-ggplotly(pcrop12, tooltip = c("text"))
+pcrop12 <- ggplotly(pcrop12, tooltip = c("text"))
 
 
 soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
 
 gsoil <- ggplot(soil_quality, aes(x = `G_Value`, y = `G_Area_acre`, fill = `G_Area_acre`)) +
-  geom_bar(stat = "identity", aes(text = paste0(`G_Value`, "\n", "Total Acres: ", round(`G_Area_acre`, 0))))+
+  geom_bar(stat = "identity",hoverinfo = "text", aes(text = paste0(`G_Value`, "\n", "Total Acres: ", round(`G_Area_acre`, 0))))+
   coord_flip() +
   theme(legend.position = "none") +
   scale_x_discrete(limits = rev) +
   scale_fill_viridis() + 
   labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification")
-ggplotly(gsoil, tooltip = "text")
+gsoil <-ggplotly(gsoil, tooltip = "text")
 
 psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Area_acre`)) +
-  geom_bar(stat = "identity", aes(text = paste0(`P_Value`, "\n", "Total Acres: ", round(`P_Area_acre`, 0))))+
+  geom_bar(stat = "identity",hoverinfo ="text", aes(text = paste0(`P_Value`, "\n", "Total Acres: ", round(`P_Area_acre`, 0))))+
   geom_errorbarh(aes(xmax=as.numeric(`P_Value`)+0.45,xmin=as.numeric(`P_Value`)-0.45,height=0),position=position_dodge(width=0.9)) +
   coord_flip() +
   theme(legend.position = "none") +
   scale_x_discrete(limits = rev) +
   scale_fill_viridis() +
   labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") 
-ggplotly(psoil, tooltip = "text")
+psoil <-ggplotly(psoil, tooltip = "text")
 
 
       # Powhatan Land Use
@@ -407,6 +407,16 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                  choices = c("2017", "2018", "2019", "2020"), 
                                                                  selected = "2020"),
                                                      plotOutput("gsoc", height = "500px"),
+                                                     h4(strong("Visualization Summaries")),
+                                                     p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. 
+                                                       The 25-44 age group has been the second largest, but has faced more inconsistency and has seen a decrease since 2019."),
+                                                     p("The", strong("employment"), "graphs indicates that the education, health, and social services industry group has been the largest by a wide margin, and specifically saw a large 
+                                                       increase between 2018 and 2019. The agricultural, forestal, fishing, hunting, and mining industry group has consistently been the smallest, employing less than 5% of 
+                                                       the population every year."),
+                                                     p("The" ,strong("income distribution"), "graph illustrates the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied 
+                                                       by a decrease in earnings below $75,000. It is also notable that earnings above $100,000 and below $35,000 are the largest categories throughout all years."),
+                                                     p("The" ,strong("median earnings"), "graphs highlight the fact that those with a highest educational attainment of Some college/Associates earn the most. The median earnings for this 
+                                                       group were significantly higher than others in 2017 and 2018, but saw a significant decrease to $65,890 in 2019. This number goes back up to $75,313 in 2020; still much lower than the first two years."),
                                                      
                                               ),
                                      ),
@@ -464,6 +474,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                  choices = c("2017", "2018", "2019", "2020"), 
                                                                  selected = "2020"),
                                                      plotOutput("psoc", height = "500px"),
+                                                     h4(strong("Visualization Summaries")),
+                                                     p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. The 25-44 age group has been 
+                                                       the second largest, but has faced more inconsistency and has seen a decrease since 2018."),
+                                                     p("The", strong("employment"), "graphs indicates that the education, health, and social services industry group has been the largest by a wide margin, and specifically saw a large increase in 2019. The agricultural, forestal,
+                                                       fishing, hunting, and mining industry group has consistently been the smallest with the exception of 2018 when the information industry was smaller."),
+                                                     p("The", strong("income distribution"), "graph illustrates the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied by a consistent decrease in earnings below $75,000."),
+                                                     p("The", strong("median earnings"), "graphs highlight the fact that those with a highest educational attainment of Some college/Associates earn the most. The median earnings for this group were significantly higher than others up until 2019, but saw 
+                                                       a significant decrease to $66,915 in 2020. This number is nearly identical to the median earnings for those with less than a high school education at $66,716."),
                                               ),
                                               column(12, 
                                                      h4("References: "), 
@@ -870,7 +888,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
                                                                 
-                                                                #                plotlyOutput("trend1", height = "600px")
+                                                                #                leafletOutput("trend1", height = "600px")
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 selectInput("pcrop", "Select Variable:", width = "100%", choices = c(
                                                                   "Total Acreage by Land Type 2021" = "pcrop21",
@@ -1344,6 +1362,8 @@ server <- function(input, output){
     input$gcrop
   })
   
+
+  
   output$gcrop_graph <- renderPlotly({
     if(gcrop() == "gcrop12"){
       gcrop12
@@ -1351,6 +1371,10 @@ server <- function(input, output){
     else if(gcrop() == "gcrop21"){
       gcrop21
     }
+  })
+  
+  pcrop <- reactive({
+    input$pcrop
   })
   
   output$pcrop_graph <- renderPlotly({
