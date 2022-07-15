@@ -74,7 +74,6 @@ Gooch_22_21 <- st_read("Goochland_Parcel_Data/Goochland_Parcellation/Gooch_Parce
 POWHATAN PARCEL
 ```{r POWHATAN PARCEL}
 
-View(PowReduParc2012)
 
 # ================================================== 2012 =========================
 fac.2012 <- PowReduParc2012$MLUSE
