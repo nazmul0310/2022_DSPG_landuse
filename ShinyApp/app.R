@@ -372,27 +372,27 @@ ui <- navbarPage(title = "DSPG 2022",
                                               column(4, 
                                                      h4(strong("County Background")),
                                                      p("Goochland County is located in the Piedmont of the Commonwealth of Virginia. It covers 281.42 square miles. This makes Goochland the 71st biggest
-                                                       county in Virginia. The country is known for its fertile land and mineral deposits. The James River flows through the center of county which
-                                                       supplied water to farmlands and to mills. In the east side of the county coal was mined and in the west gold.  Today, agriculture is still 
+                                                       county in Virginia. The county is known for its fertile land and mineral deposits. The James River flows through the center of the county which
+                                                       supplied water to farmlands and to mills. Coal was mined in the east and gold in the west. Today, agriculture is still 
                                                        important to the county economy. Goochland has updated its voting districts in 2022 to better represent the population of all 5 districts. 
-                                                       Goochland Country also has a huge summer program with plenty of activates. The activities are located all over the county at different facilities 
+                                                       Goochland Country also has a vast summer program with plenty of activates. The activities are located all over the county at different facilities 
                                                        including the skate park, gymnasium, the baseball fields, weight room, trails, and many more [1][2]. "),
                                                      
                                                      h4(strong("Summary Statistics")),
-                                                     p("Goochland County’s population is 23,472 people, which is split between 49.8% male (11,698), and 50.2% female (11,774) [3]. 23,524 identify as one 
-                                                       race, where 19,302 are white, 3,267 are African American, 75 American Indian and Alaska Native, 494 Asian, 3 Native Hawaiian and Other Pacific Islander, 
+                                                     p("Goochland County’s population is 23,472, which is split between 49.8% male (11,698), and 50.2% female (11,774) [3]. 23,524 identify as one 
+                                                       race, where 19,302 are white, 3,267 are African American, 75 are American Indian and Alaska Native, 494 Asian, 3 are Native Hawaiian and Other Pacific Islander, 
                                                        and 383 are some other race [4]." ),
                                                      p("57.9% of the population within Goochland County is employed. The unemployment rate is 3.7% [5]."),
-                                                     p("There are 11,001 civilian employed population, 418 are employed under agriculture, forestry, fishing and hunting, and mining [6]."),
-                                                     p("There are a total of 8,711 households in Goochland County. The median income is $97,146 with a margin of error of around 8,582. Around 24.1% of the 6,600 
-                                                       family have one earner, while 46.1% have two earners [7]. The greatest proportion (20.5%) of earners in Goochland earn between $100,000 to $149,999. 18.4% 
-                                                       of earners in Goochland earn $200,000 plus [8]."),
-                                                     p("Nearly 93.1% of the population 25 and over have graduate high school and gone to further their academic career. The highest level of education, a graduate or 
-                                                       professional degree has been attained by around 3,531 people, or 20.1% of the population over 25 years old [9]."),
-                                                     p("There were 355 farms with an average farm size of 160. This makes the total land coverage of farms to be 56,739 acres. $ 11,740,000 was generated from products 
-                                                       sold to market. 46% of farms sold less than $2,500, and 3% of farms sold between over $100,000. Grains, oilseeds, dry beans, and dry peas were the main crop that 
-                                                       was sold ($2,846,000) and Milk from cows were the main Livestock, poultry, and products sold ($4,936,000) [10]."),
-                                                     p("1.0% of Goochland’s population moved within the county, 8.4% moved into the county from a different county in VA, .7% moved from a completely different state, .3% 
+                                                     p("There are 11,001 civilian employed citizens with 418 employed under agriculture, forestry, fishing and hunting, and mining [6]."),
+                                                     p("There are a total of 8,711 households in Goochland County. The median income is $97,146 with a margin of error of around 8,582. Approximately 24.1% of the 6,600 
+                                                       households have one earner, while 46.1% have two earners [7]. The greatest proportion (20.5%) of earners in Goochland make between $100,000 to $149,999. 18.4% 
+                                                       of earners in Goochland earn over $200,000 [8]."),
+                                                     p("Nearly 93.1% of the population 25 and over have graduated high school and gone to further their academic career. The highest level of education, a graduate or 
+                                                       professional degree, has been attained by around 3,531 people, or 20.1% of the population over 25 years old [9]."),
+                                                     p("According to the 2017 agricultural census, there were approximately 355 farms with an average farm size of 160 acres. This makes the total land coverage of farms to be 56,739 acres. 
+                                                     $11,740,000 was generated from agricultural products sold to market. 46% of farms sold less than $2,500, and 3% of farms sold over $100,000. Grains, oilseeds, dry beans, and dry peas were the main crops that 
+                                                       were sold ($2,846,000) and milk from cows were the main livestock and poultry products sold ($4,936,000) [10]."),
+                                                     p("1.0% of Goochland’s population moved within the county, 8.4% moved into the county from a different county in VA, .7% moved from a completely different state, and .3% 
                                                        moved from abroad [11]."),
                                               ) ,
                                               column(8, 
@@ -437,30 +437,29 @@ ui <- navbarPage(title = "DSPG 2022",
                                               p("", style = "padding-top:10px;"), 
                                               column(4, 
                                                      h4(strong("County Background")),
-                                                     p("Powhatan, located in the Virginia’s Central Piedmont, was founded in 1777 by the Virginia General Assembly. It is 272 mi2 and is home to a population 
-                                                       of 29,253. The James River borders the North end of the country, contributing to the formation of many creeks stretching southward throughout the county. 
+                                                     p("Powhatan County, located in the Virginia’s Central Piedmont, was founded in 1777 by the Virginia General Assembly. It is 272 square miles and is home to a population 
+                                                       of 29,253. The county is approximately 20 miles from Richmond and 2 hours from Washington, D.C. The James River borders the north end of the county, contributing to the formation of many creeks stretching southward. 
                                                        There are five districts within the county and 12 polling places interspersed through them. Powhatan is rich in history and offers an abundance of tourist 
                                                        attractions contributing to its thriving economy. There are three parks/wildlife management areas within the county: Powhatan Wildlife Management Area, Fighting Creek Park, 
-                                                       and Powhatan State Park. Where once were several farms, the Powhatan Wildlife Management Area is 4462 acres that provide many experiences such as hunting, fishing and other 
-                                                       forested activities that aim to maintain the diversity of its natural wildlife species."),
+                                                       and Powhatan State Park. Where once were several farms, the Powhatan Wildlife Management Area is 4,462 acres that provide many experiences such as hunting, fishing and other 
+                                                       forested activities that aim to maintain the diversity of its natural wildlife species. [1][2]"),
                                                      
                                                      h4(strong("Summary Statistics")),
-                                                     p("The total population is 29,253 people, split between 51% male (15,188), and 49% female (14,065). [Link] 28,762 identify as one race, where 25,732 are white, 2,505 are African 
-                                                       American, 64 American Indian and Alaska Native, 169 Asian, 24 Native Hawaiian and Other Pacific Islander, and 268 are some other race.[Link]."),
-                                                     p("24,715 or 57.3% of the population within Powhatan County is employed, along with an unemployment rate of 1.4%."),
+                                                     p("The total population  of Powhatan County is 29,253, split between 51% male (15,188), and 49% female (14,065) [3]. 28,762 identify as one race, where 25,732 are white, 2,505 are African 
+                                                       American, 64 are American Indian and Alaska Native, 169 are Asian, 24 are Native Hawaiian and Other Pacific Islander, and 268 are some other race [4]."),
+                                                     p("24,715 or 57.3% of the population within Powhatan County is employed. The unemployment rate is 1.4%. [5]"),
                                                      p("Of the 13,938 civilian employed population, there are very few that are employed in agriculture, forestry, fishing, hunting, and mining. Around .94% of the civilian employed 
                                                        population fall under that category. Of that .94% of the workers, around half of them serve roles in management, business, science, and art occupations while 14.5% of that 
-                                                       population work in natural resources, construction, and maintenance occupations. [Link]"),
-                                                     p("There were 263 farms with an average farm size of 132. This makes the total land coverage of farms to be 34,585 acres. $11,249,000 was generated from products sold to market. 
-                                                       54% of farms sold less than $2,500, and 13% of farms sold between $25,000 and $24,999. Grains, oilseeds, dry beans, and dry peas were the main crop that was sold ($2,542,000) 
-                                                       and poultry and eggs were the main Livestock, poultry, and products sold ($6,056,000). [Link]"),
-                                                     p("Of the 10,392 households, the median income is $93,833 with a margin of error of around 5,342. Around 30.2% of the 8,220 family have one earner, while 44.8% have two earners. [Link] 
-                                                       The greatest proportion (23.4%) of earners in Powhatan earn between $100,000 to $149,999. [Link]"),
-                                                     p("Nearly 89.6% of the population 25 and over have graduate high school and gone to further their academic career. The highest level of education, a graduate or professional degree has 
-                                                       been attained by around 2,032 people, or 9.3% of the population over 25 years old. [Link]"),
-                                                     p("1.9% of Powhatan’s population moved within the county, 7.4% moved into the county from a different county in VA, .8% moved from a completely different state, .1% moved from abroad. [Link]"),
-                                                     p("As of the 2020, For both the male and female population, the highest proportion of the population are ages 55-59 making up 8.63% of the population, while the smallest percent of the population 
-                                                       make up the senior citizens that are 85 years and older, which is 1.35% of the population. [Link]"),
+                                                       population work in natural resources, construction, and maintenance occupations [6]."),
+                                                     p("Of the 10,392 households, the median income is $93,833 with a margin of error of around 5,342. Approximately 30.2% of the 8,220 family have one earner, while 44.8% have two earners [7]. 
+                                                       The greatest proportion (23.4%) of earners in Powhatan make between $100,000 to $149,999 [8]."),
+                                                     p("Nearly 89.6% of the population 25 and over have graduated high school and gone to further their academic career. The highest level of education, a graduate or professional degree, has 
+                                                       been attained by around 2,032 people, or 9.3% of the population over 25 years old [9]."),
+                                                     p("According to the 2017 agricultural census, there were approximately 263 farms with an average farm size of 132 acres in 2017. This makes the total land coverage of farms to be 34,585 acres. $11,249,000 was generated from agriultural products sold to market. 
+                                                       54% of farms sold less than $2,500, and 13% of farms sold between $25,000 and $24,999. Grains, oilseeds, dry beans, and dry peas were the main crops that were sold ($2,542,000) 
+                                                       and poultry and eggs were the main livestock and poultry products sold ($6,056,000) [10]."),
+                                                     p("1.9% of Powhatan’s population moved within the county, 7.4% moved into the county from a different county in VA, .8% moved from a completely different state, and .1% moved from abroad [11]."),
+                                                     
                                               ) ,
                                               column(8, 
                                                      h4(strong("Sociodemographics")),
@@ -485,6 +484,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                               ),
                                               column(12, 
                                                      h4("References: "), 
+                                                     p(tags$small("[1] About Powhatan. About Powhatan | Powhatan County, VA - Official Website. (n.d.). Retrieved July 15, 2022, from http://www.powhatanva.gov/317/About-Powhatan")),
+                                                     p(tags$small("[2] Powhatan WMA. Virginia Department of Wildlife Resources. (n.d.). Retrieved July 15, 2022, from https://dwr.virginia.gov/wma/powhatan/")),
+                                                     p(tags$small("[3] American Community Survey 5-Year Estimates 2016/2020")),
                                                      p(tags$small("United States Department of Agriculture. Powhatan County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51145.pdf")) ,
                                                      p("", style = "padding-top:10px;")) 
                                      ), 
@@ -718,14 +720,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Crops Grown in Goochland County")),
-                                                                p("The map and histogram on the right show the crop layer data for Goochland County. Goochland County is heavily forested. 
-                                                                  Forested lands account for 63.94% of all land in Goochland County. This number is a decrease from the 69.63% in 2012. 
-                                                                  Developed land in Goochland increased from 7.28% to 9.29% in 10 years. Most of their developed land in the east side of 
+                                                                p("The map and histogram on the right show the crop layer data for Goochland County. Goochland County is heavily forested, 
+                                                                with forested lands accounting for 63.94% of all land. This number is a decrease from the 69.63% in 2012. 
+                                                                  Developed land in Goochland increased from 7.28% to 9.29% in 10 years. Most of the developed land is in the east side of 
                                                                   the county closer to Richmond, VA. Forages is the second biggest crop layer category with 14.99%. Forage is bulky food 
-                                                                  such as grass or hay for horses and cattle. Croplands are spread out throughout the county. Croplands only use 4.1% of 
-                                                                  the land in the county. From an agricultural perspective, the land is most likely used for raising livestock instead of 
-                                                                  growing crops. There is a heavy concentration of row crops on the south boundary of Goochland. The James River also creates 
-                                                                  the boundary between Powhatan County and Goochland County.")
+                                                                  such as grass or hay for horses and cattle. Croplands are spread out throughout the county and only make up 4.1% of 
+                                                                  the land. From an agricultural perspective, the land is more often used for raising livestock instead of 
+                                                                  growing crops. There is a heavy concentration of row crops on the south boundary of county. The James River also acts as a 
+                                                                   boundary between Powhatan County and Goochland County.")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
@@ -878,12 +880,12 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Crops Grown in Powhatan County")),
-                                                                p("The map and histogram on the right show the crop layer data for Powhatan County. Powhatan County is heavily forested. Forested lands account for 67.84% of all 
-                                                                  land in Powhatan County. This number is a decrease from the 75.82% in 2012. A big reason why that number is reduced is that Powhatan is rapidly developing. 
-                                                                  Developed land in Powhatan increased from 3.46% to 6.88% in 10 yearsost of their developed land in the east side of the county closer to Richmond, VA. Forages 
+                                                                p("The map and histogram on the right show the crop layer data for Powhatan County. Powhatan County is heavily forested with forested lands account for 67.84% of all 
+                                                                  land. This number is a decrease from the 75.82% in 2012. A big reason why that number is reduced is that Powhatan is rapidly developing. 
+                                                                  Developed land in Powhatan increased from 3.46% to 6.88% in 10 years. Most of this developed land is in the east side of the county closer to Richmond, VA. Forages 
                                                                   is the second biggest crop layer category with 15.42%. Forage is bulky food such as grass or hay for horses and cattle. Croplands are spread out throughout the 
-                                                                  county. Croplands only use 4.1% of the land in the county. From an agricultural perspective, the land is most likely used for raising livestock instead of growing crops. 
-                                                                  There is a heavy concentration of row crops on the north boundary of Powhatan. The James River also creates the boundary between Powhatan County and Goochland County.")
+                                                                  county andmake up only use 4.1% of the land in the county. From an agricultural perspective, the land is most often used for raising livestock instead of growing crops. 
+                                                                  There is a heavy concentration of row crops on the north boundary of Powhatan. The James River also acts as a boundary between Powhatan County and Goochland County.")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
@@ -1242,11 +1244,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                           img(src = "chris.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           br(), 
                                           img(src = "rache.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'John Malla', target = '_blank'), "(Virginia Tech, Undergraduate in Computational Modeling and Data Analytics);",
+                                          p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Rachel Inman', target = '_blank'), "(Virginia Tech, Undergraduate in Smart and Sustainable Cities and Minoring in Landscape Architecture);",
                                             br(), 
-                                            a(href = 'https://www.linkedin.com/in/julie-rebstock', 'Christopher Vest', target = '_blank'), "(Jacksonville State University, Undergraduate in Finance);",
+                                            a(href = 'https://www.linkedin.com/in/julie-rebstock', 'John Malla', target = '_blank'), "(Virginia Tech, Undergraduate in Computational Modeling and Data Analytics);",
                                             br(), 
-                                            a(href = 'www.linkedin.com/in/rachelinman21', 'Rachel Inman', target = '_blank'), "(Virginia Tech, Undergraduate in Smart and Sustainable Cities and Minoring in Landscape Architecture)."),
+                                            a(href = 'www.linkedin.com/in/rachelinman21', 'Christopher Vest', target = '_blank'), "(Jacksonville State University, Undergraduate in Finance)."),
                                           p("", style = "padding-top:10px;") 
                                    ),
                                    column(6, align = "center",
@@ -1362,8 +1364,6 @@ server <- function(input, output){
   gcrop <- reactive({
     input$gcrop
   })
-  
-
   
   output$gcrop_graph <- renderPlotly({
     if(gcrop() == "gcrop12"){
