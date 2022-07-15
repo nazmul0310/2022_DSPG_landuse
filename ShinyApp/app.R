@@ -61,7 +61,7 @@ ind.func <- function(inputYear, inputCounty) {
   
   ind <- industry %>% 
     filter(county == inputCounty, year==inputYear) %>%
-    ggplot(aes(x = reorder(name, -val2), y = value, fill = value)) + 
+    ggplot(aes(x = reorder(name, desc(name)), y = value, fill = value)) + 
     geom_bar(stat = "identity") + theme(legend.position = "none") +
     coord_flip() + scale_fill_viridis()  + 
     theme_light() + 
@@ -127,24 +127,51 @@ croplayer1 <- read.csv("data/ag_analysis.csv")
 gcrop21 <- croplayer1 %>% 
   filter(County == "Goochland", Year==2021) %>%
   ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
-  geom_bar(stat = "identity", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
+  geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() +  
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") +     
   scale_fill_viridis() + 
-  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
+  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type") 
+ggplotly(gcrop21, tooltip = c("text")) 
 
 gcrop12 <- croplayer1 %>% 
   filter(County == "Goochland", Year== 2012) %>%
   ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
-  geom_bar(stat = "identity", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
+  geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() + 
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") + 
   scale_fill_viridis() + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
+ggplotly(gcrop12, tooltip = c("text"))
+
+pcrop21 <- croplayer1 %>% 
+  filter(County == "Powhatan", Year==2021) %>%
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
+  coord_flip() + 
+  theme_light() +
+  theme(axis.text.y = element_text(hjust=0)) +
+  theme(legend.position = "none") + 
+  scale_fill_viridis() + 
+  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
+ggplotly(pcrop21, tooltip = c("text"))
+
+pcrop12 <- croplayer1 %>% 
+  filter(County == "Powhatan", Year== 2012) %>%
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
+  coord_flip() + 
+  theme_light() +
+  theme(axis.text.y = element_text(hjust=0)) +
+  theme(legend.position = "none") + 
+  scale_fill_viridis() + 
+  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
+ggplotly(pcrop12, tooltip = c("text"))
+
 
 soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
 
@@ -164,33 +191,13 @@ psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Ar
   theme(legend.position = "none") +
   scale_x_discrete(limits = rev) +
   scale_fill_viridis() +
-  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification")
+  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") 
 ggplotly(psoil, tooltip = "text")
 
 
       # Powhatan Land Use
 
-pcrop21 <- croplayer1 %>% 
-  filter(County == "Powhatan", Year==2021) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
-  geom_bar(stat = "identity", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
-  coord_flip() + 
-  theme_light() +
-  theme(axis.text.y = element_text(hjust=0)) +
-  theme(legend.position = "none") + 
-  scale_fill_viridis() + 
-  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 
-pcrop12 <- croplayer1 %>% 
-  filter(County == "Powhatan", Year== 2012) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
-  geom_bar(stat = "identity", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
-  coord_flip() + 
-  theme_light() +
-  theme(axis.text.y = element_text(hjust=0)) +
-  theme(legend.position = "none") + 
-  scale_fill_viridis() + 
-  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 
 harbour<- leaflet() %>% 
   addTiles() %>% 
@@ -396,12 +403,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Income Distribution" = "ginc",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "gedu")
                                                      ),
-                                                     sliderInput(inputId = "yearSelect_gsoc", label = "Select Year: ", 
-                                                                 width = "150%", 
-                                                                 min = 2017,
-                                                                 max = 2020,
-                                                                 value = 2020,
-                                                                 sep = ""),
+                                                     radioButtons(inputId = "yearSelect_gsoc", label = "Select Year: ", 
+                                                                 choices = c("2017", "2018", "2019", "2020"), 
+                                                                 selected = "2020"),
                                                      plotOutput("gsoc", height = "500px"),
                                                      
                                               ),
@@ -456,12 +460,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Income Distribution" = "pinc",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "pedu")
                                                      ),
-                                                     sliderInput(inputId = "yearSelect_psoc", label = "Select Year: ", 
-                                                                 width = "150%", 
-                                                                 min = 2017,
-                                                                 max = 2020,
-                                                                 value = 2020,
-                                                                 sep = ""),
+                                                     radioButtons(inputId = "yearSelect_psoc", label = "Select Year: ", 
+                                                                 choices = c("2017", "2018", "2019", "2020"), 
+                                                                 selected = "2020"),
                                                      plotOutput("psoc", height = "500px"),
                                               ),
                                               column(12, 
@@ -720,7 +721,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   "Total Acreage by Land Type 2012" = "gcrop12")
                                                                 ),
                                                                 
-                                                                plotOutput("gcrop_graph", height = "500px"),
+                                                                plotlyOutput("gcrop_graph", height = "500px"),
                                                          ),
                                                          column(12, 
                                                                 
@@ -756,7 +757,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             step = 9,
                                                                             value = 2021,
                                                                             sep = "", ticks = FALSE),
-                                                                leafletOutput("mymap",height = 500),                                                                h4(strong("Soil Quality Graph")),
+                                                                leafletOutput("mymap",height = 500), 
+                                                                h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("gsoil", height = "500px"),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
                                                          column(12, 
@@ -875,7 +877,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   "Total Acreage by Land Type 2012" = "pcrop12")
                                                                 ),
                                                                 
-                                                                plotOutput("pcrop_graph", height = "500px"),
+                                                                plotlyOutput("pcrop_graph", height = "500px"),
                                                                 
                                                          ),
                                                          column(12, 
@@ -1343,7 +1345,7 @@ server <- function(input, output){
     input$gcrop
   })
   
-  output$gcrop_graph <- renderPlot({
+  output$gcrop_graph <- renderPlotly({
     if(gcrop() == "gcrop12"){
       gcrop12
     }
@@ -1352,7 +1354,7 @@ server <- function(input, output){
     }
   })
   
-  output$pcrop_graph <- renderPlot({
+  output$pcrop_graph <- renderPlotly({
     if(pcrop() == "pcrop12"){
       pcrop12
     }

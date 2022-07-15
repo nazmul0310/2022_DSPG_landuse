@@ -11,7 +11,7 @@ croplayer1 <- read.csv("C:/Users/Christopher Vest/Documents/Land_use_project/202
 p_21 <- croplayer1 %>% 
   filter(County == "Powhatan", Year==2021) %>%
   ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
-  geom_bar(stat = "identity", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
+  geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() + 
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
@@ -23,7 +23,7 @@ ggplotly(p_21, tooltip = c("text"))
 g_21 <- croplayer1 %>% 
   filter(County == "Goochland", Year==2021) %>%
 ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
-  geom_bar(stat = "identity", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
+  geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() +  
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
@@ -35,7 +35,7 @@ ggplotly(g_21, tooltip = c("text"))
 p_12 <- croplayer1 %>% 
   filter(County == "Powhatan", Year== 2012) %>%
   ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
-  geom_bar(stat = "identity", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
+  geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() + 
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
@@ -47,7 +47,7 @@ ggplotly(p_12, tooltip = c("text"))
 g_12 <- croplayer1 %>% 
   filter(County == "Goochland", Year== 2012) %>%
   ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
-  geom_bar(stat = "identity", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
+  geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() + 
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
