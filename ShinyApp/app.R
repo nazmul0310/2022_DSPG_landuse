@@ -1030,8 +1030,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             max = 2022,
                                                                             step = 1,
                                                                             value = c(2019,2022),
+                                                                            width = "150%",
                                                                             sep = ""),
-                                                                leafletOutput("g.hotspotMap",height = 1000)
+                                                                leafletOutput("g.hotspotMap")
                                                                 
                                                          ),
                                                          column(12, 
@@ -1394,7 +1395,7 @@ server <- function(input, output){
                                                      weight = 1,
                                                      smoothFactor=1,
                                                      fillColor = "red",
-                                                     fillOpacity = 0.1)
+                                                     fillOpacity = 0.2)
     }
     g.hotspot.plt
   })
