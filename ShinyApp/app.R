@@ -8,7 +8,7 @@
 #
 # LAND USE PROJECT APP
 
-
+library(profvis)
 library(shiny)
 library(shinycssloaders)
 library(shinythemes)
@@ -134,7 +134,7 @@ gcrop21 <- croplayer1 %>%
   theme(legend.position = "none") +     
   scale_fill_viridis() + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type") 
-ggplotly(gcrop21, tooltip = c("text")) 
+gcrop21 <-ggplotly(gcrop21, tooltip = c("text")) 
 
 gcrop12 <- croplayer1 %>% 
   filter(County == "Goochland", Year== 2012) %>%
@@ -146,7 +146,7 @@ gcrop12 <- croplayer1 %>%
   theme(legend.position = "none") + 
   scale_fill_viridis() + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
-ggplotly(gcrop12, tooltip = c("text"))
+gcrop12 <-ggplotly(gcrop12, tooltip = c("text"))
 
 pcrop21 <- croplayer1 %>% 
   filter(County == "Powhatan", Year==2021) %>%
@@ -158,7 +158,7 @@ pcrop21 <- croplayer1 %>%
   theme(legend.position = "none") + 
   scale_fill_viridis() + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
-ggplotly(pcrop21, tooltip = c("text"))
+pcrop21 <-ggplotly(pcrop21, tooltip = c("text"))
 
 pcrop12 <- croplayer1 %>% 
   filter(County == "Powhatan", Year== 2012) %>%
@@ -170,29 +170,29 @@ pcrop12 <- croplayer1 %>%
   theme(legend.position = "none") + 
   scale_fill_viridis() + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
-ggplotly(pcrop12, tooltip = c("text"))
+pcrop12 <- ggplotly(pcrop12, tooltip = c("text"))
 
 
 soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
 
 gsoil <- ggplot(soil_quality, aes(x = `G_Value`, y = `G_Area_acre`, fill = `G_Area_acre`)) +
-  geom_bar(stat = "identity", aes(text = paste0(`G_Value`, "\n", "Total Acres: ", round(`G_Area_acre`, 0))))+
+  geom_bar(stat = "identity",hoverinfo = "text", aes(text = paste0(`G_Value`, "\n", "Total Acres: ", round(`G_Area_acre`, 0))))+
   coord_flip() +
   theme(legend.position = "none") +
   scale_x_discrete(limits = rev) +
   scale_fill_viridis() + 
   labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification")
-ggplotly(gsoil, tooltip = "text")
+gsoil <-ggplotly(gsoil, tooltip = "text")
 
 psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Area_acre`)) +
-  geom_bar(stat = "identity", aes(text = paste0(`P_Value`, "\n", "Total Acres: ", round(`P_Area_acre`, 0))))+
+  geom_bar(stat = "identity",hoverinfo ="text", aes(text = paste0(`P_Value`, "\n", "Total Acres: ", round(`P_Area_acre`, 0))))+
   geom_errorbarh(aes(xmax=as.numeric(`P_Value`)+0.45,xmin=as.numeric(`P_Value`)-0.45,height=0),position=position_dodge(width=0.9)) +
   coord_flip() +
   theme(legend.position = "none") +
   scale_x_discrete(limits = rev) +
   scale_fill_viridis() +
   labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") 
-ggplotly(psoil, tooltip = "text")
+psoil <-ggplotly(psoil, tooltip = "text")
 
 
       # Powhatan Land Use
@@ -372,27 +372,27 @@ ui <- navbarPage(title = "DSPG 2022",
                                               column(4, 
                                                      h4(strong("County Background")),
                                                      p("Goochland County is located in the Piedmont of the Commonwealth of Virginia. It covers 281.42 square miles. This makes Goochland the 71st biggest
-                                                       county in Virginia. The country is known for its fertile land and mineral deposits. The James River flows through the center of county which
-                                                       supplied water to farmlands and to mills. In the east side of the county coal was mined and in the west gold.  Today, agriculture is still 
+                                                       county in Virginia. The county is known for its fertile land and mineral deposits. The James River flows through the center of the county which
+                                                       supplied water to farmlands and to mills. Coal was mined in the east and gold in the west. Today, agriculture is still 
                                                        important to the county economy. Goochland has updated its voting districts in 2022 to better represent the population of all 5 districts. 
-                                                       Goochland Country also has a huge summer program with plenty of activates. The activities are located all over the county at different facilities 
+                                                       Goochland Country also has a vast summer program with plenty of activates. The activities are located all over the county at different facilities 
                                                        including the skate park, gymnasium, the baseball fields, weight room, trails, and many more [1][2]. "),
                                                      
                                                      h4(strong("Summary Statistics")),
-                                                     p("Goochland County’s population is 23,472 people, which is split between 49.8% male (11,698), and 50.2% female (11,774) [3]. 23,524 identify as one 
-                                                       race, where 19,302 are white, 3,267 are African American, 75 American Indian and Alaska Native, 494 Asian, 3 Native Hawaiian and Other Pacific Islander, 
+                                                     p("Goochland County’s population is 23,472, which is split between 49.8% male (11,698), and 50.2% female (11,774) [3]. 23,524 identify as one 
+                                                       race, where 19,302 are white, 3,267 are African American, 75 are American Indian and Alaska Native, 494 Asian, 3 are Native Hawaiian and Other Pacific Islander, 
                                                        and 383 are some other race [4]." ),
                                                      p("57.9% of the population within Goochland County is employed. The unemployment rate is 3.7% [5]."),
-                                                     p("There are 11,001 civilian employed population, 418 are employed under agriculture, forestry, fishing and hunting, and mining [6]."),
-                                                     p("There are a total of 8,711 households in Goochland County. The median income is $97,146 with a margin of error of around 8,582. Around 24.1% of the 6,600 
-                                                       family have one earner, while 46.1% have two earners [7]. The greatest proportion (20.5%) of earners in Goochland earn between $100,000 to $149,999. 18.4% 
-                                                       of earners in Goochland earn $200,000 plus [8]."),
-                                                     p("Nearly 93.1% of the population 25 and over have graduate high school and gone to further their academic career. The highest level of education, a graduate or 
-                                                       professional degree has been attained by around 3,531 people, or 20.1% of the population over 25 years old [9]."),
-                                                     p("There were 355 farms with an average farm size of 160. This makes the total land coverage of farms to be 56,739 acres. $ 11,740,000 was generated from products 
-                                                       sold to market. 46% of farms sold less than $2,500, and 3% of farms sold between over $100,000. Grains, oilseeds, dry beans, and dry peas were the main crop that 
-                                                       was sold ($2,846,000) and Milk from cows were the main Livestock, poultry, and products sold ($4,936,000) [10]."),
-                                                     p("1.0% of Goochland’s population moved within the county, 8.4% moved into the county from a different county in VA, .7% moved from a completely different state, .3% 
+                                                     p("There are 11,001 civilian employed citizens with 418 employed under agriculture, forestry, fishing and hunting, and mining [6]."),
+                                                     p("There are a total of 8,711 households in Goochland County. The median income is $97,146 with a margin of error of around 8,582. Approximately 24.1% of the 6,600 
+                                                       households have one earner, while 46.1% have two earners [7]. The greatest proportion (20.5%) of earners in Goochland make between $100,000 to $149,999. 18.4% 
+                                                       of earners in Goochland earn over $200,000 [8]."),
+                                                     p("Nearly 93.1% of the population 25 and over have graduated high school and gone to further their academic career. The highest level of education, a graduate or 
+                                                       professional degree, has been attained by around 3,531 people, or 20.1% of the population over 25 years old [9]."),
+                                                     p("According to the 2017 agricultural census, there were approximately 355 farms with an average farm size of 160 acres. This makes the total land coverage of farms to be 56,739 acres. 
+                                                     $11,740,000 was generated from agricultural products sold to market. 46% of farms sold less than $2,500, and 3% of farms sold over $100,000. Grains, oilseeds, dry beans, and dry peas were the main crops that 
+                                                       were sold ($2,846,000) and milk from cows were the main livestock and poultry products sold ($4,936,000) [10]."),
+                                                     p("1.0% of Goochland’s population moved within the county, 8.4% moved into the county from a different county in VA, .7% moved from a completely different state, and .3% 
                                                        moved from abroad [11]."),
                                               ) ,
                                               column(8, 
@@ -407,6 +407,16 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                  choices = c("2017", "2018", "2019", "2020"), 
                                                                  selected = "2020"),
                                                      plotOutput("gsoc", height = "500px"),
+                                                     h4(strong("Visualization Summaries")),
+                                                     p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. 
+                                                       The 25-44 age group has been the second largest, but has faced more inconsistency and has seen a decrease since 2019."),
+                                                     p("The", strong("employment"), "graphs indicates that the education, health, and social services industry group has been the largest by a wide margin, and specifically saw a large 
+                                                       increase between 2018 and 2019. The agricultural, forestal, fishing, hunting, and mining industry group has consistently been the smallest, employing less than 5% of 
+                                                       the population every year."),
+                                                     p("The" ,strong("income distribution"), "graph illustrates the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied 
+                                                       by a decrease in earnings below $75,000. It is also notable that earnings above $100,000 and below $35,000 are the largest categories throughout all years."),
+                                                     p("The" ,strong("median earnings"), "graphs highlight the fact that those with a highest educational attainment of Some college/Associates earn the most. The median earnings for this 
+                                                       group were significantly higher than others in 2017 and 2018, but saw a significant decrease to $65,890 in 2019. This number goes back up to $75,313 in 2020; still much lower than the first two years."),
                                                      
                                               ),
                                      ),
@@ -427,30 +437,29 @@ ui <- navbarPage(title = "DSPG 2022",
                                               p("", style = "padding-top:10px;"), 
                                               column(4, 
                                                      h4(strong("County Background")),
-                                                     p("Powhatan, located in the Virginia’s Central Piedmont, was founded in 1777 by the Virginia General Assembly. It is 272 mi2 and is home to a population 
-                                                       of 29,253. The James River borders the North end of the country, contributing to the formation of many creeks stretching southward throughout the county. 
+                                                     p("Powhatan County, located in the Virginia’s Central Piedmont, was founded in 1777 by the Virginia General Assembly. It is 272 square miles and is home to a population 
+                                                       of 29,253. The county is approximately 20 miles from Richmond and 2 hours from Washington, D.C. The James River borders the north end of the county, contributing to the formation of many creeks stretching southward. 
                                                        There are five districts within the county and 12 polling places interspersed through them. Powhatan is rich in history and offers an abundance of tourist 
                                                        attractions contributing to its thriving economy. There are three parks/wildlife management areas within the county: Powhatan Wildlife Management Area, Fighting Creek Park, 
-                                                       and Powhatan State Park. Where once were several farms, the Powhatan Wildlife Management Area is 4462 acres that provide many experiences such as hunting, fishing and other 
-                                                       forested activities that aim to maintain the diversity of its natural wildlife species."),
+                                                       and Powhatan State Park. Where once were several farms, the Powhatan Wildlife Management Area is 4,462 acres that provide many experiences such as hunting, fishing and other 
+                                                       forested activities that aim to maintain the diversity of its natural wildlife species. [1][2]"),
                                                      
                                                      h4(strong("Summary Statistics")),
-                                                     p("The total population is 29,253 people, split between 51% male (15,188), and 49% female (14,065). [Link] 28,762 identify as one race, where 25,732 are white, 2,505 are African 
-                                                       American, 64 American Indian and Alaska Native, 169 Asian, 24 Native Hawaiian and Other Pacific Islander, and 268 are some other race.[Link]."),
-                                                     p("24,715 or 57.3% of the population within Powhatan County is employed, along with an unemployment rate of 1.4%."),
+                                                     p("The total population  of Powhatan County is 29,253, split between 51% male (15,188), and 49% female (14,065) [3]. 28,762 identify as one race, where 25,732 are white, 2,505 are African 
+                                                       American, 64 are American Indian and Alaska Native, 169 are Asian, 24 are Native Hawaiian and Other Pacific Islander, and 268 are some other race [4]."),
+                                                     p("24,715 or 57.3% of the population within Powhatan County is employed. The unemployment rate is 1.4%. [5]"),
                                                      p("Of the 13,938 civilian employed population, there are very few that are employed in agriculture, forestry, fishing, hunting, and mining. Around .94% of the civilian employed 
                                                        population fall under that category. Of that .94% of the workers, around half of them serve roles in management, business, science, and art occupations while 14.5% of that 
-                                                       population work in natural resources, construction, and maintenance occupations. [Link]"),
-                                                     p("There were 263 farms with an average farm size of 132. This makes the total land coverage of farms to be 34,585 acres. $11,249,000 was generated from products sold to market. 
-                                                       54% of farms sold less than $2,500, and 13% of farms sold between $25,000 and $24,999. Grains, oilseeds, dry beans, and dry peas were the main crop that was sold ($2,542,000) 
-                                                       and poultry and eggs were the main Livestock, poultry, and products sold ($6,056,000). [Link]"),
-                                                     p("Of the 10,392 households, the median income is $93,833 with a margin of error of around 5,342. Around 30.2% of the 8,220 family have one earner, while 44.8% have two earners. [Link] 
-                                                       The greatest proportion (23.4%) of earners in Powhatan earn between $100,000 to $149,999. [Link]"),
-                                                     p("Nearly 89.6% of the population 25 and over have graduate high school and gone to further their academic career. The highest level of education, a graduate or professional degree has 
-                                                       been attained by around 2,032 people, or 9.3% of the population over 25 years old. [Link]"),
-                                                     p("1.9% of Powhatan’s population moved within the county, 7.4% moved into the county from a different county in VA, .8% moved from a completely different state, .1% moved from abroad. [Link]"),
-                                                     p("As of the 2020, For both the male and female population, the highest proportion of the population are ages 55-59 making up 8.63% of the population, while the smallest percent of the population 
-                                                       make up the senior citizens that are 85 years and older, which is 1.35% of the population. [Link]"),
+                                                       population work in natural resources, construction, and maintenance occupations [6]."),
+                                                     p("Of the 10,392 households, the median income is $93,833 with a margin of error of around 5,342. Approximately 30.2% of the 8,220 family have one earner, while 44.8% have two earners [7]. 
+                                                       The greatest proportion (23.4%) of earners in Powhatan make between $100,000 to $149,999 [8]."),
+                                                     p("Nearly 89.6% of the population 25 and over have graduated high school and gone to further their academic career. The highest level of education, a graduate or professional degree, has 
+                                                       been attained by around 2,032 people, or 9.3% of the population over 25 years old [9]."),
+                                                     p("According to the 2017 agricultural census, there were approximately 263 farms with an average farm size of 132 acres in 2017. This makes the total land coverage of farms to be 34,585 acres. $11,249,000 was generated from agriultural products sold to market. 
+                                                       54% of farms sold less than $2,500, and 13% of farms sold between $25,000 and $24,999. Grains, oilseeds, dry beans, and dry peas were the main crops that were sold ($2,542,000) 
+                                                       and poultry and eggs were the main livestock and poultry products sold ($6,056,000) [10]."),
+                                                     p("1.9% of Powhatan’s population moved within the county, 7.4% moved into the county from a different county in VA, .8% moved from a completely different state, and .1% moved from abroad [11]."),
+                                                     
                                               ) ,
                                               column(8, 
                                                      h4(strong("Sociodemographics")),
@@ -464,9 +473,20 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                  choices = c("2017", "2018", "2019", "2020"), 
                                                                  selected = "2020"),
                                                      plotOutput("psoc", height = "500px"),
+                                                     h4(strong("Visualization Summaries")),
+                                                     p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. The 25-44 age group has been 
+                                                       the second largest, but has faced more inconsistency and has seen a decrease since 2018."),
+                                                     p("The", strong("employment"), "graphs indicates that the education, health, and social services industry group has been the largest by a wide margin, and specifically saw a large increase in 2019. The agricultural, forestal,
+                                                       fishing, hunting, and mining industry group has consistently been the smallest with the exception of 2018 when the information industry was smaller."),
+                                                     p("The", strong("income distribution"), "graph illustrates the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied by a consistent decrease in earnings below $75,000."),
+                                                     p("The", strong("median earnings"), "graphs highlight the fact that those with a highest educational attainment of Some college/Associates earn the most. The median earnings for this group were significantly higher than others up until 2019, but saw 
+                                                       a significant decrease to $66,915 in 2020. This number is nearly identical to the median earnings for those with less than a high school education at $66,716."),
                                               ),
                                               column(12, 
                                                      h4("References: "), 
+                                                     p(tags$small("[1] About Powhatan. About Powhatan | Powhatan County, VA - Official Website. (n.d.). Retrieved July 15, 2022, from http://www.powhatanva.gov/317/About-Powhatan")),
+                                                     p(tags$small("[2] Powhatan WMA. Virginia Department of Wildlife Resources. (n.d.). Retrieved July 15, 2022, from https://dwr.virginia.gov/wma/powhatan/")),
+                                                     p(tags$small("[3] American Community Survey 5-Year Estimates 2016/2020")),
                                                      p(tags$small("United States Department of Agriculture. Powhatan County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51145.pdf")) ,
                                                      p("", style = "padding-top:10px;")) 
                                      ), 
@@ -662,14 +682,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Use in Goochland County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Insert text ")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
@@ -700,14 +713,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Crops Grown in Goochland County")),
-                                                                p("The map and histogram on the right show the crop layer data for Goochland County. Goochland County is heavily forested. 
-                                                                  Forested lands account for 63.94% of all land in Goochland County. This number is a decrease from the 69.63% in 2012. 
-                                                                  Developed land in Goochland increased from 7.28% to 9.29% in 10 years. Most of their developed land in the east side of 
+                                                                p("The map and histogram on the right show the crop layer data for Goochland County. Goochland County is heavily forested, 
+                                                                with forested lands accounting for 63.94% of all land. This number is a decrease from the 69.63% in 2012. 
+                                                                  Developed land in Goochland increased from 7.28% to 9.29% in 10 years. Most of the developed land is in the east side of 
                                                                   the county closer to Richmond, VA. Forages is the second biggest crop layer category with 14.99%. Forage is bulky food 
-                                                                  such as grass or hay for horses and cattle. Croplands are spread out throughout the county. Croplands only use 4.1% of 
-                                                                  the land in the county. From an agricultural perspective, the land is most likely used for raising livestock instead of 
-                                                                  growing crops. There is a heavy concentration of row crops on the south boundary of Goochland. The James River also creates 
-                                                                  the boundary between Powhatan County and Goochland County.")
+                                                                  such as grass or hay for horses and cattle. Croplands are spread out throughout the county and only make up 4.1% of 
+                                                                  the land. From an agricultural perspective, the land is more often used for raising livestock instead of 
+                                                                  growing crops. There is a heavy concentration of row crops on the south boundary of county. The James River also acts as a 
+                                                                   boundary between Powhatan County and Goochland County.")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
@@ -738,14 +751,30 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Soil Quality in Goochland County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Good quality soil is essential for crops to produce. Which makes soil quality a factor that could result in land conversion. 
+                                                                  The National Cooperative Soil Survey is a survey done to classify soil into classes based on its usefulness. Those classes are: "),
+                                                                tags$ul(
+                                                                  
+                                                                  tags$li(strong("Class 1"), "soils have few limitations that restrict their use."),
+                                                                  
+                                                                  tags$li(strong("Class 2"), "soils have moderate limitations that reduce the choice of plants or that require moderate conservation practices."),
+                                                                  
+                                                                  tags$li(strong("Class 3"), "soils have severe limitations that reduce the choice of plants, require special conservation practices, or both."),
+                                                                  
+                                                                  tags$li(strong("Class 4"), "soils have very severe limitations that reduce the choice of plants, require very careful management, or both."),
+                                                                  
+                                                                  tags$li(strong("Class 5"), "soils are subject to little or no erosion but have other limitations, impractical to remove, that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
+                                                                  
+                                                                  tags$li(strong("Class 6"), "soils have severe limitations that make them generally suitable for cultivation and that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
+                                                                  
+                                                                  tags$li(strong("Class 7"), "soils have very severe limitations that make them unsuitable for cultivation and that restrict their use mainly to grazing, forestland, or wildlife habitat."),
+                                                                  
+                                                                  tags$li(strong("Class 8"), "soils and miscellaneous areas have limitations that preclude commercial plant production and that restrict their use to recreational purposes, wildlife habitat, watershed, or esthetic purposes."),
+                                                                  
+                                                                ),
+                                                                p("Most of Goochland County’s soil is in Class 2 or 3. This means that most of the land in Goochland is farmable, but it has limitations that reduce the choice of plants or that require very careful 
+                                                                  management, or both.  On the other end of the spectrum, Goochland has zero acres of land in Class 8. Goochland also has a low number of acres with no data with 5,237 acres. Despite the limitations, 
+                                                                  it still is possible to farm and for Goochland to be mostly agricultural."),
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
@@ -776,14 +805,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Traffic in Goochland County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Insert text")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Traffic Visualizations")),
@@ -817,14 +839,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Use in Powhatan County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Insert Text")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
@@ -860,17 +875,17 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Crops Grown in Powhatan County")),
-                                                                p("The map and histogram on the right show the crop layer data for Powhatan County. Powhatan County is heavily forested. Forested lands account for 67.84% of all 
-                                                                  land in Powhatan County. This number is a decrease from the 75.82% in 2012. A big reason why that number is reduced is that Powhatan is rapidly developing. 
-                                                                  Developed land in Powhatan increased from 3.46% to 6.88% in 10 yearsost of their developed land in the east side of the county closer to Richmond, VA. Forages 
+                                                                p("The map and histogram on the right show the crop layer data for Powhatan County. Powhatan County is heavily forested with forested lands account for 67.84% of all 
+                                                                  land. This number is a decrease from the 75.82% in 2012. A big reason why that number is reduced is that Powhatan is rapidly developing. 
+                                                                  Developed land in Powhatan increased from 3.46% to 6.88% in 10 years. Most of this developed land is in the east side of the county closer to Richmond, VA. Forages 
                                                                   is the second biggest crop layer category with 15.42%. Forage is bulky food such as grass or hay for horses and cattle. Croplands are spread out throughout the 
-                                                                  county. Croplands only use 4.1% of the land in the county. From an agricultural perspective, the land is most likely used for raising livestock instead of growing crops. 
-                                                                  There is a heavy concentration of row crops on the north boundary of Powhatan. The James River also creates the boundary between Powhatan County and Goochland County.")
+                                                                  county andmake up only use 4.1% of the land in the county. From an agricultural perspective, the land is most often used for raising livestock instead of growing crops. 
+                                                                  There is a heavy concentration of row crops on the north boundary of Powhatan. The James River also acts as a boundary between Powhatan County and Goochland County.")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
                                                                 
-                                                                #                plotlyOutput("trend1", height = "600px")
+                                                                #                leafletOutput("trend1", height = "600px")
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 selectInput("pcrop", "Select Variable:", width = "100%", choices = c(
                                                                   "Total Acreage by Land Type 2021" = "pcrop21",
@@ -878,7 +893,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 ),
                                                                 
                                                                 plotlyOutput("pcrop_graph", height = "500px"),
-                                                                
+                                                                p(tags$small("Data Source: ACS 2016-2020")),
                                                          ),
                                                          column(12, 
                                                                 
@@ -895,14 +910,30 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Soil Quality in Powhatan County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Good quality soil is essential for crops to produce. Which makes soil quality a factor that could result in land conversion. 
+                                                                  The National Cooperative Soil Survey is a survey done to classify soil into classes based on its usefulness. Those classes are: "),
+                                                                tags$ul(
+                                                                  
+                                                                  tags$li(strong("Class 1"), "soils have few limitations that restrict their use."),
+                                                                  
+                                                                  tags$li(strong("Class 2"), "soils have moderate limitations that reduce the choice of plants or that require moderate conservation practices."),
+                                                                  
+                                                                  tags$li(strong("Class 3"), "soils have severe limitations that reduce the choice of plants, require special conservation practices, or both."),
+                                                                  
+                                                                  tags$li(strong("Class 4"), "soils have very severe limitations that reduce the choice of plants, require very careful management, or both."),
+                                                                  
+                                                                  tags$li(strong("Class 5"), "soils are subject to little or no erosion but have other limitations, impractical to remove, that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
+                                                                  
+                                                                  tags$li(strong("Class 6"), "soils have severe limitations that make them generally suitable for cultivation and that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
+                                                                  
+                                                                  tags$li(strong("Class 7"), "soils have very severe limitations that make them unsuitable for cultivation and that restrict their use mainly to grazing, forestland, or wildlife habitat."),
+                                                                  
+                                                                  tags$li(strong("Class 8"), "soils and miscellaneous areas have limitations that preclude commercial plant production and that restrict their use to recreational purposes, wildlife habitat, watershed, or esthetic purposes."),
+                                                                  
+                                                                ),
+                                                                p("Powhatan County soil is mostly in Class 2. As mentioned above, Class 2 has moderate limitations so crops can be grown here. Powhatan also has land that is in Class 1. This is the best land
+                                                                  in the county, but it only makes up 1,686 acres. Class 4 soil is also prevalent in Powhatan. However, this soil class is unfavorable for farming as it has very severe limitations. The graph 
+                                                                  on the right can be zoomed in on Class 8. This class is the least suitable soil class for any activity. Powhatan has 29 acres in the class. Overall, Powhatan has good farmland and can remain agricultural. "),
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
@@ -926,14 +957,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Traffic in Powhatan County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Insert text")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Traffic Visualizations")),
@@ -976,14 +1000,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Parcels in Goochland County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Insert text")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Parcellation Map")),
@@ -1015,14 +1032,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Parcellation Hot Spots in Goochland County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Insert text")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Parcellation Hot Spot Map")),
@@ -1034,9 +1044,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             value = c(2019,2022),
                                                                             width = "150%",
                                                                             sep = ""),
-                                                                leafletOutput("g.hotspotMap")
-                                                                
-                                                         ),
+                                                                leafletOutput("g.hotspotMap"),
+                                                                p(tags$small("Data Source: Goochland County Administrative Data"))),
                                                          column(12, 
                                                                 
                                                                 h4("References") , 
@@ -1060,14 +1069,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Parcels in Powhatan County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Insert text")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Parcellation Map")),
@@ -1099,14 +1101,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Parcellation Hot Spots in Powhatan County")),
-                                                                p("As residential and commercial businesses have grown in the past ten years in Floyd, there continues to be a different demographic of the new movers
-                                       into the county. The new residents share a household income that is significantly higher than those traditionally residing in Floyd 
-                                       for the past ten years, and their home values have almost doubled. Due to the recent pandemic, there was a push to move to rural areas and work
-                                       from home, resulting in home values increasing in the past two years. Many new residents are moving into Floyd for its land features, natural 
-                                       beauty, and vibrant culture of music, arts, local foods and wines, and outdoor recreation. However, these same residents work outside the county
-                                       and contribute less to the county's economy. This trend is evident when observing commuting data for Floyd County from the Virginia Employment 
-                                       Commission [6]. Floyd has roughly 60% of employees that live in Floyd, but commute out of the county for their job, only 15%, in contrast,
-                                       that commute into the county for work, leaving the remaining 25% of people who both work and live in the county [5]. ")
+                                                                p("Insert text")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Parcellation Hot Spot Map")),
@@ -1224,11 +1219,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                           img(src = "chris.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           br(), 
                                           img(src = "rache.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'John Malla', target = '_blank'), "(Virginia Tech, Undergraduate in Computational Modeling and Data Analytics);",
+                                          p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Rachel Inman', target = '_blank'), "(Virginia Tech, Undergraduate in Smart and Sustainable Cities and Minoring in Landscape Architecture);",
                                             br(), 
-                                            a(href = 'https://www.linkedin.com/in/julie-rebstock', 'Christopher Vest', target = '_blank'), "(Jacksonville State University, Undergraduate in Finance);",
+                                            a(href = 'https://www.linkedin.com/in/julie-rebstock', 'John Malla', target = '_blank'), "(Virginia Tech, Undergraduate in Computational Modeling and Data Analytics);",
                                             br(), 
-                                            a(href = 'www.linkedin.com/in/rachelinman21', 'Rachel Inman', target = '_blank'), "(Virginia Tech, Undergraduate in Smart and Sustainable Cities and Minoring in Landscape Architecture)."),
+                                            a(href = 'www.linkedin.com/in/rachelinman21', 'Christopher Vest', target = '_blank'), "(Jacksonville State University, Undergraduate in Finance)."),
                                           p("", style = "padding-top:10px;") 
                                    ),
                                    column(6, align = "center",
@@ -1354,6 +1349,10 @@ server <- function(input, output){
     }
   })
   
+  pcrop <- reactive({
+    input$pcrop
+  })
+  
   output$pcrop_graph <- renderPlotly({
     if(pcrop() == "pcrop12"){
       pcrop12
@@ -1373,8 +1372,7 @@ server <- function(input, output){
   
   output$luPlot.g <- renderLeaflet({
     luPlot <- g.luPlotFunction(input$luYear.g)
-    luPlot
-  })
+  }) %>% bindCache(input$luYear.g)
   
   output$g.hotspotMap <- renderLeaflet({
     gl_cnty<- st_read("data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84") 
