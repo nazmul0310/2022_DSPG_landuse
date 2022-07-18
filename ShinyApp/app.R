@@ -29,15 +29,29 @@ library(viridis)
 library(readxl)
 library(RColorBrewer)
 library(sf) #for importing shp file
+library(highcharter) #for transition matrix
+library(htmlwidgets) #for transition matrix
 
 options(scipen=999)
 options(shiny.maxRequestSize = 100*1024^2)
 
 # data --------------------------------------------------------------------------------------------------------------------
+      # soc
 popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny ap
 industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
 inc <- read.csv("data/inc.csv", header=TRUE) 
 educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) 
+      # boundaries
+gl_cnty<- st_read("data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+pow_cnty<- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+
+
+
+
+
+
+
+
 
 # Sociodemographic
 
@@ -233,7 +247,6 @@ harbour<- leaflet() %>%
   setView(lng=-77.949, lat=37.742, zoom=9)
 
 GoochlandAllParcel <- read_sf("../ShinyApp/data/luParcelData/GoochAll.shp")
-goochBoundary <- read_sf("../ShinyApp/data/luParcelData/Goochland_Boundary.shp")
 
 
 g.luPlotFunction <- function(year.g) {
@@ -253,13 +266,13 @@ g.luPlotFunction <- function(year.g) {
   
   mypalette <- colorBin(palette = "viridis", as.numeric(LUC_values), bins = 8)
   colors <- mypalette(unclass(LUC_values))
-  colors[8] <- "#ffffff" # the color is similar to 
+  colors[8] <- "#4D4D4D" # the color is similar to 
   legendpalette <- colorFactor(palette = colors,levels=LUC_values)
   
   MyMap <- leaflet() %>%
     addTiles() %>%
     addProviderTiles(providers$CartoDB.Positron) %>%
-    addPolygons(data=goochBoundary,
+    addPolygons(data=gl_cnty,
                 fillColor = "transparent") %>%
     addPolygons(data = Gooch[1] %>% filter(LUC_FIN == "Single Family Residential Urban"), 
                 fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
@@ -293,9 +306,79 @@ g.luPlotFunction <- function(year.g) {
               title = "Land Use Type",
               labFormat = labelFormat(),
               opacity = 1,
-              data=Gooch) #need to change for show the correct label
+              data=Gooch) 
 }
 
+parc.func <- function(data, range, county, cnty){
+  
+  # Declares initial leaflet, nothing added to it.
+  my.parc.plt <- leaflet()%>%
+    addTiles() %>%
+    addProviderTiles(providers$CartoDB.Positron) %>%
+    addPolygons(data = cnty, fillColor = "transparent")
+  
+  # Sets view based on county
+  if(county == "Powhatan"){
+    my.parc.plt <- my.parc.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
+  }
+  else{
+    my.parc.plt <- my.parc.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
+  }
+  
+  # for loop to add polygons based on what the max year is vs. subsequent years prior
+  for(i in range){
+    # Adds most recent year's parcellations
+    if(i == max(range)){
+      my.parc.plt <- my.parc.plt %>%
+        addPolygons(data = data %>% filter(year == i), 
+                    fillColor = "red", smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+    }
+    # Adds subsequent year's parcellations
+    else {
+      my.parc.plt <- my.parc.plt %>%
+        addPolygons(data = data %>% filter(year == i), 
+                    fillColor = "red", smoothFactor = 0.1, fillOpacity = .25, stroke = FALSE)
+    }
+  }
+  my.parc.plt
+}
+
+hotspot.func <- function(county, range){
+  # Initial plot, fitted
+  hotspot.plt <- leaflet()%>%
+    addTiles() %>%
+    addProviderTiles(providers$CartoDB.Positron)
+  
+  # Sets view based on county
+  if(county == "Powhatan"){
+    hotspot.plt <- hotspot.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
+    file_list <- paste("data/Parcel_Hotspot/powhatan/pow_hotspot_",range,".shp",sep = "")
+    hotspot.plt <- hotspot.plt %>% addPolygons(data = pow_cnty, fillOpacity = 0)
+  }
+  else{
+    hotspot.plt <- hotspot.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
+    file_list <- paste("data/Parcel_Hotspot/goochland/gooch_hotspot_",range,".shp",sep = "")
+    hotspot.plt <- hotspot.plt %>% addPolygons(data = gl_cnty, fillOpacity = 0)
+  }
+  
+  
+  for (file in file_list){
+    #import the heatspot maps of the selected years
+    hotspot.data<- st_read(file) %>% st_transform("+proj=longlat +datum=WGS84")
+    hotspot.plt <- hotspot.plt %>% addPolygons(stroke = FALSE,
+                                               data = hotspot.data,
+                                               weight = 1,
+                                               smoothFactor=1,
+                                               fillColor = "red",
+                                               fillOpacity = 0.2)
+  }
+  hotspot.plt
+}
+
+
+harbour<- leaflet() %>% 
+  addTiles() %>% 
+  setView(lng=-77.949, lat=37.742, zoom=9)
 
 
 
@@ -316,9 +399,9 @@ pow_bndry <- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>%
   st_transform(crs = st_crs("EPSG:4326"))
 
 
-
-
-
+#transition matrix
+g.sankey <- read.csv("data/luParcelData/g_sankey.csv") %>% select(LUC_old,LUC_new) 
+p.sankey <- read.csv("data/luParcelData/p_sankey.csv") %>% select(MLUSE_old,MLUSE_new) 
 
 # ui --------------------------------------------------------------------------------------------------------------------
 
@@ -733,6 +816,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                                 
                                                                 leafletOutput(outputId = "luPlot.g"),
+                                                                highchartOutput("gooch_sankey"),
                                                                 p(tags$small("Data Source: Goochland County Administrative Data")))  ,
                                                          column(12,
                                                                 
@@ -894,6 +978,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 ),
                                                                 #          plotlyOutput("trend1", height = "600px")
                                                                 h4(strong("Land Use Transition Matrix")),
+                                                                highchartOutput("pow_sankey"),
                                                                 #withSpinner(leafletOutput("mines")),
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
                                                          
@@ -1039,7 +1124,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Parcels in Goochland County")),
-                                                                p("Insert text")
+                                                                p("Solid red represents new split parcels in the selected latest year. Lighter red represents new split parcels of the years before the selected latest year."), 
+                                                                p("New parcels spread across Goochland in 2019-2022. Meanwhile, there are always new parcels in the southeastern region which is close to Richmond. It implies 
+                                                                that metropolis might have some impacts on the parcellation. It is seeming that the northwestern has more parcels generated. In fact, the southeastern has 
+                                                                generated new parcels more frequently according to the hotspot maps. It is because new parcels in the southeast are smaller and lots of the new parcels are 
+                                                                single-family housing. While new parcels in the northwest are larger. Besides, parcellation happened less frequently along the James River. A suggestion is 
+                                                                that soil quality along the river is more fertile and suitable for agriculture (wait to check with soil quality). The map of Land Uses Over the Years shows 
+                                                                that most of the land along the James River is large-size arilcultural/undeveloped land.")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Parcellation Map")),
@@ -1071,7 +1162,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Parcellation Hot Spots in Goochland County")),
-                                                                p("Insert text")
+                                                                p("There are new parcels split from their mother parcels every year in Goochland. The hot spot map shows the area where parcellation happens the most frequently with red polygons. 
+                                                                After selecting the year range via the slider, the map will show the parcellation frequency during the period. The more solid the circle is, the more frequently parcellation has 
+                                                                happened in this area during the selected period."),
+                                                                p("There is a significant spatial pattern of the parcellation in Goochland. Parcellation happened more frequently in the southeastern area of the county, and it persisted every year. 
+                                                                In the middle area, it became more often in 2021 and 2022. Parcellation in the northwestern area is relatively less frequent in 2019-2022. Besides, the area of high frequent 
+                                                                parcellation in the southeast has expanded along the VA 288 highway. From the hot spot map over time, we can see the impact of the metropolitan area on parcellation. The map 
+                                                                of Land Uses Over the Years shows that agricultural/undeveloped land use is denser in the northwest. It might suggest some negative correlation between agricultural land use and land parcellation.")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Parcellation Hot Spot Map")),
@@ -1108,7 +1205,10 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Parcels in Powhatan County")),
-                                                                p("Insert text")
+                                                                p("The more solid the circle is, the more frequently parcellation has happened in this area during the selected period. 
+                                                                Solid red represents new split parcels in the selected latest year. Lighter red represents new split parcels of the 
+                                                                years before the selected latest year."), 
+                                                                p("New parcels spread across Powhatan in 2012-2020. Some large-size parcels are generated along the James River. (I cannot find other patterns)")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Parcellation Map")),
@@ -1118,7 +1218,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             max = 2020,
                                                                             value = c(2012, 2020),
                                                                             sep = "", 
-                                                                            width = "150%", ticks = FALSE),
+                                                                            width = "150%"),
                                                                 leafletOutput("p.parcellationPlot")
                                                                 
                                                          ),
@@ -1140,12 +1240,24 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Parcellation Hot Spots in Powhatan County")),
-                                                                p("Insert text")
+                                                                p("There are new parcels split from their mother parcels every year in Goochland. The hot spot map shows the area where parcellation happens the most frequently 
+                                                                  with red polygons. After selecting the year range via the slider, the map will show the parcellation frequency during the period."),
+                                                                p("From the hot spot map of parcellation in Powhatan over years, a pattern can be observed. Parcellation happened more frequently in 
+                                                                  the center part, east and west edges of Powhatan. The high frequency of parcellation in the center part persisted in 2015-2021. 
+                                                                  In the middle area, it became more often in 2021 and 2022. Parcellation in the east area might be driven by the proximity to the metropolis.")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Parcellation Hot Spot Map")),
-                                                                
-                                                                #                plotlyOutput("trend1", height = "600px")
+                                                                sliderInput(inputId = "p.hotspotInput", 
+                                                                            label = "Choose the starting and ending years",
+                                                                            min = 2015,
+                                                                            max = 2021,
+                                                                            step = 1,
+                                                                            value = c(2015,2021),
+                                                                            width = "150%",
+                                                                            sep = ""),
+                                                                leafletOutput("p.hotspotMap"),
+                                                                p(tags$small("Data Source: Powhatan County Administrative Data"))
                                                                 
                                                          ),
                                                          column(12, 
@@ -1306,6 +1418,8 @@ ui <- navbarPage(title = "DSPG 2022",
 
 server <- function(input, output){
   
+  ### SOCIODEMOGRAPHICS  =================================================
+  
   goochland_soc <- reactive({
     input$goochland_soc
   })
@@ -1326,7 +1440,6 @@ server <- function(input, output){
     }
     
   })
-  
   
   powhatan_soc <- reactive({
     input$powhatan_soc
@@ -1360,6 +1473,8 @@ server <- function(input, output){
   output$harbour<- renderLeaflet({
     harbour
   })
+  
+  ### CROP LAYERS ================================================
   
   output$mymap <- renderLeaflet({
     
@@ -1420,82 +1535,78 @@ server <- function(input, output){
   output$luPlot.g <- renderLeaflet({
     luPlot <- g.luPlotFunction(input$luYear.g)
     luPlot
-  })
+  }) %>% bindCache(input$luYear.g) #will it be faster?
   
+  
+  
+  ### HOT SPOTS ======================================
   output$g.hotspotMap <- renderLeaflet({
-    gl_cnty<- st_read("data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84") 
-    
-    g.hotspot.plt <- leaflet()%>%
-      addTiles() %>%
-      setView(lng=-77.885376, lat=37.684143 , zoom=10) %>%
-      addPolygons(data=gl_cnty,
-                  fillColor = "transparent")
     begin_year <- input$g.hotspotInput[1]-2000
     end_year <- input$g.hotspotInput[2]-2000
+    yrRange <- c(begin_year:end_year)
+    
+    hotspot.func("Goochland", yrRange)
+  })
+  
+  output$p.hotspotMap <- renderLeaflet({
+    begin_year <- input$p.hotspotInput[1]-2000
+    end_year <- input$p.hotspotInput[2]-2000
+    yrRange <- c(begin_year:end_year)
+    
+    hotspot.func("Powhatan", yrRange)
+  })
+  
+  output$p.hotspotMap <- renderLeaflet({
+    po_cnty<- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84") 
+    
+    p.hotspot.plt <- leaflet()%>%
+      addTiles() %>%
+      setView(lng=-77.9188, lat=37.5415 , zoom=10) %>%
+      addPolygons(data=po_cnty,
+                  fillColor = "transparent")
+    begin_year <- input$p.hotspotInput[1]-2000
+    end_year <- input$p.hotspotInput[2]-2000
     yr <- c(begin_year:end_year)
-    file_list <- paste("data/Parcel_Hotspot/gooch_hotspot_",yr,".shp",sep = "")
+    file_list <- paste("data/Parcel_Hotspot/pow_hotspot_",yr,".shp",sep = "")
     
     for (file in file_list){
       #import the heatspot maps of the selected years
-      gl<- st_read(file) %>% st_transform("+proj=longlat +datum=WGS84")
-      g.hotspot.plt <- g.hotspot.plt %>% addPolygons(stroke = FALSE,
-                                                     data = gl,
+      po<- st_read(file) %>% st_transform("+proj=longlat +datum=WGS84")
+      p.hotspot.plt <- p.hotspot.plt %>% addPolygons(stroke = FALSE,
+                                                     data = po,
                                                      weight = 1,
                                                      smoothFactor=1,
                                                      fillColor = "red",
                                                      fillOpacity = 0.2)
     }
-    g.hotspot.plt
+    p.hotspot.plt
   })
   
   
-  # Plotting Parcellations
-  
-  parc.func <- function(data, range, county, cnty){
-    
-    # Declares initial leaflet, nothing added to it.
-    my.parc.plt <- leaflet()%>%
-      addTiles() %>%
-      addProviderTiles(providers$CartoDB.Positron) %>%
-      addPolygons(data = cnty, fillColor = "transparent")
-    
-    # Sets view based on county
-    if(county == "Powhatan"){
-      my.parc.plt <- my.parc.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
-    }
-    else{
-      my.parc.plt <- my.parc.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
-    }
-    
-    # for loop to add polygons based on what the max year is vs. subsequent years prior
-    for(i in range){
-      # Adds most recent year's parcellations
-      if(i == max(range)){
-        my.parc.plt <- my.parc.plt %>%
-          addPolygons(data = data %>% filter(year == i), 
-                      fillColor = "red", smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
-      }
-      # Adds subsequent year's parcellations
-      else {
-        my.parc.plt <- my.parc.plt %>%
-          addPolygons(data = data %>% filter(year == i), 
-                      fillColor = "red", smoothFactor = 0.1, fillOpacity = .25, stroke = FALSE)
-      }
-    }
-    my.parc.plt
-  }
+  ### PARCELLATION ======================================
   
   
   output$g.parcellationPlot <- renderLeaflet({
-    yearRange <- input$g.parcellationRange[1]:input$g.parcellationRange[2]
+    yearRange <- abs(input$g.parcellationRange[1]:input$g.parcellationRange[2])
     parc.func(gooch_parcellation, yearRange, "Goochland", gooch_bndry)
   })
   
   output$p.parcellationPlot <- renderLeaflet({
-    yearRange <- input$p.parcellationRange[1]:input$p.parcellationRange[2]
+    yearRange <- abs(input$p.parcellationRange[1]:input$p.parcellationRange[2])
     parc.func(pow_parcellation, yearRange, "Powhatan", pow_bndry)
     
   })
+  
+  output$gooch_sankey <- renderHighchart({ 
+    hchart(data_to_sankey(g.sankey), "sankey") %>%
+      hc_title(text = "Land Use Conversion in Goochland (Counts): 2018-2022") 
+  })
+  
+  output$pow_sankey <- renderHighchart({ 
+    hchart(data_to_sankey(p.sankey), "sankey") %>%
+      hc_title(text = "Land Use Conversion in Powhatan (Counts): 2012-2021") 
+  })
+  
   
   
 }
