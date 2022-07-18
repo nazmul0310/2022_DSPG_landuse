@@ -1,5 +1,5 @@
 #
-# This is a Shiny web application. You can run the application by clicking
+# This is a Shiny web application. You can run the application by clicking on
 # the 'Run App' button above.
 #
 # Find out more about building applications with Shiny here:
@@ -120,6 +120,19 @@ edu.func <- function(inputYear, inputCounty) {
 }
 
 
+# Policy
+
+    # Goochland
+
+
+pcon<- st_read("data/Conservation/Powhatan_Natural_Conservation.shp")
+pcon <- st_transform(pcon, "+proj=longlat +datum=WGS84")
+
+powhatan_con <- leaflet()%>%
+  addTiles() %>%
+  setView(lng=-78, lat=37.64, zoom=10.48) %>% 
+  addPolygons(data=pcon, weight=0)
+
 
 # Land use
 
@@ -207,7 +220,7 @@ psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Ar
 psoil <-ggplotly(psoil, tooltip = "text")
 
 
-      # Powhatan Land Use
+# Powhatan Land Use
 
 
 
@@ -321,12 +334,12 @@ hotspot.func <- function(county, range){
   # Sets view based on county
   if(county == "Powhatan"){
     hotspot.plt <- hotspot.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
-    file_list <- paste("data/Parcel_Hotspot/powhatan/pow_hotspot_",yr,".shp",sep = "")
+    file_list <- paste("data/Parcel_Hotspot/powhatan/pow_hotspot_",range,".shp",sep = "")
     hotspot.plt <- hotspot.plt %>% addPolygons(data = pow_cnty, fillOpacity = 0)
   }
   else{
     hotspot.plt <- hotspot.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
-    file_list <- paste("data/Parcel_Hotspot/goochland/gooch_hotspot_",yr,".shp",sep = "")
+    file_list <- paste("data/Parcel_Hotspot/goochland/gooch_hotspot_",range,".shp",sep = "")
     hotspot.plt <- hotspot.plt %>% addPolygons(data = gl_cnty, fillOpacity = 0)
   }
   
@@ -351,7 +364,7 @@ harbour<- leaflet() %>%
 
 
 
-      # Land Parcellation Imports
+# Land Parcellation Imports
 
 # gooch
 gooch_parcellation <- st_read("data/parcellationData/Gooch_Parcellation_LT.shp") %>%
@@ -482,8 +495,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "gedu")
                                                      ),
                                                      radioButtons(inputId = "yearSelect_gsoc", label = "Select Year: ", 
-                                                                 choices = c("2017", "2018", "2019", "2020"), 
-                                                                 selected = "2020"),
+                                                                  choices = c("2017", "2018", "2019", "2020"), 
+                                                                  selected = "2020"),
                                                      plotOutput("gsoc", height = "500px"),
                                                      h4(strong("Visualization Summaries")),
                                                      p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. 
@@ -548,8 +561,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "pedu")
                                                      ),
                                                      radioButtons(inputId = "yearSelect_psoc", label = "Select Year: ", 
-                                                                 choices = c("2017", "2018", "2019", "2020"), 
-                                                                 selected = "2020"),
+                                                                  choices = c("2017", "2018", "2019", "2020"), 
+                                                                  selected = "2020"),
                                                      plotOutput("psoc", height = "500px"),
                                                      h4(strong("Visualization Summaries")),
                                                      p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. The 25-44 age group has been 
@@ -724,6 +737,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      h1(strong("Powhatan"), align = "center"),
                                                      p("", style = "padding-top:10px;"),
                                                      fluidRow(style = "margin: 6px;", align = "justify",
+                                                              leafletOutput("powhatan_con"),
+                                                              br(),
                                                               p('Powhatan County land use policy includes a land use deferral program, Powhatan County code Section 70-76, which states that the purpose of land use is
                                                      to “preserve real estate devoted to agricultural, horticultural, forest and open space uses within its boundaries in the public interest....". 
                                                      The land use deferral program “offers a deferral of a portion of the real estate taxes for qualifying properties”. This ordinance was adopted by the
@@ -1157,7 +1172,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             max = 2020,
                                                                             value = c(2012, 2020),
                                                                             sep = "", 
-                                                                            width = "150%", ticks = FALSE),
+                                                                            width = "150%"),
                                                                 leafletOutput("p.parcellationPlot")
                                                                 
                                                          ),
@@ -1179,22 +1194,19 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Parcellation Hot Spots in Powhatan County")),
-                                                                sliderInput(inputId = "g.hotspotInput", 
-                                                                            label = "Choose the starting and ending years",
-                                                                            min = 2019,
-                                                                            max = 2022,
-                                                                            step = 1,
-                                                                            value = c(2019,2022),
-                                                                            width = "150%",
-                                                                            sep = ""),
-                                                                leafletOutput("g.hotspotMap"),
-                                                                p(tags$small("Data Source: Goochland County Administrative Data"))
+                                                                p(tags$small("Insert Text"))
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Parcellation Hot Spot Map")),
-                                                                
-                                                                #                plotlyOutput("trend1", height = "600px")
-                                                                
+                                                                sliderInput(inputId = "p.hotspotInput", 
+                                                                            label = "Choose the starting and ending years",
+                                                                            min = 2015,
+                                                                            max = 2021,
+                                                                            step = 1,
+                                                                            value = c(2015,2021),
+                                                                            width = "150%",
+                                                                            sep = ""),
+                                                                leafletOutput("p.hotspotMap"),
                                                          ),
                                                          column(12, 
                                                                 
@@ -1267,7 +1279,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                             that has occured over a 5 year period (2018 - 2022). We used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
                                           br(""),
                                           img(src = "vdot.png", style = "display: inline; float: left;", width = "200px"),
-                                          p(strong("VDOT Traffic Data "), " ***description*** "),
+                                          p(strong("VDOT Traffic Data "), "The Virginia Department of Transportation (VDOT) is responsible for building, maintaining and operating the state's roads, bridges and tunnels. And, through the Commonwealth Transportation Board, it provides funding for airports, seaports, rail and public transportation. Virginia has the third-largest state-maintained highway system in the country, behind Texas and North Carolina."),
                                           br(""),
                                           
                                    ),
@@ -1302,10 +1314,10 @@ ui <- navbarPage(title = "DSPG 2022",
                           fluidRow(style = "margin-left: 100px; margin-right: 100px;",
                                    column(6, align = "center",
                                           h4(strong("DSPG Undergraduate Interns")),
-                                          img(src = "john.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          img(src = "chris.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "Rachel Inman.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "John Malla.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           br(), 
-                                          img(src = "rache.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "Christopher Vest.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Rachel Inman', target = '_blank'), "(Virginia Tech, Undergraduate in Smart and Sustainable Cities and Minoring in Landscape Architecture);",
                                             br(), 
                                             a(href = 'https://www.linkedin.com/in/julie-rebstock', 'John Malla', target = '_blank'), "(Virginia Tech, Undergraduate in Computational Modeling and Data Analytics);",
@@ -1315,8 +1327,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                    ),
                                    column(6, align = "center",
                                           h4(strong("VT Faculty Members")),
-                                          img(src = "team-posadas.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
-                                          img(src = "team-sarah.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "SusanChen.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "weizhang.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           p(a(href = "https://www.linkedin.com/in/briannaposadas/", 'Dr. Susan Chen', target = '_blank'), "(Associate Professor of Econometrics & Data Analytics);",
                                             br(), 
                                             a(href = '', 'Dr. Wei Zhang', target = '_blank'), "(Assistant Professor of Agricultural & Applied Economics)."),
@@ -1326,15 +1338,15 @@ ui <- navbarPage(title = "DSPG 2022",
                           fluidRow(style = "margin-left: 100px; margin-right: 100px;",
                                    column(6, align = "center",
                                           h4(strong("DSPG Graduate Fellows and Research Assistants")),
-                                          img(src = "farm.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          img(src = "team-julie.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "Nazmul Huda.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "Samantha Rippley.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           br(), 
-                                          img(src = "---.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "Yuanyuan Wen.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Nazmul Huda', target = '_blank'), "(Virginia Tech, Graduate in Geography);",
                                             br(), 
-                                            a(href = 'https://www.linkedin.com/in/julie-rebstock', 'Yuanyuan Wen', target = '_blank'), "(Virgina Tech, Graduate in Agricultural & Applied Economics);",
+                                            a(href = 'https://www.linkedin.com/in/julie-rebstock', 'Samantha Rippley', target = '_blank'), "(Virgina Tech, Graduate in Agricultural Economics);",
                                             br(), 
-                                            a(href = 'www.linkedin.com/in/rachelinman21', 'Samantha Rippley', target = '_blank'), "(Virginia Tech, Graduate in Agricultural Economics)."),
+                                            a(href = 'www.linkedin.com/in/rachelinman21', 'Yuanyuan Wen', target = '_blank'), "(Virginia Tech, Graduate in Agricultural & Applied Economics)."),
                                           p("", style = "padding-top:10px;") 
                                    ),
                                    column(6, align = "center",
@@ -1396,6 +1408,10 @@ server <- function(input, output){
       edu.func(input$yearSelect_psoc, "Powhatan ")
     }
     
+  })
+  
+  output$powhatan_con<- renderLeaflet({
+    powhatan_con
   })
   
   output$harbour<- renderLeaflet({
@@ -1489,12 +1505,12 @@ server <- function(input, output){
   
   
   output$g.parcellationPlot <- renderLeaflet({
-    yearRange <- input$g.parcellationRange[1]:input$g.parcellationRange[2]
+    yearRange <- abs(input$g.parcellationRange[1]:input$g.parcellationRange[2])
     parc.func(gooch_parcellation, yearRange, "Goochland", gooch_bndry)
   })
   
   output$p.parcellationPlot <- renderLeaflet({
-    yearRange <- input$p.parcellationRange[1]:input$p.parcellationRange[2]
+    yearRange <- abs(input$p.parcellationRange[1]:input$p.parcellationRange[2])
     parc.func(pow_parcellation, yearRange, "Powhatan", pow_bndry)
     
   })
