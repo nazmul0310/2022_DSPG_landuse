@@ -8,7 +8,7 @@
 #
 # LAND USE PROJECT APP
 
-library(profvis)
+
 library(shiny)
 library(shinycssloaders)
 library(shinythemes)
@@ -195,7 +195,7 @@ psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Ar
 psoil <-ggplotly(psoil, tooltip = "text")
 
 
-      # Powhatan Land Use
+# Powhatan Land Use
 
 
 
@@ -273,7 +273,7 @@ harbour<- leaflet() %>%
 
 
 
-      # Land Parcellation Imports
+# Land Parcellation Imports
 
 # gooch
 gooch_parcellation <- st_read("data/parcellationData/Gooch_Parcellation_LT.shp") %>%
@@ -404,8 +404,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "gedu")
                                                      ),
                                                      radioButtons(inputId = "yearSelect_gsoc", label = "Select Year: ", 
-                                                                 choices = c("2017", "2018", "2019", "2020"), 
-                                                                 selected = "2020"),
+                                                                  choices = c("2017", "2018", "2019", "2020"), 
+                                                                  selected = "2020"),
                                                      plotOutput("gsoc", height = "500px"),
                                                      h4(strong("Visualization Summaries")),
                                                      p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. 
@@ -470,8 +470,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        "Median Earnings By Educational Attainment (Age > 25 years)" = "pedu")
                                                      ),
                                                      radioButtons(inputId = "yearSelect_psoc", label = "Select Year: ", 
-                                                                 choices = c("2017", "2018", "2019", "2020"), 
-                                                                 selected = "2020"),
+                                                                  choices = c("2017", "2018", "2019", "2020"), 
+                                                                  selected = "2020"),
                                                      plotOutput("psoc", height = "500px"),
                                                      h4(strong("Visualization Summaries")),
                                                      p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. The 25-44 age group has been 
@@ -1180,7 +1180,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                             that has occured over a 5 year period (2018 - 2022). We used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
                                           br(""),
                                           img(src = "vdot.png", style = "display: inline; float: left;", width = "200px"),
-                                          p(strong("VDOT Traffic Data "), " ***description*** "),
+                                          p(strong("VDOT Traffic Data "), "The Virginia Department of Transportation (VDOT) is responsible for building, maintaining and operating the state's roads, bridges and tunnels. And, through the Commonwealth Transportation Board, it provides funding for airports, seaports, rail and public transportation. Virginia has the third-largest state-maintained highway system in the country, behind Texas and North Carolina."),
                                           br(""),
                                           
                                    ),
@@ -1372,7 +1372,8 @@ server <- function(input, output){
   
   output$luPlot.g <- renderLeaflet({
     luPlot <- g.luPlotFunction(input$luYear.g)
-  }) %>% bindCache(input$luYear.g)
+    luPlot
+  })
   
   output$g.hotspotMap <- renderLeaflet({
     gl_cnty<- st_read("data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84") 
