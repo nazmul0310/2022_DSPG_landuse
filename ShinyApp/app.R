@@ -290,7 +290,7 @@ g.luPlotFunction <- function(year.g) {
               title = "Land Use Type",
               labFormat = labelFormat(),
               opacity = 1,
-              data=Gooch) #need to change for show the correct label
+              data=Gooch) 
 }
 
 parc.func <- function(data, range, county, cnty){
@@ -1504,7 +1504,7 @@ server <- function(input, output){
   output$luPlot.g <- renderLeaflet({
     luPlot <- g.luPlotFunction(input$luYear.g)
     luPlot
-  })
+  }) %>% bindCache(input$luYear.g) #will it be faster?
   
   
   
