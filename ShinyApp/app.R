@@ -279,7 +279,7 @@ g.luPlotFunction <- function(year.g) {
               title = "Land Use Type",
               labFormat = labelFormat(),
               opacity = 1,
-              data=Gooch) #need to change for show the correct label
+              data=Gooch) 
 }
 
 
@@ -1422,7 +1422,7 @@ server <- function(input, output){
   output$luPlot.g <- renderLeaflet({
     luPlot <- g.luPlotFunction(input$luYear.g)
     luPlot
-  })
+  }) %>% bindCache(input$luYear.g) #will it be faster?
   
   output$g.hotspotMap <- renderLeaflet({
     gl_cnty<- st_read("data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84") 
