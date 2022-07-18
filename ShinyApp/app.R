@@ -112,14 +112,30 @@ edu.func <- function(inputYear, inputCounty) {
 
     # Goochland
 
+gcon<- st_read("data/Conservation/Gooch_Preservation.shp")
+gcon <- st_transform(gcon, "+proj=longlat +datum=WGS84")
+
+goochland_con <- leaflet()%>%
+  addTiles() %>%
+  setView(lng=-78, lat=37.7, zoom=10.48) %>% 
+  addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="purple")
+
+    # Powhatan
 
 pcon<- st_read("data/Conservation/Powhatan_Natural_Conservation.shp")
 pcon <- st_transform(pcon, "+proj=longlat +datum=WGS84")
+pcon$col=sample(c('red','yellow','green'),nrow(pcon),1)
 
 powhatan_con <- leaflet()%>%
   addTiles() %>%
-  setView(lng=-78, lat=37.64, zoom=10.48) %>% 
-  addPolygons(data=pcon, weight=0)
+  setView(lng=-78, lat=37.58, zoom=10.49) %>% 
+  addPolygons(data=pcon[1,], weight=0, fillOpacity = 0.5, fillColor = "orange", group = "Priority Conservation Areas")%>%
+  addPolygons(data=pcon[2,], weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "Protected Lands")%>%
+  addPolygons(data=pcon[3,], weight=0, fillOpacity = 0.5, fillColor = "green", group = "AFD")%>%
+  addLayersControl(
+    overlayGroups = c("Priority Conservation Areas", "Protected Lands", "AFD"),
+    position = "bottomleft",
+    options = layersControlOptions(collapsed = FALSE))
 
 
 # Land use
@@ -245,7 +261,7 @@ g.luPlotFunction <- function(year.g) {
     addProviderTiles(providers$CartoDB.Positron) %>%
     addPolygons(data=goochBoundary,
                 fillColor = "transparent") %>%
-    addPolygons(data = Gooch %>% filter(LUC_FIN == "Single Family Residential Urban"), 
+    addPolygons(data = Gooch[1] %>% filter(LUC_FIN == "Single Family Residential Urban"), 
                 fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
                 group = "Single Family Urban") %>%
     addPolygons(data=Gooch %>% filter(LUC_FIN == "Single Family Residential Suburban"), 
@@ -634,6 +650,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      h1(strong("Goochland"), align = "center"),
                                                      p("", style = "padding-top:10px;"),
                                                      fluidRow(style = "margin: 6px;", align = "justify",
+                                                              leafletOutput("goochland_con"),
+                                                              p("The areas highlighted in purple represent", strong("Rural Preservation Districts"), "which allow for residential development but continue to allow agricultural uses in the preservation area, equestrian activities, and forest management plans [1]."),
                                                               p("Goochland County runs a land use program which assesses land based on use value as opposed to market value. The program was adopted by the county in 1978. There are multiple requirements for land to be eligible for the program as established by the State Land Evaluation Advisory Council:"),
                                                               tags$ul(
                                                                 
@@ -657,7 +675,16 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p("", style = "padding-top:10px;"),
                                                      fluidRow(style = "margin: 6px;", align = "justify",
                                                               leafletOutput("powhatan_con"),
-                                                              br(),
+                                                              p("The map above highlights the many different types of conservation districts in Powhatan County."), 
+                                                              tags$ul(
+                                                                
+                                                                tags$li("The green layer represents", strong("Agricultural Forestal Districts (AFD)"),"which are areas of land that are recognized by the county as being economically and environmentally valuable resources for all"),
+                                                                
+                                                                tags$li("The yellow layer represents", strong("Protected Lands"), "which "),
+                                                                
+                                                                tags$li("The orange layer represents", strong("Priority Conservation Areas"), "which"),
+
+                                                              ),
                                                               p('Powhatan County land use policy includes a land use deferral program, Powhatan County code Section 70-76, which states that the purpose of land use is
                                                      to “preserve real estate devoted to agricultural, horticultural, forest and open space uses within its boundaries in the public interest....". 
                                                      The land use deferral program “offers a deferral of a portion of the real estate taxes for qualifying properties”. This ordinance was adopted by the
@@ -672,7 +699,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      conservation of open land and farmland and recognize agriculture as an economic driver of the community.'))),
                                               column(12, 
                                                      h4("References:"),
-                                                     p(tags$small("[1] How Can You Help Protect Source Water? (n.d.). Retrieved July 29, 2021, from https://www.epa.gov/sourcewaterprotection/how-can-you-help-protect-source-water")), 
+                                                     p(tags$small("[1] Planning and Zoning Initiatives. Planning and Zoning Initiatives | Goochland County, VA - Official Website. (n.d.). Retrieved July 18, 2022, from https://www.goochlandva.us/1058/Planning-and-Zoning-Initiatives ")), 
                                                      p(tags$small("[2] Well maintenance. (2009, April 10). Retrieved July 29, 2021, from https://www.cdc.gov/healthywater/drinking/private/wells/maintenance.html#:~:text=Wells%20should%20be%20checked%20and,example%2C%20arsenic%20and%20radon).")) ,
                                                      p(tags$small("[3] A Guide to Private Wells (pp. 5-25, Publication). (1995). Blacksburg, VA: Virginia Water Resources Research Center.")) ,
                                                      p("", style = "padding-top:10px;")) 
@@ -1320,6 +1347,10 @@ server <- function(input, output){
       edu.func(input$yearSelect_psoc, "Powhatan ")
     }
     
+  })
+  
+  output$goochland_con<- renderLeaflet({
+    goochland_con
   })
   
   output$powhatan_con<- renderLeaflet({
