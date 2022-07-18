@@ -29,77 +29,71 @@ library(readxl)
 library(RColorBrewer)
 options(scipen=999)
 
-setwd("../")
+setwd("../../../ShinyApp")
 
-travelTimes <- st_read("Powhatan_Parcel_Data/Powhatan_Travel_Time/Powhatan_Travel_Times.shp")
-Rmnd30 <- st_read("Powhatan_Parcel_Data/Richmond_Travel_Times/30MinuteTravelTime.shp")
-Rmnd45 <- st_read("Powhatan_Parcel_Data/Richmond_Travel_Times/45MinuteTravelTime.shp")
-Rmnd60 <- st_read("Powhatan_Parcel_Data/Richmond_Travel_Times/60MinuteTravelTime.shp")
+pow.travelTimes <- st_read("data/travelTimes/Powhatan_Travel_Time/Powhatan_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+gooch.travelTimes <- st_read("data/travelTimes/Goochland_Travel_Time/Goochland_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+Rmnd30 <- st_read("data/travelTimes/Richmond_Travel_Times/30MinuteTravelTime.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+Rmnd45 <- st_read("data/travelTimes/Richmond_Travel_Times/45MinuteTravelTime.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+Rmnd60 <- st_read("data/travelTimes/Richmond_Travel_Times/60MinuteTravelTime.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
+travelTime.func <- function(data, county){
+  
+  # Initial plot
+  travelTime.plt <- leaflet() %>%
+    addTiles() %>%
+    addProviderTiles("Esri")  
+  
+  if(county == "Powhatan"){
+    travelTime.plt <- travelTime.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
+  }
+  else{
+    travelTime.plt <- travelTime.plt %>% setView(lng=-77.949, lat=37.742, zoom=10)
+  }
+  
+  data$Trv2RcMnd <- factor(data$Trv2RcMnd, levels = c("30 minutes", "45 minutes", "One hour", "More than an hour"))
+  # Custom color palette
+  mypalette <- colorBin(palette = "viridis", as.numeric(data$Trv2RcMnd), bins = 5)
+  colors <- mypalette(unclass(data$Trv2RcMnd))
+  sorted_colors <- c("#440154", "#2A788E", "#7AD151", "#FDE725")
+  
+  travelTime.plt <- travelTime.plt %>%
+    addPolygons(data = data, color = "black",
+                fillColor = colors,
+                smoothFactor = 0.1, fillOpacity=.6, weight = 1,stroke = T) %>%
+    
+    addPolygons(data = Rmnd30, color = "Yellow",
+                opacity = 1, weight = 2, fillColor = "white",fillOpacity = .1, 
+                group = "Within 30") %>%
+    addPolygons(data = Rmnd45, color = "Orange",
+                opacity = 1, weight = 2, fillColor = "white",fillOpacity = .1,
+                group = "Within 45") %>%
+    addPolygons(data = Rmnd60, color = "Red",
+                opacity = 1, weight = 2, fillColor = "white",fillOpacity = .1,
+                group = "Within 60")
+  
+  
+  
+  travelTime.plt
+}
 
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-  radioButtons(inputId = "drivingTimeInput", label = "Select Time from Richmond: ", 
-                       choices = c("Within 30 minutes", "Within 45 minutes", "Within 60 minutes", "More than 60 mintues"), 
-                       selected = "More than 60 minutes"),
-          
-  leafletOutput("p.drivingPlot")
+  leafletOutput(outputId = "p.travelPlot"),
+  leafletOutput(outputId = "g.travelPlot")
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-  # Driving Time
-  # ==================================================================
-  
-  drvTimeInput <- reactive({
-    input$drivingTimeInput
+  output$p.travelPlot <- renderLeaflet({
+    
+    travelTime.func(pow.travelTimes, "Powhatan")
+    
   })
   
-  driveRange <- drvTimeInput()
-  
-  if(driveRange == "Within 30 minutes"){
-    travelTimes <- travelTimes %>% filter(Trv2RcMnd == "30 minutes")
-    drv.color <- "#35b779"
-    iso.file <- Rmnd30
-  }
-  else if(driveRange == "Within 45 minutes"){
-    travelTimes <- travelTimes %>% filter(Trv2RcMnd == c("30 minutes", "45 minutes"))
-    drv.color <- "#31688e"
-    iso.file <- Rmnd45
-  }
-  else if(driveRange == "Within 60 minutes"){
-    travelTimes <- travelTimes %>% filter(Trv2RcMnd == c("30 minutes", "45 minutes", "One hour"))
-    drv.color <- "#440154"
-    iso.file <- Rmnd60
-  }
-  
-  
-  # Function============
-  drivingPlot.func <- function(data, county, richmondISO, lnColor){
-    
-    driving.plt <- leaflet() %>%
-      addTiles() %>%
-      addProviderTiles("Esri") %>%
-      addPolygons(richmondISO, fillColor = "transparent") %>%
-      addPolygons(data, color = lnColor)
-    driving.plt
 
-  }
-  
-  
-  # Output=========
-  output$p.drivingPlot <- renderLeaflet({
-    
-    drivingPlot.func(travelTimes, "Powhatan", iso.file, drv.color)
-    
-  })
-  
-  
-  
-  # ==================================================================
-  
 }
 
 # Run the application 
