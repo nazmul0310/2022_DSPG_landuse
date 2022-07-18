@@ -1213,12 +1213,6 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Parcellation Hot Spots in Powhatan County")),
-<<<<<<< HEAD
-                                                                p(tags$small("Insert Text"))
-                                                         ), 
-                                                         column(8, 
-                                                                h4(strong("Parcellation Hot Spot Map")),
-=======
                                                                 p("There are new parcels split from their mother parcels every year in Goochland. The hot spot map shows the area where parcellation happens the most frequently 
                                                                   with red polygons. After selecting the year range via the slider, the map will show the parcellation frequency during the period."),
                                                                 p("From the hot spot map of parcellation in Powhatan over years, a pattern can be observed. Parcellation happened more frequently in 
@@ -1227,9 +1221,6 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Parcellation Hot Spot Map")),
-                                                                
-                                                                #                plotlyOutput("trend1", height = "600px")
->>>>>>> e753bbdb927050165c4a2a15fb748d60f176dfcd
                                                                 sliderInput(inputId = "p.hotspotInput", 
                                                                             label = "Choose the starting and ending years",
                                                                             min = 2015,
@@ -1239,11 +1230,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             width = "150%",
                                                                             sep = ""),
                                                                 leafletOutput("p.hotspotMap"),
-<<<<<<< HEAD
-=======
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data"))
                                                                 
->>>>>>> e753bbdb927050165c4a2a15fb748d60f176dfcd
                                                          ),
                                                          column(12, 
                                                                 
