@@ -34,10 +34,22 @@ options(scipen=999)
 options(shiny.maxRequestSize = 100*1024^2)
 
 # data --------------------------------------------------------------------------------------------------------------------
+      # soc
 popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny ap
 industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
 inc <- read.csv("data/inc.csv", header=TRUE) 
 educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) 
+      # boundaries
+gl_cnty<- st_read("data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+pow_cnty<- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+
+
+
+
+
+
+
+
 
 # Sociodemographic
 
@@ -204,7 +216,6 @@ harbour<- leaflet() %>%
   setView(lng=-77.949, lat=37.742, zoom=9)
 
 GoochlandAllParcel <- read_sf("../ShinyApp/data/luParcelData/GoochAll.shp")
-goochBoundary <- read_sf("../ShinyApp/data/luParcelData/Goochland_Boundary.shp")
 
 
 g.luPlotFunction <- function(year.g) {
@@ -224,13 +235,13 @@ g.luPlotFunction <- function(year.g) {
   
   mypalette <- colorBin(palette = "viridis", as.numeric(LUC_values), bins = 8)
   colors <- mypalette(unclass(LUC_values))
-  colors[8] <- "#ffffff" # the color is similar to 
+  colors[8] <- "#4D4D4D" # the color is similar to 
   legendpalette <- colorFactor(palette = colors,levels=LUC_values)
   
   MyMap <- leaflet() %>%
     addTiles() %>%
     addProviderTiles(providers$CartoDB.Positron) %>%
-    addPolygons(data=goochBoundary,
+    addPolygons(data=gl_cnty,
                 fillColor = "transparent") %>%
     addPolygons(data = Gooch %>% filter(LUC_FIN == "Single Family Residential Urban"), 
                 fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
@@ -266,6 +277,73 @@ g.luPlotFunction <- function(year.g) {
               opacity = 1,
               data=Gooch) #need to change for show the correct label
 }
+
+parc.func <- function(data, range, county, cnty){
+  
+  # Declares initial leaflet, nothing added to it.
+  my.parc.plt <- leaflet()%>%
+    addTiles() %>%
+    addProviderTiles(providers$CartoDB.Positron) %>%
+    addPolygons(data = cnty, fillColor = "transparent")
+  
+  # Sets view based on county
+  if(county == "Powhatan"){
+    my.parc.plt <- my.parc.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
+  }
+  else{
+    my.parc.plt <- my.parc.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
+  }
+  
+  # for loop to add polygons based on what the max year is vs. subsequent years prior
+  for(i in range){
+    # Adds most recent year's parcellations
+    if(i == max(range)){
+      my.parc.plt <- my.parc.plt %>%
+        addPolygons(data = data %>% filter(year == i), 
+                    fillColor = "red", smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+    }
+    # Adds subsequent year's parcellations
+    else {
+      my.parc.plt <- my.parc.plt %>%
+        addPolygons(data = data %>% filter(year == i), 
+                    fillColor = "red", smoothFactor = 0.1, fillOpacity = .25, stroke = FALSE)
+    }
+  }
+  my.parc.plt
+}
+
+hotspot.func <- function(county, range){
+  # Initial plot, fitted
+  hotspot.plt <- leaflet()%>%
+    addTiles() %>%
+    addProviderTiles(providers$CartoDB.Positron)
+  
+  # Sets view based on county
+  if(county == "Powhatan"){
+    hotspot.plt <- hotspot.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
+    file_list <- paste("data/Parcel_Hotspot/powhatan/pow_hotspot_",yr,".shp",sep = "")
+    hotspot.plt <- hotspot.plt %>% addPolygons(data = pow_cnty, fillOpacity = 0)
+  }
+  else{
+    hotspot.plt <- hotspot.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
+    file_list <- paste("data/Parcel_Hotspot/goochland/gooch_hotspot_",yr,".shp",sep = "")
+    hotspot.plt <- hotspot.plt %>% addPolygons(data = gl_cnty, fillOpacity = 0)
+  }
+  
+  
+  for (file in file_list){
+    #import the heatspot maps of the selected years
+    hotspot.data<- st_read(file) %>% st_transform("+proj=longlat +datum=WGS84")
+    hotspot.plt <- hotspot.plt %>% addPolygons(stroke = FALSE,
+                                               data = hotspot.data,
+                                               weight = 1,
+                                               smoothFactor=1,
+                                               fillColor = "red",
+                                               fillOpacity = 0.2)
+  }
+  hotspot.plt
+}
+
 
 harbour<- leaflet() %>% 
   addTiles() %>% 
@@ -1101,7 +1179,16 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Parcellation Hot Spots in Powhatan County")),
-                                                                p("Insert text")
+                                                                sliderInput(inputId = "g.hotspotInput", 
+                                                                            label = "Choose the starting and ending years",
+                                                                            min = 2019,
+                                                                            max = 2022,
+                                                                            step = 1,
+                                                                            value = c(2019,2022),
+                                                                            width = "150%",
+                                                                            sep = ""),
+                                                                leafletOutput("g.hotspotMap"),
+                                                                p(tags$small("Data Source: Goochland County Administrative Data"))
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Parcellation Hot Spot Map")),
@@ -1267,6 +1354,8 @@ ui <- navbarPage(title = "DSPG 2022",
 
 server <- function(input, output){
   
+  ### SOCIODEMOGRAPHICS  =================================================
+  
   goochland_soc <- reactive({
     input$goochland_soc
   })
@@ -1287,7 +1376,6 @@ server <- function(input, output){
     }
     
   })
-  
   
   powhatan_soc <- reactive({
     input$powhatan_soc
@@ -1313,6 +1401,8 @@ server <- function(input, output){
   output$harbour<- renderLeaflet({
     harbour
   })
+  
+  ### CROP LAYERS ================================================
   
   output$mymap <- renderLeaflet({
     
@@ -1375,68 +1465,27 @@ server <- function(input, output){
     luPlot
   })
   
+  
+  
+  ### HOT SPOTS ======================================
   output$g.hotspotMap <- renderLeaflet({
-    gl_cnty<- st_read("data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84") 
-    
-    g.hotspot.plt <- leaflet()%>%
-      addTiles() %>%
-      setView(lng=-77.885376, lat=37.684143 , zoom=10) %>%
-      addPolygons(data=gl_cnty,
-                  fillColor = "transparent")
     begin_year <- input$g.hotspotInput[1]-2000
     end_year <- input$g.hotspotInput[2]-2000
-    yr <- c(begin_year:end_year)
-    file_list <- paste("data/Parcel_Hotspot/gooch_hotspot_",yr,".shp",sep = "")
+    yrRange <- c(begin_year:end_year)
     
-    for (file in file_list){
-      #import the heatspot maps of the selected years
-      gl<- st_read(file) %>% st_transform("+proj=longlat +datum=WGS84")
-      g.hotspot.plt <- g.hotspot.plt %>% addPolygons(stroke = FALSE,
-                                                     data = gl,
-                                                     weight = 1,
-                                                     smoothFactor=1,
-                                                     fillColor = "red",
-                                                     fillOpacity = 0.2)
-    }
-    g.hotspot.plt
+    hotspot.func("Goochland", yrRange)
+  })
+  
+  output$p.hotspotMap <- renderLeaflet({
+    begin_year <- input$p.hotspotInput[1]-2000
+    end_year <- input$p.hotspotInput[2]-2000
+    yrRange <- c(begin_year:end_year)
+    
+    hotspot.func("Powhatan", yrRange)
   })
   
   
-  # Plotting Parcellations
-  
-  parc.func <- function(data, range, county, cnty){
-    
-    # Declares initial leaflet, nothing added to it.
-    my.parc.plt <- leaflet()%>%
-      addTiles() %>%
-      addProviderTiles(providers$CartoDB.Positron) %>%
-      addPolygons(data = cnty, fillColor = "transparent")
-    
-    # Sets view based on county
-    if(county == "Powhatan"){
-      my.parc.plt <- my.parc.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
-    }
-    else{
-      my.parc.plt <- my.parc.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
-    }
-    
-    # for loop to add polygons based on what the max year is vs. subsequent years prior
-    for(i in range){
-      # Adds most recent year's parcellations
-      if(i == max(range)){
-        my.parc.plt <- my.parc.plt %>%
-          addPolygons(data = data %>% filter(year == i), 
-                      fillColor = "red", smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
-      }
-      # Adds subsequent year's parcellations
-      else {
-        my.parc.plt <- my.parc.plt %>%
-          addPolygons(data = data %>% filter(year == i), 
-                      fillColor = "red", smoothFactor = 0.1, fillOpacity = .25, stroke = FALSE)
-      }
-    }
-    my.parc.plt
-  }
+  ### PARCELLATION ======================================
   
   
   output$g.parcellationPlot <- renderLeaflet({
