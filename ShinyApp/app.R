@@ -1,5 +1,5 @@
 #
-# This is a Shiny web application. You can run the application by clicking
+# This is a Shiny web application. You can run the application by clicking on
 # the 'Run App' button above.
 #
 # Find out more about building applications with Shiny here:
@@ -109,6 +109,19 @@ edu.func <- function(inputYear, inputCounty) {
   edu
 }
 
+
+# Policy
+
+    # Goochland
+
+
+pcon<- st_read("data/Conservation/Powhatan_Natural_Conservation.shp")
+pcon <- st_transform(pcon, "+proj=longlat +datum=WGS84")
+
+powhatan_con <- leaflet()%>%
+  addTiles() %>%
+  setView(lng=-78, lat=37.64, zoom=10.48) %>% 
+  addPolygons(data=pcon, weight=0)
 
 
 # Land use
@@ -269,9 +282,6 @@ g.luPlotFunction <- function(year.g) {
               data=Gooch) #need to change for show the correct label
 }
 
-harbour<- leaflet() %>% 
-  addTiles() %>% 
-  setView(lng=-77.949, lat=37.742, zoom=9)
 
 
 
@@ -648,6 +658,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      h1(strong("Powhatan"), align = "center"),
                                                      p("", style = "padding-top:10px;"),
                                                      fluidRow(style = "margin: 6px;", align = "justify",
+                                                              leafletOutput("powhatan_con"),
+                                                              br(),
                                                               p('Powhatan County land use policy includes a land use deferral program, Powhatan County code Section 70-76, which states that the purpose of land use is
                                                      to “preserve real estate devoted to agricultural, horticultural, forest and open space uses within its boundaries in the public interest....". 
                                                      The land use deferral program “offers a deferral of a portion of the real estate taxes for qualifying properties”. This ordinance was adopted by the
@@ -1248,10 +1260,10 @@ ui <- navbarPage(title = "DSPG 2022",
                           fluidRow(style = "margin-left: 100px; margin-right: 100px;",
                                    column(6, align = "center",
                                           h4(strong("DSPG Undergraduate Interns")),
-                                          img(src = "john.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          img(src = "chris.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "Rachel Inman.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "John Malla.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           br(), 
-                                          img(src = "rache.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "Christopher Vest.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Rachel Inman', target = '_blank'), "(Virginia Tech, Undergraduate in Smart and Sustainable Cities and Minoring in Landscape Architecture);",
                                             br(), 
                                             a(href = 'https://www.linkedin.com/in/julie-rebstock', 'John Malla', target = '_blank'), "(Virginia Tech, Undergraduate in Computational Modeling and Data Analytics);",
@@ -1261,8 +1273,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                    ),
                                    column(6, align = "center",
                                           h4(strong("VT Faculty Members")),
-                                          img(src = "team-posadas.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
-                                          img(src = "team-sarah.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "SusanChen.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "weizhang.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           p(a(href = "https://www.linkedin.com/in/briannaposadas/", 'Dr. Susan Chen', target = '_blank'), "(Associate Professor of Econometrics & Data Analytics);",
                                             br(), 
                                             a(href = '', 'Dr. Wei Zhang', target = '_blank'), "(Assistant Professor of Agricultural & Applied Economics)."),
@@ -1272,15 +1284,15 @@ ui <- navbarPage(title = "DSPG 2022",
                           fluidRow(style = "margin-left: 100px; margin-right: 100px;",
                                    column(6, align = "center",
                                           h4(strong("DSPG Graduate Fellows and Research Assistants")),
-                                          img(src = "farm.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          img(src = "team-julie.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "Nazmul Huda.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "Samantha Rippley.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           br(), 
-                                          img(src = "---.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "Yuanyuan Wen.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Nazmul Huda', target = '_blank'), "(Virginia Tech, Graduate in Geography);",
                                             br(), 
-                                            a(href = 'https://www.linkedin.com/in/julie-rebstock', 'Yuanyuan Wen', target = '_blank'), "(Virgina Tech, Graduate in Agricultural & Applied Economics);",
+                                            a(href = 'https://www.linkedin.com/in/julie-rebstock', 'Samantha Rippley', target = '_blank'), "(Virgina Tech, Graduate in Agricultural Economics);",
                                             br(), 
-                                            a(href = 'www.linkedin.com/in/rachelinman21', 'Samantha Rippley', target = '_blank'), "(Virginia Tech, Graduate in Agricultural Economics)."),
+                                            a(href = 'www.linkedin.com/in/rachelinman21', 'Yuanyuan Wen', target = '_blank'), "(Virginia Tech, Graduate in Agricultural & Applied Economics)."),
                                           p("", style = "padding-top:10px;") 
                                    ),
                                    column(6, align = "center",
@@ -1341,6 +1353,10 @@ server <- function(input, output){
       edu.func(input$yearSelect_psoc, "Powhatan ")
     }
     
+  })
+  
+  output$powhatan_con<- renderLeaflet({
+    powhatan_con
   })
   
   output$harbour<- renderLeaflet({
