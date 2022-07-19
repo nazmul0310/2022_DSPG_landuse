@@ -1059,12 +1059,11 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
                                                                 
-                                                                #                leafletOutput("trend1", height = "600px")
-                                                                h4(strong("Crop Layer Graphs")),
                                                                 radioButtons(inputId = "p.cropYear", label = "Select Year: ", 
                                                                              choices = c("2012", "2021"), 
                                                                              selected = "2012"),
-                                                                leafletOutput("p.cropMap"),
+                                                                leafletOutput("p.cropMap"),                                                                h4(strong("Crop Layer Graphs")),
+                                                                
                                                           
                                                                 selectInput("pcrop", "Select Variable:", width = "100%", choices = c(
                                                                   "Total Acreage by Land Type 2021" = "pcrop21",
@@ -1538,10 +1537,36 @@ server <- function(input, output){
       addPolygons(data = gl_cnty, fillColor = "transparent") %>% 
       setView(lng=-77.885376, lat=37.684143, zoom = 10)
     
+    
     if(input$g.cropYear == 2012){
       my.crop.plt <- my.crop.plt %>%
-        addPolygons(data = g.cropMap12,
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE) 
+        addPolygons(data = filter(g.cropMap12, New_Label=="Developed"),
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#fde725") %>%
+        addPolygons(data = filter(g.cropMap12, New_Label=="Double cropped"),
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#bddf26") %>%
+        addPolygons(data = filter(g.cropMap12, New_Label=="Forages"),
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#7ad151") %>%
+        addPolygons(data = filter(g.cropMap12, New_Label=="Forested"),
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#44bf70") %>%
+        addPolygons(data = filter(g.cropMap12, New_Label=="Horticulture crops"),
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#22a884") %>%
+        addPolygons(data = filter(g.cropMap12, New_Label=="Other"),
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#21918c") %>%
+        addPolygons(data = filter(g.cropMap12, New_Label=="Row crops"),
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#2a788e") %>%
+        addPolygons(data = filter(g.cropMap12, New_Label=="Small grains"),
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#355f8d") %>%
+        addPolygons(data = filter(g.cropMap12, New_Label=="Tree crops"),
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#414487") %>%
+        addPolygons(data = filter(g.cropMap12, New_Label=="Water"),
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#482475") %>%
+        addPolygons(data = filter(g.cropMap12, New_Label=="Wetlands"),
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#440154") %>%
+        addLegend("bottomright", values = ~New_Label, colors="viridis",
+                  title = "Crop Layer Land Types",
+                  labFormat = labelFormat(prefix = "$"),
+                  opacity = 1
+        )
     }
     # Adds crop layer 2021
     else {
