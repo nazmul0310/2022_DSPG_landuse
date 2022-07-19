@@ -44,7 +44,7 @@ inc <- read.csv("data/inc.csv", header=TRUE)
 educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) 
       # boundaries
 gl_cnty<- st_read("data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-pow_cnty<- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+po_cnty<- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 
 
@@ -218,6 +218,9 @@ pcrop12 <- ggplotly(pcrop12, tooltip = c("text"))
 g.cropMap12 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 g.cropMap21 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
+p.cropMap12 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+p.cropMap21 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+
 soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
 
 gsoil <- ggplot(soil_quality, aes(x = `G_Value`, y = `G_Area_acre`, fill = `G_Area_acre`)) +
@@ -245,8 +248,7 @@ gtraffic <- st_transform(gtraffic, "+proj=longlat +datum=WGS84")
 groads<- st_read("data/Traffic_Hotspot/Gooch_roads.shp")
 groads<- st_transform(groads, "+proj=longlat +datum=WGS84")
 
-<<<<<<< HEAD
-=======
+
 goochland_traffic_volume <- leaflet()%>%
   addTiles() %>%
   setView(lng=-78, lat=37.72, zoom=10.49) %>% 
@@ -282,7 +284,6 @@ powhatan_traffic_volume <- leaflet()%>%
     options = layersControlOptions(collapsed = FALSE))
 
 
->>>>>>> 2951eb6bfe94a1b0ef044dab47f8389f6c28fd1d
 harbour<- leaflet() %>% 
   addTiles() %>% 
   setView(lng=-77.949, lat=37.742, zoom=9)
@@ -394,7 +395,7 @@ hotspot.func <- function(county, range){
   if(county == "Powhatan"){
     hotspot.plt <- hotspot.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
     file_list <- paste("data/Parcel_Hotspot/powhatan/pow_hotspot_",range,".shp",sep = "")
-    hotspot.plt <- hotspot.plt %>% addPolygons(data = pow_cnty, fillOpacity = 0)
+    hotspot.plt <- hotspot.plt %>% addPolygons(data = po_cnty, fillOpacity = 0)
   }
   else{
     hotspot.plt <- hotspot.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
@@ -891,7 +892,7 @@ The transition matrix under the map shows the land conversion from 2018-2022 in 
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
-                                                                radioButtons(inputId = "cropYear", label = "Select Year: ", 
+                                                                radioButtons(inputId = "g.cropYear", label = "Select Year: ", 
                                                                              choices = c("2012", "2021"), 
                                                                              selected = "2012"),
                            
@@ -1060,6 +1061,11 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                                 
                                                                 #                leafletOutput("trend1", height = "600px")
                                                                 h4(strong("Crop Layer Graphs")),
+                                                                radioButtons(inputId = "p.cropYear", label = "Select Year: ", 
+                                                                             choices = c("2012", "2021"), 
+                                                                             selected = "2012"),
+                                                                leafletOutput("p.cropMap"),
+                                                          
                                                                 selectInput("pcrop", "Select Variable:", width = "100%", choices = c(
                                                                   "Total Acreage by Land Type 2021" = "pcrop21",
                                                                   "Total Acreage by Land Type 2012" = "pcrop12")
@@ -1532,7 +1538,7 @@ server <- function(input, output){
       addPolygons(data = gl_cnty, fillColor = "transparent") %>% 
       setView(lng=-77.885376, lat=37.684143, zoom = 10)
     
-    if(input$cropYear == 2012){
+    if(input$g.cropYear == 2012){
       my.crop.plt <- my.crop.plt %>%
         addPolygons(data = g.cropMap12,
                     smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE) 
@@ -1544,6 +1550,26 @@ server <- function(input, output){
                     smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
     }
       })
+  
+  output$p.cropMap <- renderLeaflet({
+    my.crop.plt<- leaflet()%>%
+      addTiles() %>%
+      addProviderTiles(providers$CartoDB.Positron) %>%
+      addPolygons(data = po_cnty, fillColor = "transparent") %>% 
+      setView(lng=-77.9188, lat=37.5415 , zoom=10)
+    
+    if(input$p.cropYear == 2012){
+      my.crop.plt <- my.crop.plt %>%
+        addPolygons(data = p.cropMap12,
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE) 
+    }
+    # Adds crop layer 2021
+    else {
+      my.crop.plt <- my.crop.plt %>%
+        addPolygons(data = p.cropMap21,
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+    }
+  })
   
   gcrop <- reactive({
     input$gcrop
@@ -1635,7 +1661,6 @@ server <- function(input, output){
   })
   
   output$p.hotspotMap <- renderLeaflet({
-    po_cnty<- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84") 
     
     p.hotspot.plt <- leaflet()%>%
       addTiles() %>%
