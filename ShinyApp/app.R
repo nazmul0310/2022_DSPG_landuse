@@ -28,6 +28,7 @@ library(stringr)
 library(viridis)
 library(readxl)
 library(RColorBrewer)
+library(highcharter)
 library(sf) #for importing shp file
 library(highcharter) #for transition matrix
 library(htmlwidgets) #for transition matrix
@@ -126,19 +127,34 @@ edu.func <- function(inputYear, inputCounty) {
 
     # Goochland
 
+gcon<- st_read("data/Conservation/Gooch_Preservation.shp")
+gcon <- st_transform(gcon, "+proj=longlat +datum=WGS84")
+
+goochland_con <- leaflet()%>%
+  addTiles() %>%
+  setView(lng=-78, lat=37.7, zoom=10.48) %>% 
+  addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="purple")
+
+    # Powhatan
 
 pcon<- st_read("data/Conservation/Powhatan_Natural_Conservation.shp")
 pcon <- st_transform(pcon, "+proj=longlat +datum=WGS84")
+pcon$col=sample(c('red','yellow','green'),nrow(pcon),1)
 
 powhatan_con <- leaflet()%>%
   addTiles() %>%
-  setView(lng=-78, lat=37.64, zoom=10.48) %>% 
-  addPolygons(data=pcon, weight=0)
+  setView(lng=-78, lat=37.58, zoom=10.49) %>% 
+  addPolygons(data=pcon[1,], weight=0, fillOpacity = 0.5, fillColor = "orange", group = "Priority Conservation Areas")%>%
+  addPolygons(data=pcon[2,], weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "Protected Lands")%>%
+  addPolygons(data=pcon[3,], weight=0, fillOpacity = 0.5, fillColor = "green", group = "AFD")%>%
+  addLayersControl(
+    overlayGroups = c("Priority Conservation Areas", "Protected Lands", "AFD"),
+    position = "bottomleft",
+    options = layersControlOptions(collapsed = FALSE))
 
 
 # Land use
 
-#Goochland Land Use 
 
 gooch_boundary<- st_read("data/cnty_bndry/Goochland_Boundary.shp")
 gooch_boundary <- st_transform(gooch_boundary, "+proj=longlat +datum=WGS84")
@@ -224,8 +240,49 @@ psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Ar
 psoil <-ggplotly(psoil, tooltip = "text")
 
 
-# Powhatan Land Use
+gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp")
+gtraffic <- st_transform(gtraffic, "+proj=longlat +datum=WGS84")
+groads<- st_read("data/Traffic_Hotspot/Gooch_roads.shp")
+groads<- st_transform(groads, "+proj=longlat +datum=WGS84")
 
+<<<<<<< HEAD
+=======
+goochland_traffic_volume <- leaflet()%>%
+  addTiles() %>%
+  setView(lng=-78, lat=37.72, zoom=10.49) %>% 
+  addPolygons(data=groads, weight=1, color = "black", fillOpacity=0)%>%
+  addPolygons(data=filter(gtraffic, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
+  addPolygons(data=filter(gtraffic, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
+  addPolygons(data=filter(gtraffic, gridcode==3), weight=0, fillOpacity = 0.5, fillColor = "orange", group = "5,000 to 10,000")%>%
+  addPolygons(data=filter(gtraffic, gridcode==4), weight=0, fillOpacity = 0.5, fillColor = 'red', group= "10,000 to 25,000")%>%
+  addPolygons(data=filter(gtraffic, gridcode==5), weight=0, fillOpacity = 0.5, fillColor ='maroon', group= "More than 25,000")%>%
+  addLayersControl(
+    overlayGroups = c("Less than 1,000", "1,000 to 5,000", "5,000 to 10,000", "10,000 to 25,000", "More than 25,000"),
+    position = "bottomleft",
+    options = layersControlOptions(collapsed = FALSE))
+
+
+ptraffic<- st_read("data/Traffic_Hotspot/Powhatan_Traffic_Heatmap.shp")
+ptraffic <- st_transform(ptraffic, "+proj=longlat +datum=WGS84")
+proads<- st_read("data/Traffic_Hotspot/Pow_roads.shp")
+proads<- st_transform(proads, "+proj=longlat +datum=WGS84")
+
+powhatan_traffic_volume <- leaflet()%>%
+  addTiles() %>%
+  setView(lng=-78, lat=37.58, zoom=10.49) %>% 
+  addPolygons(data=proads, weight=1, color = "black", fillOpacity=0)%>%
+  addPolygons(data=filter(ptraffic, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
+  addPolygons(data=filter(ptraffic, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
+  addPolygons(data=filter(ptraffic, gridcode==3), weight=0, fillOpacity = 0.5, fillColor = "orange", group = "5,000 to 10,000")%>%
+  addPolygons(data=filter(ptraffic, gridcode==4), weight=0, fillOpacity = 0.5, fillColor = 'red', group= "10,000 to 25,000")%>%
+  addPolygons(data=filter(ptraffic, gridcode==5), weight=0, fillOpacity = 0.5, fillColor ='maroon', group= "More than 25,000")%>%
+  addLayersControl(
+    overlayGroups = c("Less than 1,000", "1,000 to 5,000", "5,000 to 10,000", "10,000 to 25,000", "More than 25,000"),
+    position = "bottomleft",
+    options = layersControlOptions(collapsed = FALSE))
+
+
+>>>>>>> 2951eb6bfe94a1b0ef044dab47f8389f6c28fd1d
 harbour<- leaflet() %>% 
   addTiles() %>% 
   setView(lng=-77.949, lat=37.742, zoom=9)
@@ -258,7 +315,7 @@ g.luPlotFunction <- function(year.g) {
     addProviderTiles(providers$CartoDB.Positron) %>%
     addPolygons(data=gl_cnty,
                 fillColor = "transparent") %>%
-    addPolygons(data = Gooch %>% filter(LUC_FIN == "Single Family Residential Urban"), 
+    addPolygons(data = Gooch[1] %>% filter(LUC_FIN == "Single Family Residential Urban"), 
                 fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
                 group = "Single Family Urban") %>%
     addPolygons(data=Gooch %>% filter(LUC_FIN == "Single Family Residential Suburban"), 
@@ -717,6 +774,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      h1(strong("Goochland"), align = "center"),
                                                      p("", style = "padding-top:10px;"),
                                                      fluidRow(style = "margin: 6px;", align = "justify",
+                                                              leafletOutput("goochland_con"),
+                                                              p("The areas highlighted in purple represent", strong("Rural Preservation Districts"), "which allow for residential development but continue to allow agricultural uses in the preservation area, equestrian activities, and forest management plans [1]."),
                                                               p("Goochland County runs a land use program which assesses land based on use value as opposed to market value. The program was adopted by the county in 1978. There are multiple requirements for land to be eligible for the program as established by the State Land Evaluation Advisory Council:"),
                                                               tags$ul(
                                                                 
@@ -740,7 +799,16 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p("", style = "padding-top:10px;"),
                                                      fluidRow(style = "margin: 6px;", align = "justify",
                                                               leafletOutput("powhatan_con"),
-                                                              br(),
+                                                              p("The map above highlights the many different types of conservation districts in Powhatan County."), 
+                                                              tags$ul(
+                                                                
+                                                                tags$li("The green layer represents", strong("Agricultural Forestal Districts (AFD)"),"which are areas of land that are recognized by the county as being economically and environmentally valuable resources for all"),
+                                                                
+                                                                tags$li("The yellow layer represents", strong("Protected Lands"), "which are protected due to their natural, cultural, or ecological value."),
+                                                                
+                                                                tags$li("The orange layer represents", strong("Priority Conservation Areas"), "which are protected for long term conservation."),
+
+                                                              ),
                                                               p('Powhatan County land use policy includes a land use deferral program, Powhatan County code Section 70-76, which states that the purpose of land use is
                                                      to “preserve real estate devoted to agricultural, horticultural, forest and open space uses within its boundaries in the public interest....". 
                                                      The land use deferral program “offers a deferral of a portion of the real estate taxes for qualifying properties”. This ordinance was adopted by the
@@ -755,7 +823,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      conservation of open land and farmland and recognize agriculture as an economic driver of the community.'))),
                                               column(12, 
                                                      h4("References:"),
-                                                     p(tags$small("[1] How Can You Help Protect Source Water? (n.d.). Retrieved July 29, 2021, from https://www.epa.gov/sourcewaterprotection/how-can-you-help-protect-source-water")), 
+                                                     p(tags$small("[1] Planning and Zoning Initiatives. Planning and Zoning Initiatives | Goochland County, VA - Official Website. (n.d.). Retrieved July 18, 2022, from https://www.goochlandva.us/1058/Planning-and-Zoning-Initiatives ")), 
                                                      p(tags$small("[2] Well maintenance. (2009, April 10). Retrieved July 29, 2021, from https://www.cdc.gov/healthywater/drinking/private/wells/maintenance.html#:~:text=Wells%20should%20be%20checked%20and,example%2C%20arsenic%20and%20radon).")) ,
                                                      p(tags$small("[3] A Guide to Private Wells (pp. 5-25, Publication). (1995). Blacksburg, VA: Virginia Water Resources Research Center.")) ,
                                                      p("", style = "padding-top:10px;")) 
@@ -777,7 +845,10 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Use in Goochland County")),
-                                                                p("Insert text ")
+                                                                p("Each parcel of land in Goochland County has an assigned land use. These land uses are: Single Family Urban, Single Family Suburban, Multi-Family Residential, Commercial & Industrial, Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), Other, and Undefined. We used the state of Virginia’s land use codes to make our maps cleaner. This involved condensing some of the categories from Goochland’s system into the other category. In our data, we also had some parcels with no land use category. Those parcels make up the undefined category.
+Based on the Goochland County map on the right, Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) are the two biggest land use categories for all years. Single Family Suburban is third biggest in acreage. The map itself doesn’t change a lot but the number of parcels that change is a lot. 
+The transition matrix under the map shows the land conversion from 2018-2022 in Goochland County. Based on the matrix the three categories that are changing the most are Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), and Undefined. While the category that goes the most is Single Family Urban. This category grew by 530 parcels. Both Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) lost many parcels of land to different land uses. Most of the parcels that changed from both Agriculture/Undeveloped (20-99) and Agriculture/Undeveloped (100+ Acres) changed to Single Family Urban. 
+")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
@@ -907,11 +978,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Traffic Visualizations")),
-                                                                selectInput("econ1", "Select Variable:", width = "100%", choices = c(
+                                                                selectInput("gooch_traffic", "Select Variable:", width = "100%", choices = c(
                                                                   "Traffic Volume" = "gvol",
                                                                   "Proximity to Richmond" = "grich")
                                                                 ),
-                                                                #                plotlyOutput("trend1", height = "600px")
+                                                                leafletOutput("goochland_traffic"),
                                                                 
                                                          ),
                                                          column(12, 
@@ -937,7 +1008,10 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Use in Powhatan County")),
-                                                                p("Insert Text")
+                                                                p("Each parcel of land in Powhatan County has an assigned land use. These land uses are: Single Family Urban, Single Family Suburban, Multi-Family Residential, Commercial & Industrial, Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), Other, and Undefined. We used the state of Virginia’s land use codes to make our maps cleaner. This involved condensing some of the categories from Powhatan’s system into the other category. In our data, we also had some parcels with no land use category. Those parcels make up the undefined category.
+Based on the Powhatan County map on the right, Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) are the two biggest land use categories for all years. Single Family Suburban is third biggest in acreage. The map itself doesn’t change a lot but the number of parcels that change is a lot. 
+The transition matrix under the map shows the land conversion from 2012-2022 in Powhatan County. Based on the matrix the three categories that are changing the most are Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), and Single-Family Suburban. While the category that goes the most is Single Family Suburban. This category grew by 584 parcels. Both Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) lost many parcels of land to different land uses. Most of the parcels that changed from both Agriculture/Undeveloped (20-99) and Agriculture/Undeveloped (100+ Acres) changed to Single Family Suburban. 
+")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
@@ -1060,11 +1134,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Traffic Visualizations")),
-                                                                selectInput("econ1", "Select Variable:", width = "100%", choices = c(
+                                                                selectInput("pow_traffic", "Select Variable:", width = "100%", choices = c(
                                                                   "Traffic Volume" = "pvol",
                                                                   "Proximity to Richmond" = "prich")
                                                                 ),
-                                                                #                plotlyOutput("trend1", height = "600px")
+                                                                leafletOutput("powhatan_traffic"),
                                                                 
                                                          ),
                                                          column(12, 
@@ -1437,6 +1511,10 @@ server <- function(input, output){
     
   })
   
+  output$goochland_con<- renderLeaflet({
+    goochland_con
+  })
+  
   output$powhatan_con<- renderLeaflet({
     powhatan_con
   })
@@ -1499,6 +1577,27 @@ server <- function(input, output){
   
   output$psoil <- renderPlotly({
     psoil
+  })
+  
+  gooch_traffic <- reactive({
+    input$gooch_traffic
+  })
+  
+  output$goochland_traffic <- renderLeaflet({
+    if(gooch_traffic() == "gvol"){
+      goochland_traffic_volume
+    }
+  })
+  
+  
+  pow_traffic <- reactive({
+    input$pow_traffic
+  })
+  
+  output$powhatan_traffic <- renderLeaflet({
+    if(pow_traffic() == "pvol"){
+      powhatan_traffic_volume
+    }
   })
 
     ### LAND USE ======================================
