@@ -1367,7 +1367,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                             that has occured over a 5 year period (2018 - 2022). We used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
                                           br(""),
                                           img(src = "vdot.png", style = "display: inline; float: left;", width = "200px"),
-                                          p(strong("VDOT Traffic Data "), "The Virginia Department of Transportation (VDOT) is responsible for building, maintaining and operating the state's roads, bridges and tunnels. And, through the Commonwealth Transportation Board, it provides funding for airports, seaports, rail and public transportation. Virginia has the third-largest state-maintained highway system in the country, behind Texas and North Carolina."),
+                                          p(strong("VDOT Traffic Data "), "The Virginia Department of Transportation (VDOT) is responsible for building, maintaining and operating the state's roads, bridges and tunnels. VDOT also conducts a program where traffic data are gathered from sensors in or along streets and highways and other sources.  This data includes estimates of the average number of vehicles that traveled each segment of road and daily vehicle miles traveled for specific groups of facilities and vehicle types are calculated."),
                                           br(""),
                                           
                                    ),
@@ -1588,12 +1588,22 @@ server <- function(input, output){
       powhatan_traffic_volume
     }
   })
-  
+
+    ### LAND USE ======================================
   output$luPlot.g <- renderLeaflet({
     luPlot <- g.luPlotFunction(input$luYear.g)
     luPlot
   }) %>% bindCache(input$luYear.g) #will it be faster?
   
+  output$gooch_sankey <- renderHighchart({ 
+    hchart(data_to_sankey(g.sankey), "sankey") %>%
+      hc_title(text = "Land Use Conversion in Goochland (Counts): 2018-2022") 
+  })
+  
+  output$pow_sankey <- renderHighchart({ 
+    hchart(data_to_sankey(p.sankey), "sankey") %>%
+      hc_title(text = "Land Use Conversion in Powhatan (Counts): 2012-2021") 
+  })
   
   
   ### HOT SPOTS ======================================
@@ -1653,18 +1663,6 @@ server <- function(input, output){
     parc.func(pow_parcellation, yearRange, "Powhatan", pow_bndry)
     
   })
-  
-  output$gooch_sankey <- renderHighchart({ 
-    hchart(data_to_sankey(g.sankey), "sankey") %>%
-      hc_title(text = "Land Use Conversion in Goochland (Counts): 2018-2022") 
-  })
-  
-  output$pow_sankey <- renderHighchart({ 
-    hchart(data_to_sankey(p.sankey), "sankey") %>%
-      hc_title(text = "Land Use Conversion in Powhatan (Counts): 2012-2021") 
-  })
-  
-  
   
 }
 
