@@ -28,6 +28,7 @@ library(stringr)
 library(viridis)
 library(readxl)
 library(RColorBrewer)
+library(highcharter)
 library(sf) #for importing shp file
 library(highcharter) #for transition matrix
 library(htmlwidgets) #for transition matrix
@@ -154,7 +155,6 @@ powhatan_con <- leaflet()%>%
 
 # Land use
 
-#Goochland Land Use 
 
 gooch_boundary<- st_read("data/cnty_bndry/Goochland_Boundary.shp")
 gooch_boundary <- st_transform(gooch_boundary, "+proj=longlat +datum=WGS84")
@@ -238,8 +238,44 @@ psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Ar
 psoil <-ggplotly(psoil, tooltip = "text")
 
 
-# Powhatan Land Use
+gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp")
+gtraffic <- st_transform(gtraffic, "+proj=longlat +datum=WGS84")
+groads<- st_read("data/Traffic_Hotspot/Gooch_roads.shp")
+groads<- st_transform(groads, "+proj=longlat +datum=WGS84")
 
+goochland_traffic_volume <- leaflet()%>%
+  addTiles() %>%
+  setView(lng=-78, lat=37.72, zoom=10.49) %>% 
+  addPolygons(data=groads, weight=1, color = "black", fillOpacity=0)%>%
+  addPolygons(data=filter(gtraffic, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
+  addPolygons(data=filter(gtraffic, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
+  addPolygons(data=filter(gtraffic, gridcode==3), weight=0, fillOpacity = 0.5, fillColor = "orange", group = "5,000 to 10,000")%>%
+  addPolygons(data=filter(gtraffic, gridcode==4), weight=0, fillOpacity = 0.5, fillColor = 'red', group= "10,000 to 25,000")%>%
+  addPolygons(data=filter(gtraffic, gridcode==5), weight=0, fillOpacity = 0.5, fillColor ='maroon', group= "More than 25,000")%>%
+  addLayersControl(
+    overlayGroups = c("Less than 1,000", "1,000 to 5,000", "5,000 to 10,000", "10,000 to 25,000", "More than 25,000"),
+    position = "bottomleft",
+    options = layersControlOptions(collapsed = FALSE))
+
+
+ptraffic<- st_read("data/Traffic_Hotspot/Powhatan_Traffic_Heatmap.shp")
+ptraffic <- st_transform(ptraffic, "+proj=longlat +datum=WGS84")
+proads<- st_read("data/Traffic_Hotspot/Pow_roads.shp")
+proads<- st_transform(proads, "+proj=longlat +datum=WGS84")
+
+powhatan_traffic_volume <- leaflet()%>%
+  addTiles() %>%
+  setView(lng=-78, lat=37.58, zoom=10.49) %>% 
+  addPolygons(data=proads, weight=1, color = "black", fillOpacity=0)%>%
+  addPolygons(data=filter(ptraffic, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
+  addPolygons(data=filter(ptraffic, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
+  addPolygons(data=filter(ptraffic, gridcode==3), weight=0, fillOpacity = 0.5, fillColor = "orange", group = "5,000 to 10,000")%>%
+  addPolygons(data=filter(ptraffic, gridcode==4), weight=0, fillOpacity = 0.5, fillColor = 'red', group= "10,000 to 25,000")%>%
+  addPolygons(data=filter(ptraffic, gridcode==5), weight=0, fillOpacity = 0.5, fillColor ='maroon', group= "More than 25,000")%>%
+  addLayersControl(
+    overlayGroups = c("Less than 1,000", "1,000 to 5,000", "5,000 to 10,000", "10,000 to 25,000", "More than 25,000"),
+    position = "bottomleft",
+    options = layersControlOptions(collapsed = FALSE))
 
 
 harbour<- leaflet() %>% 
@@ -763,9 +799,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                                 tags$li("The green layer represents", strong("Agricultural Forestal Districts (AFD)"),"which are areas of land that are recognized by the county as being economically and environmentally valuable resources for all"),
                                                                 
-                                                                tags$li("The yellow layer represents", strong("Protected Lands"), "which "),
+                                                                tags$li("The yellow layer represents", strong("Protected Lands"), "which are protected due to their natural, cultural, or ecological value."),
                                                                 
-                                                                tags$li("The orange layer represents", strong("Priority Conservation Areas"), "which"),
+                                                                tags$li("The orange layer represents", strong("Priority Conservation Areas"), "which are protected for long term conservation."),
 
                                                               ),
                                                               p('Powhatan County land use policy includes a land use deferral program, Powhatan County code Section 70-76, which states that the purpose of land use is
@@ -932,11 +968,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Traffic Visualizations")),
-                                                                selectInput("econ1", "Select Variable:", width = "100%", choices = c(
+                                                                selectInput("gooch_traffic", "Select Variable:", width = "100%", choices = c(
                                                                   "Traffic Volume" = "gvol",
                                                                   "Proximity to Richmond" = "grich")
                                                                 ),
-                                                                #                plotlyOutput("trend1", height = "600px")
+                                                                leafletOutput("goochland_traffic"),
                                                                 
                                                          ),
                                                          column(12, 
@@ -1085,11 +1121,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Traffic Visualizations")),
-                                                                selectInput("econ1", "Select Variable:", width = "100%", choices = c(
+                                                                selectInput("pow_traffic", "Select Variable:", width = "100%", choices = c(
                                                                   "Traffic Volume" = "pvol",
                                                                   "Proximity to Richmond" = "prich")
                                                                 ),
-                                                                #                plotlyOutput("trend1", height = "600px")
+                                                                leafletOutput("powhatan_traffic"),
                                                                 
                                                          ),
                                                          column(12, 
@@ -1530,6 +1566,27 @@ server <- function(input, output){
   
   output$psoil <- renderPlotly({
     psoil
+  })
+  
+  gooch_traffic <- reactive({
+    input$gooch_traffic
+  })
+  
+  output$goochland_traffic <- renderLeaflet({
+    if(gooch_traffic() == "gvol"){
+      goochland_traffic_volume
+    }
+  })
+  
+  
+  pow_traffic <- reactive({
+    input$pow_traffic
+  })
+  
+  output$powhatan_traffic <- renderLeaflet({
+    if(pow_traffic() == "pvol"){
+      powhatan_traffic_volume
+    }
   })
   
   output$luPlot.g <- renderLeaflet({
