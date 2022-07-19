@@ -296,12 +296,23 @@ harbour<- leaflet() %>%
   setView(lng=-77.949, lat=37.742, zoom=9)
 
 GoochlandAllParcel <- read_sf("../ShinyApp/data/luParcelData/GoochAll.shp")
+PowhatanAllParcel <- read_sf("../ShinyApp/data/luParcelData/PowAll.shp")
 
-
-g.luPlotFunction <- function(year.g) {
+luPlotFunction <- function(inputYear, county) {
   
-  Gooch <- GoochlandAllParcel %>% filter(year == year.g)
+  lu.plt <- leaflet() %>%
+    addTiles() %>%
+    addProviderTiles(providers$CartoDB.Positron)
   
+  # Sets view based on county
+  if(county == "Powhatan"){
+    lu.plt <- lu.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10) %>% addPolygons(data = pow_cnty, fillOpacity = 0)
+    parcelData <- PowhatanAllParcel %>% filter(year == inputYear)
+  }
+  else{
+    lu.plt <- lu.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
+    parcelData <- GoochlandAllParcel %>% filter(year == inputYear) 
+  }
   LUC_values <- c("Single Family Residential Urban", 
                   "Single Family Residential Suburban", 
                   "Multi-Family Residential", 
@@ -318,44 +329,43 @@ g.luPlotFunction <- function(year.g) {
   colors[8] <- "#4D4D4D" # the color is similar to 
   legendpalette <- colorFactor(palette = colors,levels=LUC_values)
   
-  MyMap <- leaflet() %>%
+  lu.plt <- leaflet() %>%
     addTiles() %>%
     addProviderTiles(providers$CartoDB.Positron) %>%
-    addPolygons(data=gl_cnty,
-                fillColor = "transparent") %>%
-    addPolygons(data = Gooch[1] %>% filter(LUC_FIN == "Single Family Residential Urban"), 
+    addPolygons(data = parcelData %>% filter(FIN_MLUSE == "Single Family Residential Urban"), 
                 fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
                 group = "Single Family Urban") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Single Family Residential Suburban"), 
+    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Single Family Residential Suburban"), 
                 fillColor = colors[2], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
                 group = "Single Family Suburban") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Multi-Family Residential"), 
+    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Multi-Family Residential"), 
                 fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
                 group = "Multi-Family Residential") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Commerical / Industrial") ,
+    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Commerical / Industrial") ,
                 fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
                 group = "Commercial & Industrial") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Agricultural / Undeveloped (20-99 Acres)"),
+    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Agricultural / Undeveloped (20-99 Acres)"),
                 fillColor = colors[5], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
                 group = "Agriculture/Undeveloped (20-99 Acres)") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Agricultural / Undeveloped (100+ Acres)") ,
+    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Agricultural / Undeveloped (100+ Acres)") ,
                 fillColor = colors[6], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
                 group = "Agriculture/Undeveloped (100+ Acres)") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Other"),
+    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Other"),
                 fillColor = colors[7], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
                 group = "Other") %>%
-    addPolygons(data=Gooch %>% filter(LUC_FIN == "Undefined") ,
+    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Undefined") ,
                 fillColor = colors[8], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Unknown") %>%
+                group = "Undefined") %>%
     addLayersControl(
-      overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Unknown"),
+      overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Undefined"),
       position = "bottomleft",
       options = layersControlOptions(collapsed = FALSE)) %>% 
     addLegend("bottomright", pal = legendpalette, values = LUC_values,
               title = "Land Use Type",
               labFormat = labelFormat(),
               opacity = 1,
-              data=Gooch) 
+              data=parcelData) 
+  lu.plt
 }
 
 parc.func <- function(data, range, county, cnty){
@@ -868,7 +878,7 @@ The transition matrix under the map shows the land conversion from 2018-2022 in 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
                                                                 sliderInput(inputId = "luYear.g", label = "Year:", 
                                                                             min = 2018, max = 2021, value = 2018, 
-                                                                            sep = ""),
+                                                                            sep = "", width = "150%"),
                                                                 
                                                                 h4(strong("Land Uses Over the Years")),
                                                                 
@@ -960,7 +970,6 @@ The transition matrix under the map shows the land conversion from 2018-2022 in 
                                                                   it still is possible to farm and for Goochland to be mostly agricultural."),
                                                          ), 
                                                          column(8, 
-                                                                h4(strong("Soil Quality Map")),
                                                                 leafletOutput("g.soilMap",height = 500), 
                                                                 h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("gsoil", height = "500px"),
@@ -1021,20 +1030,17 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
-                                                                selectInput("econ1", "Select Variable:", width = "100%", choices = c(
-                                                                  "2014" = "p2014",
-                                                                  "2015" = "p2015",
-                                                                  "2016" = "p2016", 
-                                                                  "2017" = "p2017", 
-                                                                  "2018" = "p2018", 
-                                                                  "2019" = "p2019",
-                                                                  "2020" = "p2020",
-                                                                  "2021" = "p2021")
-                                                                ),
-                                                                #          plotlyOutput("trend1", height = "600px")
+                                                                sliderInput(inputId = "luYear.p", label = "Year:", 
+                                                                            min = 2015, max = 2021, value = 2015, 
+                                                                            sep = "", width = "150%"),
+                                                                
+                                                                h4(strong("Land Uses Over the Years")),
+                                                                
+                                                                
+                                                                leafletOutput(outputId = "luPlot.p"),
+                                                                
                                                                 h4(strong("Land Use Transition Matrix")),
                                                                 highchartOutput("pow_sankey"),
-                                                                #withSpinner(leafletOutput("mines")),
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
                                                          
                                                          column(12, 
@@ -1063,8 +1069,6 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
-                                                                
-                                                                #                leafletOutput("trend1", height = "600px")
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 radioButtons(inputId = "p.cropYear", label = "Select Year: ", 
                                                                              choices = c("2012", "2021"), 
@@ -1656,9 +1660,13 @@ server <- function(input, output){
 
     ### LAND USE ======================================
   output$luPlot.g <- renderLeaflet({
-    luPlot <- g.luPlotFunction(input$luYear.g)
-    luPlot
+    luPlotFunction(input$luYear.g, "Goochland")
   }) %>% bindCache(input$luYear.g) #will it be faster?
+  
+  output$luPlot.p <- renderLeaflet({
+    luPlotFunction(input$luYear.p, "Powhatan")
+    
+  })
   
   output$gooch_sankey <- renderHighchart({ 
     hchart(data_to_sankey(g.sankey), "sankey") %>%
