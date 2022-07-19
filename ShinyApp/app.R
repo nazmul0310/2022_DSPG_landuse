@@ -296,8 +296,8 @@ harbour<- leaflet() %>%
   addTiles() %>% 
   setView(lng=-77.949, lat=37.742, zoom=9)
 
-GoochlandAllParcel <- read_sf("../ShinyApp/data/luParcelData/GoochAll.shp")
-PowhatanAllParcel <- read_sf("../ShinyApp/data/luParcelData/PowAll.shp")
+GoochlandAllParcel <- read_sf("data/luParcelData/GoochAll.shp") %>% rename(FIN_MLUSE = LUC_FIN)
+PowhatanAllParcel <- read_sf("data/luParcelData/PowAll.shp")
 
 luPlotFunction <- function(inputYear, county) {
   
@@ -307,7 +307,7 @@ luPlotFunction <- function(inputYear, county) {
   
   # Sets view based on county
   if(county == "Powhatan"){
-    lu.plt <- lu.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10) %>% addPolygons(data = pow_cnty, fillOpacity = 0)
+    lu.plt <- lu.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10) %>% addPolygons(data = po_cnty, fillOpacity = 0)
     parcelData <- PowhatanAllParcel %>% filter(year == inputYear)
   }
   else{
@@ -971,6 +971,10 @@ The transition matrix under the map shows the land conversion from 2018-2022 in 
                                                                   it still is possible to farm and for Goochland to be mostly agricultural."),
                                                          ), 
                                                          column(8, 
+<<<<<<< HEAD
+                                                                h4(strong("Soil Quality Map")),
+=======
+>>>>>>> 7876b6dd2745f9d3cb89fb83b91fc55c5454fa08
                                                                 leafletOutput("g.soilMap",height = 500), 
                                                                 h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("gsoil", height = "500px"),
