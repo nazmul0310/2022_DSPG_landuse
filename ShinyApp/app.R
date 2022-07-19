@@ -351,6 +351,22 @@ g.luPlotFunction <- function(year.g) {
               data=Gooch) 
 }
 
+gcrop_values <- c("Developed", 
+                "Double cropped", 
+                "Forages", 
+                "Forested", 
+                "Horticulture crops", 
+                "Other", 
+                "Row crops", 
+                "Small grains", "Tree crops", "Water", "Wetlands")
+
+gcrop_values <- factor(gcrop_values, levels = gcrop_values)
+
+gcrop_palette <- colorBin(palette = "viridis", as.numeric(gcrop_values), bins = 11)
+gcrop_colors <- gcrop_palette(unclass(gcrop_values))
+gcrop_colors[11] <- "#4D4D4D" # the color is similar to 
+gcrop_legendpalette <- colorFactor(palette = gcrop_colors,levels=gcrop_values)
+
 parc.func <- function(data, range, county, cnty){
   
   # Declares initial leaflet, nothing added to it.
@@ -1539,41 +1555,25 @@ server <- function(input, output){
     
     
     if(input$g.cropYear == 2012){
-      my.crop.plt <- my.crop.plt %>%
-        addPolygons(data = filter(g.cropMap12, New_Label=="Developed"),
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#fde725") %>%
-        addPolygons(data = filter(g.cropMap12, New_Label=="Double cropped"),
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#bddf26") %>%
-        addPolygons(data = filter(g.cropMap12, New_Label=="Forages"),
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#7ad151") %>%
-        addPolygons(data = filter(g.cropMap12, New_Label=="Forested"),
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#44bf70") %>%
-        addPolygons(data = filter(g.cropMap12, New_Label=="Horticulture crops"),
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#22a884") %>%
-        addPolygons(data = filter(g.cropMap12, New_Label=="Other"),
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#21918c") %>%
-        addPolygons(data = filter(g.cropMap12, New_Label=="Row crops"),
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#2a788e") %>%
-        addPolygons(data = filter(g.cropMap12, New_Label=="Small grains"),
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#355f8d") %>%
-        addPolygons(data = filter(g.cropMap12, New_Label=="Tree crops"),
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#414487") %>%
-        addPolygons(data = filter(g.cropMap12, New_Label=="Water"),
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#482475") %>%
-        addPolygons(data = filter(g.cropMap12, New_Label=="Wetlands"),
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = "#440154") %>%
-        addLegend("bottomright", values = ~New_Label, colors="viridis",
-                  title = "Crop Layer Land Types",
-                  labFormat = labelFormat(prefix = "$"),
-                  opacity = 1
-        )
+        for (i in 1:11){
+          my.crop.plt <- addPolygons(my.crop.plt,data=g.cropMap12 %>% filter(g.cropMap12$New_Label==gcrop_values[i]), 
+                                     smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i])
+        }
+      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = gcrop_legendpalette, values = gcrop_values,
+                                               title = "Crop Layer Land Type",
+                                               labFormat = labelFormat(),
+                                               opacity = 1,
+                                               data=g.cropMap12)
     }
+    
     # Adds crop layer 2021
     else {
       my.crop.plt <- my.crop.plt %>%
         addPolygons(data = g.cropMap21,
                     smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
     }
+    
+    
       })
   
   output$p.cropMap <- renderLeaflet({
