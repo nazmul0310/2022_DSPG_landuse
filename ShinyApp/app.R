@@ -463,14 +463,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                    column(4,
                                           h2(strong("Project Background")),
                                           p(strong("The setting:"), "Powhatan and Goochland County are two counties on the urban fringe outside of Richmond, Virginia. Both counties are known for their 
-                                            rich agricultural histories. Communities on the urban fringe are located between both rural and urban areas. Although Powhatan County has been growing and devolving faster than the average rate, they like Goochland County would like to 
-                                            keep their agricultural roots.  "),
+                                            rich agricultural histories. Communities on the urban fringe are located between both rural and urban areas. Although Powhatan County has been growing and 
+                                            devolving faster than the average rate, they like Goochland County would like to keep their agricultural roots."),
                                           p(),
-                                          p(strong("The problem:"), "Powhatan and Goochland are both rural counties that are located close to Richmond. Being that close to a big city like 
-                                            Richmond has its advantages, but also its drawbacks. One of the biggest drawbacks is land conversion. Land conversion is when land shifts its use from one 
+                                          p(strong("The problem:"), "Both Powhatan and Goochland County are approximately 40 minutes away from Richmond. Being this close to a large city  
+                                             has its advantages, but also its drawbacks. One of the biggest drawbacks is land conversion. Land conversion is when land shifts its use from one 
                                             use to another. In the case of Powhatan and Goochland, it means land is changing from agricultural land to residential. This really could hurt the economies 
-                                            of the mostly agricultural counties. Both counties have enacted policies to help combat land conversion. Powhatan with its land tax deferral and Goochland with 
-                                            its eighty-five- fifteen comprehensive plan. Both counties keep administrative data, but do not have the resources or the knowledge to analyze the data. This 
+                                            of the mostly agricultural counties. Both counties have enacted policies to help combat land conversion: Powhatan with their land tax deferral and Goochland with 
+                                            their 85:15 comprehensive plan. Both counties keep administrative data, but do not have the resources or the knowledge to analyze the data. This 
                                             is a key step in understanding the factors that cause land conversation or the probability that a parcel of land will convert. "),
                                           p(),
                                           p(strong("The project:"), "This Virginia Tech", a(href = "https://aaec.vt.edu/index.html", "Department of Argicultural and Applied Economics", target = "_blank"),
@@ -513,7 +513,9 @@ ui <- navbarPage(title = "DSPG 2022",
                             tabPanel("Goochland", 
                                      fluidRow(style = "margin: 6px;",
                                               h1(strong("Goochland"), align = "center"),
-                                              p("", style = "padding-top:10px;"), 
+                                              p("", style = "padding-top:10px;")), 
+                                     fluidRow(style = "margin: 6px;",
+                                              align = "justify",
                                               column(4, 
                                                      h4(strong("County Background")),
                                                      p("Goochland County is located in the Piedmont of the Commonwealth of Virginia. It covers 281.42 square miles. This makes Goochland the 71st biggest
@@ -552,6 +554,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   choices = c("2017", "2018", "2019", "2020"), 
                                                                   selected = "2020"),
                                                      plotOutput("gsoc", height = "500px"),
+                                      fluidRow(style = "margin: 6px;",
+                                               align = "justify",
                                                      h4(strong("Visualization Summaries")),
                                                      p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. 
                                                        The 25-44 age group has been the second largest, but has faced more inconsistency and has seen a decrease since 2019."),
@@ -561,7 +565,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p("The" ,strong("income distribution"), "graph illustrates the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied 
                                                        by a decrease in earnings below $75,000. It is also notable that earnings above $100,000 and below $35,000 are the largest categories throughout all years."),
                                                      p("The" ,strong("median earnings"), "graphs highlight the fact that those with a highest educational attainment of Some college/Associates earn the most. The median earnings for this 
-                                                       group were significantly higher than others in 2017 and 2018, but saw a significant decrease to $65,890 in 2019. This number goes back up to $75,313 in 2020; still much lower than the first two years."),
+                                                       group were significantly higher than others in 2017 and 2018, but saw a significant decrease to $65,890 in 2019. This number goes back up to $75,313 in 2020; still much lower than the first two years.")),
                                                      
                                               ),
                                      ),
@@ -579,7 +583,9 @@ ui <- navbarPage(title = "DSPG 2022",
                             tabPanel("Powhatan", 
                                      fluidRow(style = "margin: 6px;",
                                               h1(strong("Powhatan"), align = "center"),
-                                              p("", style = "padding-top:10px;"), 
+                                              p("", style = "padding-top:10px;")),
+                                     fluidRow(style = "margin: 6px;",
+                                              align = "justify",
                                               column(4, 
                                                      h4(strong("County Background")),
                                                      p("Powhatan County, located in the Virginia’s Central Piedmont, was founded in 1777 by the Virginia General Assembly. It is 272 square miles and is home to a population 
@@ -938,13 +944,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
                                                                 
-                                                                sliderInput(inputId = "year", 
-                                                                            label = "Choose the starting and ending years",
-                                                                            min = 2012,
-                                                                            max = 2021,
-                                                                            step = 9,
-                                                                            value = 2021,
-                                                                            sep = "", ticks = FALSE),
+                                                                
                                                                 leafletOutput("mymap",height = 500), 
                                                                 h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("gsoil", height = "500px"),
@@ -1514,13 +1514,11 @@ server <- function(input, output){
   
   output$mymap <- renderLeaflet({
     
-    begin_year <- 2012
-    end_year <- 2021
-    yr <- c(begin_year,end_year)
-    file_list <- paste(getwd(),"/data/Cropland/Gooch/Gooch_Ag_",yr,".shp",sep = "")
+    
+    file_list <- ("data/Cropland/Gooch/Gooch_Ag_2012.shp")
     
     for (file in file_list){
-      #import the cropdata maps of the selected years
+      #import the crop data maps of the selected years
       gl<- st_read(file) 
       gl <- st_transform(gl, "+proj=longlat +datum=WGS84")
       m <- addPolygons(m,
