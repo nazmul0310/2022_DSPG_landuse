@@ -1304,7 +1304,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                             that has occured over a 5 year period (2018 - 2022). We used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
                                           br(""),
                                           img(src = "vdot.png", style = "display: inline; float: left;", width = "200px"),
-                                          p(strong("VDOT Traffic Data "), "The Virginia Department of Transportation (VDOT) is responsible for building, maintaining and operating the state's roads, bridges and tunnels. And, through the Commonwealth Transportation Board, it provides funding for airports, seaports, rail and public transportation. Virginia has the third-largest state-maintained highway system in the country, behind Texas and North Carolina."),
+                                          p(strong("VDOT Traffic Data "), "The Virginia Department of Transportation (VDOT) is responsible for building, maintaining and operating the state's roads, bridges and tunnels. VDOT also conducts a program where traffic data are gathered from sensors in or along streets and highways and other sources.  This data includes estimates of the average number of vehicles that traveled each segment of road and daily vehicle miles traveled for specific groups of facilities and vehicle types are calculated."),
                                           br(""),
                                           
                                    ),
