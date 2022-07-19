@@ -199,6 +199,8 @@ pcrop12 <- croplayer1 %>%
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 pcrop12 <- ggplotly(pcrop12, tooltip = c("text"))
 
+g.cropMap12 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+g.cropMap21 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
 
@@ -223,8 +225,6 @@ psoil <-ggplotly(psoil, tooltip = "text")
 
 
 # Powhatan Land Use
-
-
 
 harbour<- leaflet() %>% 
   addTiles() %>% 
@@ -820,9 +820,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
-                                                                
-                                                                
-                                                                leafletOutput("harbour"),
+                                                                radioButtons(inputId = "cropYear", label = "Select Year: ", 
+                                                                             choices = c("2012", "2021"), 
+                                                                             selected = "2012"),
+                           
+                                                                leafletOutput("g.cropMap"),
                                                                 br(),
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 selectInput("gcrop", "Select Variable:", width = "100%", choices = c(
@@ -1445,27 +1447,25 @@ server <- function(input, output){
   
   ### CROP LAYERS ================================================
   
-  output$mymap <- renderLeaflet({
+  output$g.cropMap <- renderLeaflet({
+    my.crop.plt<- leaflet()%>%
+      addTiles() %>%
+      addProviderTiles(providers$CartoDB.Positron) %>%
+      addPolygons(data = gl_cnty, fillColor = "transparent") %>% 
+      setView(lng=-77.885376, lat=37.684143, zoom = 10)
     
-    begin_year <- 2012
-    end_year <- 2021
-    yr <- c(begin_year,end_year)
-    file_list <- paste(getwd(),"/data/Cropland/Gooch/Gooch_Ag_",yr,".shp",sep = "")
-    
-    for (file in file_list){
-      #import the cropdata maps of the selected years
-      gl<- st_read(file) 
-      gl <- st_transform(gl, "+proj=longlat +datum=WGS84")
-      m <- addPolygons(m,
-                       stroke = FALSE,
-                       data = gl,
-                       weight = 1,
-                       smoothFactor=1,
-                       fillColor = "red",
-                       fillOpacity = 0.1)
+    if(input$cropYear == 2012){
+      my.crop.plt <- my.crop.plt %>%
+        addPolygons(data = g.cropMap12,
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE) 
     }
-    m
-  })
+    # Adds crop layer 2021
+    else {
+      my.crop.plt <- my.crop.plt %>%
+        addPolygons(data = g.cropMap21,
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+    }
+      })
   
   gcrop <- reactive({
     input$gcrop
