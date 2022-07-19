@@ -248,6 +248,7 @@ p.soilData <- read_sf("data/Soil_Quality/Powhatan/Powhatan_soil.shp") %>% st_tra
 soilClass <- c(1:8)
 soilPalette <- colorBin(palette = "viridis", soilClass, bins = 8)
 soilColors <- soilPalette(soilClass)
+soilColors[8] <- "#4D4D4D" # the color is similar to 
 soilLegend <- colorFactor(palette = soilColors,levels=soilClass)
 
 gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp")
@@ -1617,16 +1618,29 @@ server <- function(input, output){
     for (i in 2:7){
       g.map <- addPolygons(g.map, data=g.soilData %>% filter(NirrCpCls==i), smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = soilColors[i])
     }
-    g.map
+      g.map <-g.map %>% addLegend("bottomright", pal = soilLegend, values = soilClass,
+                           title = "Soil Quality Class",
+                           labFormat = labelFormat(),
+                           opacity = 1,
+                           data=g.soilData) 
     
       })
   
   output$p.soilMap <- renderLeaflet({
-    leaflet() %>% 
+    p.map <- leaflet() %>% 
       addTiles() %>% 
-      setView(lng=-77.9188, lat=37.5415 , zoom=10) %>%
-      addPolygons(data=p.soilData, smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
-  })
+      setView(lng=-77.9188, lat=37.5415 , zoom=10) 
+    
+    for (i in 1:8){
+      p.map <- addPolygons(p.map, data=p.soilData %>% filter(NirrCpCls==i), smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = soilColors[i])
+    }
+    p.map <-p.map %>% addLegend("bottomright", pal = soilLegend, values = soilClass,
+                                     title = "Soil Quality Class",
+                                     labFormat = labelFormat(),
+                                     opacity = 1,
+                                     data=p.soilData) 
+    
+    })
   
     
   
