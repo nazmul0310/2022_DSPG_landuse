@@ -970,10 +970,7 @@ The transition matrix under the map shows the land conversion from 2018-2022 in 
                                                                   it still is possible to farm and for Goochland to be mostly agricultural."),
                                                          ), 
                                                          column(8, 
-<<<<<<< HEAD
                                                                 h4(strong("Soil Quality Map")),
-=======
->>>>>>> 7876b6dd2745f9d3cb89fb83b91fc55c5454fa08
                                                                 leafletOutput("g.soilMap",height = 500), 
                                                                 h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("gsoil", height = "500px"),
