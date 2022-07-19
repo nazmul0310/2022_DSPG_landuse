@@ -1500,12 +1500,22 @@ server <- function(input, output){
   output$psoil <- renderPlotly({
     psoil
   })
-  
+
+    ### LAND USE ======================================
   output$luPlot.g <- renderLeaflet({
     luPlot <- g.luPlotFunction(input$luYear.g)
     luPlot
   }) %>% bindCache(input$luYear.g) #will it be faster?
   
+  output$gooch_sankey <- renderHighchart({ 
+    hchart(data_to_sankey(g.sankey), "sankey") %>%
+      hc_title(text = "Land Use Conversion in Goochland (Counts): 2018-2022") 
+  })
+  
+  output$pow_sankey <- renderHighchart({ 
+    hchart(data_to_sankey(p.sankey), "sankey") %>%
+      hc_title(text = "Land Use Conversion in Powhatan (Counts): 2012-2021") 
+  })
   
   
   ### HOT SPOTS ======================================
@@ -1565,18 +1575,6 @@ server <- function(input, output){
     parc.func(pow_parcellation, yearRange, "Powhatan", pow_bndry)
     
   })
-  
-  output$gooch_sankey <- renderHighchart({ 
-    hchart(data_to_sankey(g.sankey), "sankey") %>%
-      hc_title(text = "Land Use Conversion in Goochland (Counts): 2018-2022") 
-  })
-  
-  output$pow_sankey <- renderHighchart({ 
-    hchart(data_to_sankey(p.sankey), "sankey") %>%
-      hc_title(text = "Land Use Conversion in Powhatan (Counts): 2012-2021") 
-  })
-  
-  
   
 }
 
