@@ -1538,7 +1538,6 @@ server <- function(input, output){
       addPolygons(data = gl_cnty, fillColor = "transparent") %>% 
       setView(lng=-77.885376, lat=37.684143, zoom = 10)
     
-<<<<<<< HEAD
     if(input$g.cropYear == 2012){
       my.crop.plt <- my.crop.plt %>%
         addPolygons(data = g.cropMap12,
@@ -1569,22 +1568,7 @@ server <- function(input, output){
       my.crop.plt <- my.crop.plt %>%
         addPolygons(data = p.cropMap21,
                     smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
-=======
-    
-    file_list <- ("data/Cropland/Gooch/Gooch_Ag_2012.shp")
-    
-    for (file in file_list){
-      #import the crop data maps of the selected years
-      gl<- st_read(file) 
-      gl <- st_transform(gl, "+proj=longlat +datum=WGS84")
-      m <- addPolygons(m,
-                       stroke = FALSE,
-                       data = gl,
-                       weight = 1,
-                       smoothFactor=1,
-                       fillColor = "red",
-                       fillOpacity = 0.1)
->>>>>>> e1b52eaaebda393a1b29c55f98639fefda5401d9
+
     }
   })
   
