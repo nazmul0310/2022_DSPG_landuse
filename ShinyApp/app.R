@@ -245,6 +245,11 @@ psoil <-ggplotly(psoil, tooltip = "text")
 g.soilData <- read_sf("data/Soil_Quality/Goochland/Goochland_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 p.soilData <- read_sf("data/Soil_Quality/Powhatan/Powhatan_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
+soilClass <- c(1:8)
+soilPalette <- colorBin(palette = "viridis", soilClass, bins = 8)
+soilColors <- soilPalette(soilClass)
+soilLegend <- colorFactor(palette = soilColors,levels=soilClass)
+
 gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp")
 gtraffic <- st_transform(gtraffic, "+proj=longlat +datum=WGS84")
 groads<- st_read("data/Traffic_Hotspot/Gooch_roads.shp")
@@ -965,7 +970,10 @@ The transition matrix under the map shows the land conversion from 2018-2022 in 
                                                                   it still is possible to farm and for Goochland to be mostly agricultural."),
                                                          ), 
                                                          column(8, 
+<<<<<<< HEAD
                                                                 h4(strong("Soil Quality Map")),
+=======
+>>>>>>> 7876b6dd2745f9d3cb89fb83b91fc55c5454fa08
                                                                 leafletOutput("g.soilMap",height = 500), 
                                                                 h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("gsoil", height = "500px"),
@@ -1605,12 +1613,20 @@ server <- function(input, output){
   })
   
   output$g.soilMap <- renderLeaflet({
-    leaflet() %>% 
-      setView(lng=-78, lat=37.7, zoom=10.48) %>% 
-      addPolygons(data=g.soilData, smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
-  })
+    g.map <- leaflet() %>% 
+      addTiles() %>% 
+      setView(lng=-78, lat=37.7, zoom=10.48) 
+    
+    for (i in 2:7){
+      g.map <- addPolygons(g.map, data=g.soilData %>% filter(NirrCpCls==i), smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = soilColors[i])
+    }
+    g.map
+    
+      })
+  
   output$p.soilMap <- renderLeaflet({
     leaflet() %>% 
+      addTiles() %>% 
       setView(lng=-77.9188, lat=37.5415 , zoom=10) %>%
       addPolygons(data=p.soilData, smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
   })
