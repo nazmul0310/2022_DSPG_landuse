@@ -1610,7 +1610,7 @@ server <- function(input, output){
       setView(lng=-78, lat=37.7, zoom=10.48) 
     
     for (i in 2:7){
-      g.map <- addPolygons(g.map, data=g.soilData %>% filter(NirrCpCls==i), smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = soilColors[1])
+      g.map <- addPolygons(g.map, data=g.soilData %>% filter(NirrCpCls==i), smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = soilColors[i])
     }
     g.map
     
