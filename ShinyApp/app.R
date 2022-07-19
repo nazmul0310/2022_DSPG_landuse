@@ -290,8 +290,8 @@ harbour<- leaflet() %>%
   addTiles() %>% 
   setView(lng=-77.949, lat=37.742, zoom=9)
 
-GoochlandAllParcel <- read_sf("../ShinyApp/data/luParcelData/GoochAll.shp")
-PowhatanAllParcel <- read_sf("../ShinyApp/data/luParcelData/PowAll.shp")
+GoochlandAllParcel <- read_sf("data/luParcelData/GoochAll.shp") %>% rename(FIN_MLUSE = LUC_FIN)
+PowhatanAllParcel <- read_sf("data/luParcelData/PowAll.shp")
 
 luPlotFunction <- function(inputYear, county) {
   
@@ -301,7 +301,7 @@ luPlotFunction <- function(inputYear, county) {
   
   # Sets view based on county
   if(county == "Powhatan"){
-    lu.plt <- lu.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10) %>% addPolygons(data = pow_cnty, fillOpacity = 0)
+    lu.plt <- lu.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10) %>% addPolygons(data = po_cnty, fillOpacity = 0)
     parcelData <- PowhatanAllParcel %>% filter(year == inputYear)
   }
   else{
@@ -966,19 +966,7 @@ The transition matrix under the map shows the land conversion from 2018-2022 in 
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
-<<<<<<< HEAD
-                                                                
-                                                                sliderInput(inputId = "year", 
-                                                                            label = "Choose the starting and ending years",
-                                                                            min = 2012,
-                                                                            max = 2021,
-                                                                            step = 9,
-                                                                            value = 2021,
-                                                                            sep = "", ticks = FALSE, width = "150%"),
-                                                                leafletOutput("mymap",height = 500), 
-=======
                                                                 leafletOutput("g.soilMap",height = 500), 
->>>>>>> ef4ed997b4f1695020e882c7dc0706ba6f98e1a6
                                                                 h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("gsoil", height = "500px"),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
@@ -1031,15 +1019,10 @@ The transition matrix under the map shows the land conversion from 2018-2022 in 
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Use in Powhatan County")),
-<<<<<<< HEAD
-                                                                
-                                                                p("Insert Text")
-=======
                                                                 p("Each parcel of land in Powhatan County has an assigned land use. These land uses are: Single Family Urban, Single Family Suburban, Multi-Family Residential, Commercial & Industrial, Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), Other, and Undefined. We used the state of Virginia’s land use codes to make our maps cleaner. This involved condensing some of the categories from Powhatan’s system into the other category. In our data, we also had some parcels with no land use category. Those parcels make up the undefined category.
 Based on the Powhatan County map on the right, Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) are the two biggest land use categories for all years. Single Family Suburban is third biggest in acreage. The map itself doesn’t change a lot but the number of parcels that change is a lot. 
 The transition matrix under the map shows the land conversion from 2012-2022 in Powhatan County. Based on the matrix the three categories that are changing the most are Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), and Single-Family Suburban. While the category that goes the most is Single Family Suburban. This category grew by 584 parcels. Both Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) lost many parcels of land to different land uses. Most of the parcels that changed from both Agriculture/Undeveloped (20-99) and Agriculture/Undeveloped (100+ Acres) changed to Single Family Suburban. 
 ")
->>>>>>> ef4ed997b4f1695020e882c7dc0706ba6f98e1a6
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
