@@ -242,6 +242,8 @@ psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Ar
   labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") 
 psoil <-ggplotly(psoil, tooltip = "text")
 
+g.soilData <- read_sf("data/Soil_Quality/Goochland/Goochland_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+p.soilData <- read_sf("data/Soil_Quality/Powhatan/Powhatan_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp")
 gtraffic <- st_transform(gtraffic, "+proj=longlat +datum=WGS84")
@@ -954,9 +956,7 @@ The transition matrix under the map shows the land conversion from 2018-2022 in 
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
-                                                                
-                                                                
-                                                                leafletOutput("mymap",height = 500), 
+                                                                leafletOutput("g.soilMap",height = 500), 
                                                                 h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("gsoil", height = "500px"),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
@@ -1116,6 +1116,7 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
+                                                                leafletOutput("p.soilMap"),
                                                                 
                                                                 #                plotlyOutput("trend1", height = "600px")
                                                                 h4(strong("Soil Quality Graph")),
@@ -1597,6 +1598,19 @@ server <- function(input, output){
       pcrop21
     }
   })
+  
+  output$g.soilMap <- renderLeaflet({
+    leaflet() %>% 
+      setView(lng=-78, lat=37.7, zoom=10.48) %>% 
+      addPolygons(data=g.soilData, smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+  })
+  output$p.soilMap <- renderLeaflet({
+    leaflet() %>% 
+      setView(lng=-77.9188, lat=37.5415 , zoom=10) %>%
+      addPolygons(data=p.soilData, smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+  })
+  
+    
   
   output$gsoil <- renderPlotly({
     gsoil
