@@ -44,7 +44,7 @@ inc <- read.csv("data/inc.csv", header=TRUE)
 educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) 
       # boundaries
 gl_cnty<- st_read("data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-pow_cnty<- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+po_cnty<- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 
 
@@ -215,6 +215,11 @@ pcrop12 <- croplayer1 %>%
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 pcrop12 <- ggplotly(pcrop12, tooltip = c("text"))
 
+g.cropMap12 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+g.cropMap21 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+
+p.cropMap12 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+p.cropMap21 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
 
@@ -237,11 +242,14 @@ psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Ar
   labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") 
 psoil <-ggplotly(psoil, tooltip = "text")
 
+g.soilData <- read_sf("data/Soil_Quality/Goochland/Goochland_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+p.soilData <- read_sf("data/Soil_Quality/Powhatan/Powhatan_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp")
 gtraffic <- st_transform(gtraffic, "+proj=longlat +datum=WGS84")
 groads<- st_read("data/Traffic_Hotspot/Gooch_roads.shp")
 groads<- st_transform(groads, "+proj=longlat +datum=WGS84")
+
 
 goochland_traffic_volume <- leaflet()%>%
   addTiles() %>%
@@ -399,7 +407,7 @@ hotspot.func <- function(county, range){
   if(county == "Powhatan"){
     hotspot.plt <- hotspot.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
     file_list <- paste("data/Parcel_Hotspot/powhatan/pow_hotspot_",range,".shp",sep = "")
-    hotspot.plt <- hotspot.plt %>% addPolygons(data = pow_cnty, fillOpacity = 0)
+    hotspot.plt <- hotspot.plt %>% addPolygons(data = po_cnty, fillOpacity = 0)
   }
   else{
     hotspot.plt <- hotspot.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
@@ -473,14 +481,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                    column(4,
                                           h2(strong("Project Background")),
                                           p(strong("The setting:"), "Powhatan and Goochland County are two counties on the urban fringe outside of Richmond, Virginia. Both counties are known for their 
-                                            rich agricultural histories. Communities on the urban fringe are located between both rural and urban areas. Although Powhatan County has been growing and devolving faster than the average rate, they like Goochland County would like to 
-                                            keep their agricultural roots.  "),
+                                            rich agricultural histories. Communities on the urban fringe are located between both rural and urban areas. Although Powhatan County has been growing and 
+                                            devolving faster than the average rate, they like Goochland County would like to keep their agricultural roots."),
                                           p(),
-                                          p(strong("The problem:"), "Powhatan and Goochland are both rural counties that are located close to Richmond. Being that close to a big city like 
-                                            Richmond has its advantages, but also its drawbacks. One of the biggest drawbacks is land conversion. Land conversion is when land shifts its use from one 
+                                          p(strong("The problem:"), "Both Powhatan and Goochland County are approximately 40 minutes away from Richmond. Being this close to a large city  
+                                             has its advantages, but also its drawbacks. One of the biggest drawbacks is land conversion. Land conversion is when land shifts its use from one 
                                             use to another. In the case of Powhatan and Goochland, it means land is changing from agricultural land to residential. This really could hurt the economies 
-                                            of the mostly agricultural counties. Both counties have enacted policies to help combat land conversion. Powhatan with its land tax deferral and Goochland with 
-                                            its eighty-five- fifteen comprehensive plan. Both counties keep administrative data, but do not have the resources or the knowledge to analyze the data. This 
+                                            of the mostly agricultural counties. Both counties have enacted policies to help combat land conversion: Powhatan with their land tax deferral and Goochland with 
+                                            their 85:15 comprehensive plan. Both counties keep administrative data, but do not have the resources or the knowledge to analyze the data. This 
                                             is a key step in understanding the factors that cause land conversation or the probability that a parcel of land will convert. "),
                                           p(),
                                           p(strong("The project:"), "This Virginia Tech", a(href = "https://aaec.vt.edu/index.html", "Department of Argicultural and Applied Economics", target = "_blank"),
@@ -523,7 +531,9 @@ ui <- navbarPage(title = "DSPG 2022",
                             tabPanel("Goochland", 
                                      fluidRow(style = "margin: 6px;",
                                               h1(strong("Goochland"), align = "center"),
-                                              p("", style = "padding-top:10px;"), 
+                                              p("", style = "padding-top:10px;")), 
+                                     fluidRow(style = "margin: 6px;",
+                                              align = "justify",
                                               column(4, 
                                                      h4(strong("County Background")),
                                                      p("Goochland County is located in the Piedmont of the Commonwealth of Virginia. It covers 281.42 square miles. This makes Goochland the 71st biggest
@@ -562,6 +572,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   choices = c("2017", "2018", "2019", "2020"), 
                                                                   selected = "2020"),
                                                      plotOutput("gsoc", height = "500px"),
+                                      fluidRow(style = "margin: 6px;",
+                                               align = "justify",
                                                      h4(strong("Visualization Summaries")),
                                                      p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. 
                                                        The 25-44 age group has been the second largest, but has faced more inconsistency and has seen a decrease since 2019."),
@@ -571,7 +583,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p("The" ,strong("income distribution"), "graph illustrates the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied 
                                                        by a decrease in earnings below $75,000. It is also notable that earnings above $100,000 and below $35,000 are the largest categories throughout all years."),
                                                      p("The" ,strong("median earnings"), "graphs highlight the fact that those with a highest educational attainment of Some college/Associates earn the most. The median earnings for this 
-                                                       group were significantly higher than others in 2017 and 2018, but saw a significant decrease to $65,890 in 2019. This number goes back up to $75,313 in 2020; still much lower than the first two years."),
+                                                       group were significantly higher than others in 2017 and 2018, but saw a significant decrease to $65,890 in 2019. This number goes back up to $75,313 in 2020; still much lower than the first two years.")),
                                                      
                                               ),
                                      ),
@@ -589,7 +601,9 @@ ui <- navbarPage(title = "DSPG 2022",
                             tabPanel("Powhatan", 
                                      fluidRow(style = "margin: 6px;",
                                               h1(strong("Powhatan"), align = "center"),
-                                              p("", style = "padding-top:10px;"), 
+                                              p("", style = "padding-top:10px;")),
+                                     fluidRow(style = "margin: 6px;",
+                                              align = "justify",
                                               column(4, 
                                                      h4(strong("County Background")),
                                                      p("Powhatan County, located in the Virginia’s Central Piedmont, was founded in 1777 by the Virginia General Assembly. It is 272 square miles and is home to a population 
@@ -850,7 +864,10 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Use in Goochland County")),
-                                                                p("Insert text ")
+                                                                p("Each parcel of land in Goochland County has an assigned land use. These land uses are: Single Family Urban, Single Family Suburban, Multi-Family Residential, Commercial & Industrial, Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), Other, and Undefined. We used the state of Virginia’s land use codes to make our maps cleaner. This involved condensing some of the categories from Goochland’s system into the other category. In our data, we also had some parcels with no land use category. Those parcels make up the undefined category.
+Based on the Goochland County map on the right, Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) are the two biggest land use categories for all years. Single Family Suburban is third biggest in acreage. The map itself doesn’t change a lot but the number of parcels that change is a lot. 
+The transition matrix under the map shows the land conversion from 2018-2022 in Goochland County. Based on the matrix the three categories that are changing the most are Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), and Undefined. While the category that goes the most is Single Family Urban. This category grew by 530 parcels. Both Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) lost many parcels of land to different land uses. Most of the parcels that changed from both Agriculture/Undeveloped (20-99) and Agriculture/Undeveloped (100+ Acres) changed to Single Family Urban. 
+")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
@@ -893,9 +910,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
-                                                                
-                                                                
-                                                                leafletOutput("harbour"),
+                                                                radioButtons(inputId = "g.cropYear", label = "Select Year: ", 
+                                                                             choices = c("2012", "2021"), 
+                                                                             selected = "2012"),
+                           
+                                                                leafletOutput("g.cropMap"),
                                                                 br(),
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 selectInput("gcrop", "Select Variable:", width = "100%", choices = c(
@@ -947,6 +966,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
+<<<<<<< HEAD
                                                                 
                                                                 sliderInput(inputId = "year", 
                                                                             label = "Choose the starting and ending years",
@@ -956,6 +976,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             value = 2021,
                                                                             sep = "", ticks = FALSE, width = "150%"),
                                                                 leafletOutput("mymap",height = 500), 
+=======
+                                                                leafletOutput("g.soilMap",height = 500), 
+>>>>>>> ef4ed997b4f1695020e882c7dc0706ba6f98e1a6
                                                                 h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("gsoil", height = "500px"),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
@@ -1008,8 +1031,15 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Use in Powhatan County")),
+<<<<<<< HEAD
                                                                 
                                                                 p("Insert Text")
+=======
+                                                                p("Each parcel of land in Powhatan County has an assigned land use. These land uses are: Single Family Urban, Single Family Suburban, Multi-Family Residential, Commercial & Industrial, Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), Other, and Undefined. We used the state of Virginia’s land use codes to make our maps cleaner. This involved condensing some of the categories from Powhatan’s system into the other category. In our data, we also had some parcels with no land use category. Those parcels make up the undefined category.
+Based on the Powhatan County map on the right, Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) are the two biggest land use categories for all years. Single Family Suburban is third biggest in acreage. The map itself doesn’t change a lot but the number of parcels that change is a lot. 
+The transition matrix under the map shows the land conversion from 2012-2022 in Powhatan County. Based on the matrix the three categories that are changing the most are Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), and Single-Family Suburban. While the category that goes the most is Single Family Suburban. This category grew by 584 parcels. Both Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) lost many parcels of land to different land uses. Most of the parcels that changed from both Agriculture/Undeveloped (20-99) and Agriculture/Undeveloped (100+ Acres) changed to Single Family Suburban. 
+")
+>>>>>>> ef4ed997b4f1695020e882c7dc0706ba6f98e1a6
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
@@ -1053,6 +1083,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
                                                                 h4(strong("Crop Layer Graphs")),
+                                                                radioButtons(inputId = "p.cropYear", label = "Select Year: ", 
+                                                                             choices = c("2012", "2021"), 
+                                                                             selected = "2012"),
+                                                                leafletOutput("p.cropMap"),
+                                                          
                                                                 selectInput("pcrop", "Select Variable:", width = "100%", choices = c(
                                                                   "Total Acreage by Land Type 2021" = "pcrop21",
                                                                   "Total Acreage by Land Type 2012" = "pcrop12")
@@ -1103,6 +1138,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
+                                                                leafletOutput("p.soilMap"),
                                                                 
                                                                 #                plotlyOutput("trend1", height = "600px")
                                                                 h4(strong("Soil Quality Graph")),
@@ -1518,26 +1554,45 @@ server <- function(input, output){
   
   ### CROP LAYERS ================================================
   
-  output$mymap <- renderLeaflet({
+  output$g.cropMap <- renderLeaflet({
+    my.crop.plt<- leaflet()%>%
+      addTiles() %>%
+      addProviderTiles(providers$CartoDB.Positron) %>%
+      addPolygons(data = gl_cnty, fillColor = "transparent") %>% 
+      setView(lng=-77.885376, lat=37.684143, zoom = 10)
     
-    begin_year <- 2012
-    end_year <- 2021
-    yr <- c(begin_year,end_year)
-    file_list <- paste(getwd(),"/data/Cropland/Gooch/Gooch_Ag_",yr,".shp",sep = "")
-    
-    for (file in file_list){
-      #import the cropdata maps of the selected years
-      gl<- st_read(file) 
-      gl <- st_transform(gl, "+proj=longlat +datum=WGS84")
-      m <- addPolygons(m,
-                       stroke = FALSE,
-                       data = gl,
-                       weight = 1,
-                       smoothFactor=1,
-                       fillColor = "red",
-                       fillOpacity = 0.1)
+    if(input$g.cropYear == 2012){
+      my.crop.plt <- my.crop.plt %>%
+        addPolygons(data = g.cropMap12,
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE) 
     }
-    m
+    # Adds crop layer 2021
+    else {
+      my.crop.plt <- my.crop.plt %>%
+        addPolygons(data = g.cropMap21,
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+    }
+      })
+  
+  output$p.cropMap <- renderLeaflet({
+    my.crop.plt<- leaflet()%>%
+      addTiles() %>%
+      addProviderTiles(providers$CartoDB.Positron) %>%
+      addPolygons(data = po_cnty, fillColor = "transparent") %>% 
+      setView(lng=-77.9188, lat=37.5415 , zoom=10)
+    
+    if(input$p.cropYear == 2012){
+      my.crop.plt <- my.crop.plt %>%
+        addPolygons(data = p.cropMap12,
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE) 
+    }
+    # Adds crop layer 2021
+    else {
+      my.crop.plt <- my.crop.plt %>%
+        addPolygons(data = p.cropMap21,
+                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+
+    }
   })
   
   gcrop <- reactive({
@@ -1565,6 +1620,19 @@ server <- function(input, output){
       pcrop21
     }
   })
+  
+  output$g.soilMap <- renderLeaflet({
+    leaflet() %>% 
+      setView(lng=-78, lat=37.7, zoom=10.48) %>% 
+      addPolygons(data=g.soilData, smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+  })
+  output$p.soilMap <- renderLeaflet({
+    leaflet() %>% 
+      setView(lng=-77.9188, lat=37.5415 , zoom=10) %>%
+      addPolygons(data=p.soilData, smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+  })
+  
+    
   
   output$gsoil <- renderPlotly({
     gsoil
@@ -1634,7 +1702,6 @@ server <- function(input, output){
   })
   
   output$p.hotspotMap <- renderLeaflet({
-    po_cnty<- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84") 
     
     p.hotspot.plt <- leaflet()%>%
       addTiles() %>%
