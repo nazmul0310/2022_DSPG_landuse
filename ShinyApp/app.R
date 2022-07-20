@@ -259,7 +259,7 @@ groads<- st_transform(groads, "+proj=longlat +datum=WGS84")
 
 goochland_traffic_volume <- leaflet()%>%
   addTiles() %>%
-  setView(lng=-78, lat=37.72, zoom=10.49) %>% 
+  setView(lng=-77.885376, lat=37.684143, zoom = 10)  %>% 
   addPolygons(data=groads, weight=1, color = "black", fillOpacity=0)%>%
   addPolygons(data=filter(gtraffic, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
   addPolygons(data=filter(gtraffic, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
@@ -279,7 +279,7 @@ proads<- st_transform(proads, "+proj=longlat +datum=WGS84")
 
 powhatan_traffic_volume <- leaflet()%>%
   addTiles() %>%
-  setView(lng=-78, lat=37.58, zoom=10.49) %>% 
+  setView(lng=-77.9188, lat=37.5415 , zoom=10.49) %>% 
   addPolygons(data=proads, weight=1, color = "black", fillOpacity=0)%>%
   addPolygons(data=filter(ptraffic, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
   addPolygons(data=filter(ptraffic, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
@@ -368,6 +368,61 @@ luPlotFunction <- function(inputYear, county) {
               data=parcelData) 
   lu.plt
 }
+
+
+pow.travelTimes <- st_read("data/travelTimes/Powhatan_Travel_Time/Powhatan_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+gooch.travelTimes <- st_read("data/travelTimes/Goochland_Travel_Time/Goochland_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+Rmnd30 <- st_read("data/travelTimes/Richmond_Travel_Times/30MinuteTravelTime.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+Rmnd45 <- st_read("data/travelTimes/Richmond_Travel_Times/45MinuteTravelTime.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+Rmnd60 <- st_read("data/travelTimes/Richmond_Travel_Times/60MinuteTravelTime.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+
+travelTime.func <- function(county){
+  
+  # Initial plot
+  travelTime.plt <- leaflet() %>%
+    addTiles() %>%
+    addProviderTiles("Esri")  
+  
+  if(county == "Powhatan"){
+    travelTime.plt <- travelTime.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
+    data <- pow.travelTimes
+  } else {
+    travelTime.plt <- travelTime.plt %>% setView(lng=-77.885376, lat=37.694143, zoom = 10)
+    data <- gooch.travelTimes
+  }
+  
+  
+  data$Trv2RcMnd <- factor(data$Trv2RcMnd, levels = c("30 minutes", "45 minutes", "One hour", "More than an hour"))
+  # Custom color palette
+  mypalette <- colorBin(palette = "viridis", as.numeric(data$Trv2RcMnd), bins = 5)
+  colors <- mypalette(unclass(data$Trv2RcMnd))
+  sorted_colors <- c("#440154", "#2A788E", "#7AD151", "#FDE725")
+  
+  travelTime.plt <- travelTime.plt %>%
+    addPolygons(data = data, color = "black",
+                fillColor = colors,
+                smoothFactor = 0.1, fillOpacity=.6, weight = 1,stroke = FALSE) %>%
+    
+    addPolygons(data = Rmnd30, color = "Black",
+                opacity = 1, weight = 2, fillColor = "transparent", fillOpacity = 0,
+                group = "Within 30") %>%
+    addPolygons(data = Rmnd45, color = "Black",
+                opacity = 1, weight = 2, fillColor = "transparent", fillOpacity = 0,
+                group = "Within 45") %>%
+    addPolygons(data = Rmnd60, color = "Black",
+                opacity = 1, weight = 2, fillColor = "transparent", fillOpacity = 0,
+                group = "Within 60") %>%
+    addCircleMarkers(lat = 37.534379575044426, lng = -77.44071077873014, label = "Richmond") %>%
+    addLayersControl(
+      overlayGroups=c("Within 30", "Within 45", "Within 60"),
+      position = "bottomleft",
+      options = layersControlOptions(collapsed = FALSE)) %>%
+    addLegend(position = "bottomright", labels = c("Within 30 minutes", "Within 45 minutes", "Within 1 hour", "More than 1 hour"), 
+              colors = sorted_colors)
+  
+  travelTime.plt
+}
+
 
 parc.func <- function(data, range, county, cnty){
   
@@ -1660,6 +1715,9 @@ server <- function(input, output){
     if(gooch_traffic() == "gvol"){
       goochland_traffic_volume
     }
+    if(gooch_traffic() == "grich"){
+      travelTime.func("Goochland")
+    }
   })
   
   
@@ -1670,6 +1728,9 @@ server <- function(input, output){
   output$powhatan_traffic <- renderLeaflet({
     if(pow_traffic() == "pvol"){
       powhatan_traffic_volume
+    }
+    if(pow_traffic() == "prich"){
+      travelTime.func("Powhatan")
     }
   })
 
