@@ -558,10 +558,10 @@ thm <- hc_theme(colors = c("#440154", "#443A83", "#31688E", "#21908D", "#35B779"
                            "#8FD644", "#FDE725", "#4D4D4D"),
                 chart = list(backgroundColor = "#ffffff"),
                 title = list(style = list(color ='#000000',
-                                          fontFamily = "Arial")),
+                                          fontFamily = "Lumen")),
                 subtitle = list(style = list(color ='#000000',
-                                             fontFamily = "Arial")),
-                legend = list(itemStyle = list(fontFamily ='Arial',color ='black')
+                                             fontFamily = "Lumen")),
+                legend = list(itemStyle = list(fontFamily ='Lumen',color ='black')
                               ,itemHoverStyle = list(color ='black')))
 
 # ui --------------------------------------------------------------------------------------------------------------------
@@ -994,7 +994,10 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
 
                                                                 leafletOutput(outputId = "luPlot.g"),
+<<<<<<< HEAD
                                                                 h4(strong("Land Use Transition Matrix")),
+=======
+>>>>>>> 7b9289b0eb3c6d3999609452d7ea4d2e70457da4
                                                                 br(),
                                                                 h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
                                                         
@@ -1165,10 +1168,16 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                                 
                                                                 leafletOutput(outputId = "luPlot.p"),
+<<<<<<< HEAD
+=======
+                                                                
+>>>>>>> 7b9289b0eb3c6d3999609452d7ea4d2e70457da4
                                                                 h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
-                                                                br(),
                                                                 highchartOutput("pow_sankey",height = 600),
+<<<<<<< HEAD
                                                                 h4(strong("Land Use Transition Matrix")),
+=======
+>>>>>>> 7b9289b0eb3c6d3999609452d7ea4d2e70457da4
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
                                                          
                                                          column(12, 
