@@ -266,7 +266,7 @@ groads<- st_transform(groads, "+proj=longlat +datum=WGS84")
 
 goochland_traffic_volume <- leaflet()%>%
   addTiles() %>%
-  setView(lng=-78, lat=37.72, zoom=10.49) %>% 
+  setView(lng=-77.885376, lat=37.684143, zoom = 10)  %>% 
   addPolygons(data=groads, weight=1, color = "black", fillOpacity=0)%>%
   addPolygons(data=filter(gtraffic, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
   addPolygons(data=filter(gtraffic, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
@@ -286,7 +286,7 @@ proads<- st_transform(proads, "+proj=longlat +datum=WGS84")
 
 powhatan_traffic_volume <- leaflet()%>%
   addTiles() %>%
-  setView(lng=-78, lat=37.58, zoom=10.49) %>% 
+  setView(lng=-77.9188, lat=37.5415 , zoom=10.49) %>% 
   addPolygons(data=proads, weight=1, color = "black", fillOpacity=0)%>%
   addPolygons(data=filter(ptraffic, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
   addPolygons(data=filter(ptraffic, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
@@ -374,6 +374,59 @@ luPlotFunction <- function(inputYear, county) {
               opacity = 1,
               data=parcelData) 
   lu.plt
+}
+
+pow.travelTimes <- st_read("data/travelTimes/Powhatan_Travel_Time/Powhatan_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+gooch.travelTimes <- st_read("data/travelTimes/Goochland_Travel_Time/Goochland_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+Rmnd30 <- st_read("data/travelTimes/Richmond_Travel_Times/30MinuteTravelTime.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+Rmnd45 <- st_read("data/travelTimes/Richmond_Travel_Times/45MinuteTravelTime.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+Rmnd60 <- st_read("data/travelTimes/Richmond_Travel_Times/60MinuteTravelTime.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+
+travelTime.func <- function(county){
+  
+  # Initial plot
+  travelTime.plt <- leaflet() %>%
+    addTiles() %>%
+    addProviderTiles("Esri")  
+  
+  if(county == "Powhatan"){
+    travelTime.plt <- travelTime.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
+    data <- pow.travelTimes
+  } else {
+    travelTime.plt <- travelTime.plt %>% setView(lng=-77.885376, lat=37.694143, zoom = 10)
+    data <- gooch.travelTimes
+  }
+  
+  
+  data$Trv2RcMnd <- factor(data$Trv2RcMnd, levels = c("30 minutes", "45 minutes", "One hour", "More than an hour"))
+  # Custom color palette
+  mypalette <- colorBin(palette = "viridis", as.numeric(data$Trv2RcMnd), bins = 5)
+  colors <- mypalette(unclass(data$Trv2RcMnd))
+  sorted_colors <- c("#440154", "#2A788E", "#7AD151", "#FDE725")
+  
+  travelTime.plt <- travelTime.plt %>%
+    addPolygons(data = data, color = "black",
+                fillColor = colors,
+                smoothFactor = 0.1, fillOpacity=.6, weight = 1,stroke = FALSE) %>%
+    
+    addPolygons(data = Rmnd30, color = "Black",
+                opacity = 1, weight = 2, fillColor = "transparent", fillOpacity = 0,
+                group = "Within 30") %>%
+    addPolygons(data = Rmnd45, color = "Black",
+                opacity = 1, weight = 2, fillColor = "transparent", fillOpacity = 0,
+                group = "Within 45") %>%
+    addPolygons(data = Rmnd60, color = "Black",
+                opacity = 1, weight = 2, fillColor = "transparent", fillOpacity = 0,
+                group = "Within 60") %>%
+    addCircleMarkers(lat = 37.534379575044426, lng = -77.44071077873014, label = "Richmond") %>%
+    addLayersControl(
+      overlayGroups=c("Within 30", "Within 45", "Within 60"),
+      position = "bottomleft",
+      options = layersControlOptions(collapsed = FALSE)) %>%
+    addLegend(position = "bottomright", labels = c("Within 30 minutes", "Within 45 minutes", "Within 1 hour", "More than 1 hour"), 
+              colors = sorted_colors)
+  
+  travelTime.plt
 }
 
 gcrop_values <- c("Developed", 
@@ -1094,6 +1147,7 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
+
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 radioButtons(inputId = "p.cropYear", label = "Select Year: ", 
                                                                              choices = c("2012", "2021"), 
@@ -1461,18 +1515,18 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                           img(src = "John Malla.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           br(), 
                                           img(src = "Christopher Vest.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Rachel Inman', target = '_blank'), "(Virginia Tech, Undergraduate in Smart and Sustainable Cities and Minoring in Landscape Architecture);",
+                                          p(a(href = 'https://www.linkedin.com/in/rachelinman21/', 'Rachel Inman', target = '_blank'), "(Virginia Tech, Undergraduate in Smart and Sustainable Cities and Minoring in Landscape Architecture);",
                                             br(), 
-                                            a(href = 'https://www.linkedin.com/in/julie-rebstock', 'John Malla', target = '_blank'), "(Virginia Tech, Undergraduate in Computational Modeling and Data Analytics);",
+                                            a(href = 'https://www.linkedin.com/in/john-malla-4b03b0232/', 'John Malla', target = '_blank'), "(Virginia Tech, Undergraduate in Computational Modeling and Data Analytics);",
                                             br(), 
-                                            a(href = 'www.linkedin.com/in/rachelinman21', 'Christopher Vest', target = '_blank'), "(Jacksonville State University, Undergraduate in Finance)."),
+                                            a(href = 'https://www.linkedin.com/in/christophercvest', 'Christopher Vest', target = '_blank'), "(Jacksonville State University, Undergraduate in Finance)."),
                                           p("", style = "padding-top:10px;") 
                                    ),
                                    column(6, align = "center",
                                           h4(strong("VT Faculty Members")),
                                           img(src = "SusanChen.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
                                           img(src = "weizhang.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = "https://www.linkedin.com/in/briannaposadas/", 'Dr. Susan Chen', target = '_blank'), "(Associate Professor of Econometrics & Data Analytics);",
+                                          p(a(href = "https://www.linkedin.com/in/susanchenja/", 'Dr. Susan Chen', target = '_blank'), "(Associate Professor of Econometrics & Data Analytics);",
                                             br(), 
                                             a(href = '', 'Dr. Wei Zhang', target = '_blank'), "(Assistant Professor of Agricultural & Applied Economics)."),
                                           p("", style = "padding-top:10px;")
@@ -1485,9 +1539,9 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                           img(src = "Samantha Rippley.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           br(), 
                                           img(src = "Yuanyuan Wen.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Nazmul Huda', target = '_blank'), "(Virginia Tech, Graduate in Geography);",
+                                          p(a(href = 'https://www.linkedin.com/in/nazmulpeyal/', 'Nazmul Huda', target = '_blank'), "(Virginia Tech, Graduate in Geography);",
                                             br(), 
-                                            a(href = 'https://www.linkedin.com/in/julie-rebstock', 'Samantha Rippley', target = '_blank'), "(Virgina Tech, Graduate in Agricultural Economics);",
+                                            a(href = 'https://www.linkedin.com/in/samantha-rippley-58846119b/', 'Samantha Rippley', target = '_blank'), "(Virgina Tech, Graduate in Agricultural Economics);",
                                             br(), 
                                             a(href = 'www.linkedin.com/in/rachelinman21', 'Yuanyuan Wen', target = '_blank'), "(Virginia Tech, Graduate in Agricultural & Applied Economics)."),
                                           p("", style = "padding-top:10px;") 
@@ -1496,7 +1550,7 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                           h4(strong("Project Stakeholders")),
                                           img(src = "team-posadas.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
                                           img(src = "team-sarah.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = "https://www.linkedin.com/in/briannaposadas/", 'Rachel Henley', target = '_blank'), "(Virginia Cooperative Extension, Powhatan County);",
+                                          p(a(href = "https://www.linkedin.com/in/rachel-henley-335a0345/", 'Rachel Henley', target = '_blank'), "(Virginia Cooperative Extension, Powhatan County);",
                                             br(), 
                                             a(href = '', 'Nichole Shuman', target = '_blank'), "(Virginia Cooperative Extension, Goochland County)."),
                                           p("", style = "padding-top:10px;")
@@ -1694,6 +1748,9 @@ server <- function(input, output){
     if(gooch_traffic() == "gvol"){
       goochland_traffic_volume
     }
+    if(gooch_traffic() == "grich"){
+      travelTime.func("Goochland")
+    }
   })
   
   
@@ -1704,6 +1761,9 @@ server <- function(input, output){
   output$powhatan_traffic <- renderLeaflet({
     if(pow_traffic() == "pvol"){
       powhatan_traffic_volume
+    }
+    if(pow_traffic() == "prich"){
+      travelTime.func("Powhatan")
     }
   })
 
