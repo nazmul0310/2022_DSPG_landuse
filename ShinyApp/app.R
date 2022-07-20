@@ -215,41 +215,44 @@ pcrop12 <- croplayer1 %>%
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 pcrop12 <- ggplotly(pcrop12, tooltip = c("text"))
 
-g.cropMap12 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-g.cropMap21 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
-p.cropMap12 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-p.cropMap21 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+
+g.soilData <- read_sf("data/Soil_Quality/Goochland/Goochland_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+p.soilData <- read_sf("data/Soil_Quality/Powhatan/Powhatan_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+
+soilClass <- c("Capability Class-I","Capability Class-II","Capability Class-III","Capability Class-IV",
+               "Capability Class-V","Capability Class-VI","Capability Class-VII","Capability Class-VIII",
+               "NODATA")
+soilClass <- factor(soilClass, levels = soilClass)
+
+soilPalette <- colorBin(palette = "viridis", as.numeric(soilClass), bins = 9)
+soilColors <- soilPalette(unclass(soilClass))
+soilColors[9] <- "#4D4D4D" # the color is similar to 
+soilLegend <- colorFactor(palette = soilColors,levels=soilClass)
+g.soilColors <- soilColors[-c(1,8)] #gooch doesnt have category I and VIII
+
 
 soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
 
-gsoil <- ggplot(soil_quality, aes(x = `G_Value`, y = `G_Area_acre`, fill = `G_Area_acre`)) +
+gsoil <- ggplot(soil_quality, aes(x = `G_Value`, y = `G_Area_acre`, fill = `G_Value`)) +
   geom_bar(stat = "identity",hoverinfo = "text", aes(text = paste0(`G_Value`, "\n", "Total Acres: ", round(`G_Area_acre`, 0))))+
   coord_flip() +
   theme(legend.position = "none") +
   scale_x_discrete(limits = rev) +
-  scale_fill_viridis() + 
-  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification")
+  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification")+
+  scale_fill_manual(values=soilColors)
 gsoil <-ggplotly(gsoil, tooltip = "text")
 
-psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Area_acre`)) +
+psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Value`)) +
   geom_bar(stat = "identity",hoverinfo ="text", aes(text = paste0(`P_Value`, "\n", "Total Acres: ", round(`P_Area_acre`, 0))))+
   geom_errorbarh(aes(xmax=as.numeric(`P_Value`)+0.45,xmin=as.numeric(`P_Value`)-0.45,height=0),position=position_dodge(width=0.9)) +
   coord_flip() +
   theme(legend.position = "none") +
   scale_x_discrete(limits = rev) +
-  scale_fill_viridis() +
+  scale_fill_manual(values=soilColors)+
   labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") 
 psoil <-ggplotly(psoil, tooltip = "text")
 
-g.soilData <- read_sf("data/Soil_Quality/Goochland/Goochland_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-p.soilData <- read_sf("data/Soil_Quality/Powhatan/Powhatan_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-
-soilClass <- c(1:8)
-soilPalette <- colorBin(palette = "viridis", soilClass, bins = 8)
-soilColors <- soilPalette(soilClass)
-soilColors[8] <- "#4D4D4D" # the color is similar to 
-soilLegend <- colorFactor(palette = soilColors,levels=soilClass)
 
 gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp")
 gtraffic <- st_transform(gtraffic, "+proj=longlat +datum=WGS84")
@@ -369,6 +372,12 @@ luPlotFunction <- function(inputYear, county) {
   lu.plt
 }
 
+g.cropMap12 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+g.cropMap21 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+
+p.cropMap12 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+p.cropMap21 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+
 pow.travelTimes <- st_read("data/travelTimes/Powhatan_Travel_Time/Powhatan_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 gooch.travelTimes <- st_read("data/travelTimes/Goochland_Travel_Time/Goochland_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 Rmnd30 <- st_read("data/travelTimes/Richmond_Travel_Times/30MinuteTravelTime.shp") %>% st_transform("+proj=longlat +datum=WGS84")
@@ -427,16 +436,49 @@ gcrop_values <- c("Developed",
                 "Forages", 
                 "Forested", 
                 "Horticulture crops", 
-                "Other", 
+                "Wetlands", 
                 "Row crops", 
-                "Small grains", "Tree crops", "Water", "Wetlands")
+                "Small grains", "Water", "Tree crops", "Other")
 
 gcrop_values <- factor(gcrop_values, levels = gcrop_values)
 
 gcrop_palette <- colorBin(palette = "viridis", as.numeric(gcrop_values), bins = 11)
 gcrop_colors <- gcrop_palette(unclass(gcrop_values))
-gcrop_colors[11] <- "#4D4D4D" # the color is similar to 
+gcrop_colors[11] <- "#4D4D4D" # makes it gray 
 gcrop_legendpalette <- colorFactor(palette = gcrop_colors,levels=gcrop_values)
+
+
+gcrop21_values <- c("Developed", 
+                  "Double cropped", 
+                  "Forages", 
+                  "Forested", 
+                  "Horticulture crops", 
+                  "Wetlands", 
+                  "Row crops", 
+                  "Small grains", "Water", "Other")
+
+gcrop21_values <- factor(gcrop21_values, levels = gcrop21_values)
+
+gcrop21_colors <- gcrop_colors[-10]
+gcrop21_colors[10] <- "#4D4D4D"
+gcrop21_legendpalette <- colorFactor(palette=gcrop21_colors,levels=gcrop21_values)
+
+
+pcrop_values <- c("Developed", 
+                  "Double cropped", 
+                  "Forages", 
+                  "Forested", 
+                  "Horticulture crops", 
+                  "Wetlands", 
+                  "Row crops", 
+                  "Small grains", "Water", "Tree crops", "Other")
+
+pcrop_values <- factor(pcrop_values, levels = pcrop_values)
+
+pcrop_palette <- colorBin(palette = "viridis", as.numeric(pcrop_values), bins = 11)
+pcrop_colors <- pcrop_palette(unclass(pcrop_values))
+pcrop_colors[11] <- "#4D4D4D" # makes it gray 
+pcrop_legendpalette <- colorFactor(palette = pcrop_colors,levels=pcrop_values)
 
 parc.func <- function(data, range, county, cnty){
   
@@ -1140,8 +1182,6 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
-
-                                                            
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 radioButtons(inputId = "p.cropYear", label = "Select Year: ", 
                                                                              choices = c("2012", "2021"), 
@@ -1509,18 +1549,18 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                           img(src = "John Malla.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           br(), 
                                           img(src = "Christopher Vest.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Rachel Inman', target = '_blank'), "(Virginia Tech, Undergraduate in Smart and Sustainable Cities and Minoring in Landscape Architecture);",
+                                          p(a(href = 'https://www.linkedin.com/in/rachelinman21/', 'Rachel Inman', target = '_blank'), "(Virginia Tech, Undergraduate in Smart and Sustainable Cities and Minoring in Landscape Architecture);",
                                             br(), 
-                                            a(href = 'https://www.linkedin.com/in/julie-rebstock', 'John Malla', target = '_blank'), "(Virginia Tech, Undergraduate in Computational Modeling and Data Analytics);",
+                                            a(href = 'https://www.linkedin.com/in/john-malla-4b03b0232/', 'John Malla', target = '_blank'), "(Virginia Tech, Undergraduate in Computational Modeling and Data Analytics);",
                                             br(), 
-                                            a(href = 'www.linkedin.com/in/rachelinman21', 'Christopher Vest', target = '_blank'), "(Jacksonville State University, Undergraduate in Finance)."),
+                                            a(href = 'https://www.linkedin.com/in/christophercvest', 'Christopher Vest', target = '_blank'), "(Jacksonville State University, Undergraduate in Finance)."),
                                           p("", style = "padding-top:10px;") 
                                    ),
                                    column(6, align = "center",
                                           h4(strong("VT Faculty Members")),
                                           img(src = "SusanChen.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
                                           img(src = "weizhang.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = "https://www.linkedin.com/in/briannaposadas/", 'Dr. Susan Chen', target = '_blank'), "(Associate Professor of Econometrics & Data Analytics);",
+                                          p(a(href = "https://www.linkedin.com/in/susanchenja/", 'Dr. Susan Chen', target = '_blank'), "(Associate Professor of Econometrics & Data Analytics);",
                                             br(), 
                                             a(href = '', 'Dr. Wei Zhang', target = '_blank'), "(Assistant Professor of Agricultural & Applied Economics)."),
                                           p("", style = "padding-top:10px;")
@@ -1533,9 +1573,9 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                           img(src = "Samantha Rippley.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           br(), 
                                           img(src = "Yuanyuan Wen.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Nazmul Huda', target = '_blank'), "(Virginia Tech, Graduate in Geography);",
+                                          p(a(href = 'https://www.linkedin.com/in/nazmulpeyal/', 'Nazmul Huda', target = '_blank'), "(Virginia Tech, Graduate in Geography);",
                                             br(), 
-                                            a(href = 'https://www.linkedin.com/in/julie-rebstock', 'Samantha Rippley', target = '_blank'), "(Virgina Tech, Graduate in Agricultural Economics);",
+                                            a(href = 'https://www.linkedin.com/in/samantha-rippley-58846119b/', 'Samantha Rippley', target = '_blank'), "(Virgina Tech, Graduate in Agricultural Economics);",
                                             br(), 
                                             a(href = 'www.linkedin.com/in/rachelinman21', 'Yuanyuan Wen', target = '_blank'), "(Virginia Tech, Graduate in Agricultural & Applied Economics)."),
                                           p("", style = "padding-top:10px;") 
@@ -1544,7 +1584,7 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                           h4(strong("Project Stakeholders")),
                                           img(src = "team-posadas.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
                                           img(src = "team-sarah.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = "https://www.linkedin.com/in/briannaposadas/", 'Rachel Henley', target = '_blank'), "(Virginia Cooperative Extension, Powhatan County);",
+                                          p(a(href = "https://www.linkedin.com/in/rachel-henley-335a0345/", 'Rachel Henley', target = '_blank'), "(Virginia Cooperative Extension, Powhatan County);",
                                             br(), 
                                             a(href = '', 'Nichole Shuman', target = '_blank'), "(Virginia Cooperative Extension, Goochland County)."),
                                           p("", style = "padding-top:10px;")
@@ -1622,6 +1662,7 @@ server <- function(input, output){
       addPolygons(data = gl_cnty, fillColor = "transparent") %>% 
       setView(lng=-77.885376, lat=37.684143, zoom = 10)
     
+
     
     if(input$g.cropYear == 2012){
         for (i in 1:11){
@@ -1637,9 +1678,15 @@ server <- function(input, output){
     
     # Adds crop layer 2021
     else {
-      my.crop.plt <- my.crop.plt %>%
-        addPolygons(data = g.cropMap21,
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+      for (i in 1:10){
+        my.crop.plt <- addPolygons(my.crop.plt,data=g.cropMap21 %>% filter(g.cropMap21$New_Label==gcrop_values[i]), 
+                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop21_colors[i])
+      }
+      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = gcrop21_legendpalette, values = gcrop21_values,
+                                               title = "Crop Layer Land Type",
+                                               labFormat = labelFormat(),
+                                               opacity = 1,
+                                               data=g.cropMap21)
     }
     
     
@@ -1653,15 +1700,27 @@ server <- function(input, output){
       setView(lng=-77.9188, lat=37.5415 , zoom=10)
     
     if(input$p.cropYear == 2012){
-      my.crop.plt <- my.crop.plt %>%
-        addPolygons(data = p.cropMap12,
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE) 
+      for (i in 1:11){
+        my.crop.plt <- addPolygons(my.crop.plt,data=p.cropMap12 %>% filter(p.cropMap12$New.Label==pcrop_values[i]), 
+                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = pcrop_colors[i])
+      }
+      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = pcrop_legendpalette, values = pcrop_values,
+                                               title = "Crop Layer Land Type",
+                                               labFormat = labelFormat(),
+                                               opacity = 1,
+                                               data=p.cropMap12) 
     }
     # Adds crop layer 2021
     else {
-      my.crop.plt <- my.crop.plt %>%
-        addPolygons(data = p.cropMap21,
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+      for (i in 1:11){
+        my.crop.plt <- addPolygons(my.crop.plt,data=p.cropMap21 %>% filter(p.cropMap21$Comb_Class==pcrop_values[i]), 
+                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = pcrop_colors[i])
+      }
+      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = pcrop_legendpalette, values = pcrop_values,
+                                               title = "Crop Layer Land Type",
+                                               labFormat = labelFormat(),
+                                               opacity = 1,
+                                               data=p.cropMap21)
 
     }
   })
