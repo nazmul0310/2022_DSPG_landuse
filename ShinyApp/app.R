@@ -561,6 +561,16 @@ pow_bndry <- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>%
 g.sankey <- read.csv("data/luParcelData/g_sankey.csv") %>% select(LUC_old,LUC_new) 
 p.sankey <- read.csv("data/luParcelData/p_sankey.csv") %>% select(MLUSE_old,MLUSE_new) 
 
+thm <- hc_theme(colors = c("#440154", "#443A83", "#31688E", "#21908D", "#35B779",
+                           "#8FD644", "#FDE725", "#4D4D4D"),
+                chart = list(backgroundColor = "#ffffff"),
+                title = list(style = list(color ='#000000',
+                                          fontFamily = "Arial")),
+                subtitle = list(style = list(color ='#000000',
+                                             fontFamily = "Arial")),
+                legend = list(itemStyle = list(fontFamily ='Arial',color ='black')
+                              ,itemHoverStyle = list(color ='black')))
+
 # ui --------------------------------------------------------------------------------------------------------------------
 
 ui <- navbarPage(title = "DSPG 2022",
@@ -983,7 +993,10 @@ The transition matrix under the map shows the land conversion from 2018-2022 in 
                                                                 
                                                                 
                                                                 leafletOutput(outputId = "luPlot.g"),
-                                                                highchartOutput("gooch_sankey"),
+                                                                br(),
+                                                                h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
+                                                        
+                                                                highchartOutput("gooch_sankey",height = 600),
                                                                 p(tags$small("Data Source: Goochland County Administrative Data")))  ,
                                                          column(12,
                                                                 
@@ -1139,8 +1152,9 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                                 
                                                                 leafletOutput(outputId = "luPlot.p"),
                                                                 
-                                                                h4(strong("Land Use Transition Matrix")),
-                                                                highchartOutput("pow_sankey"),
+                                                                h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
+                                                                br(),
+                                                                highchartOutput("pow_sankey",height = 600),
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
                                                          
                                                          column(12, 
@@ -1820,12 +1834,12 @@ server <- function(input, output){
   
   output$gooch_sankey <- renderHighchart({ 
     hchart(data_to_sankey(g.sankey), "sankey") %>%
-      hc_title(text = "Land Use Conversion in Goochland (Counts): 2018-2022") 
+      hc_add_theme(thm)
   })
   
   output$pow_sankey <- renderHighchart({ 
     hchart(data_to_sankey(p.sankey), "sankey") %>%
-      hc_title(text = "Land Use Conversion in Powhatan (Counts): 2012-2021") 
+      hc_add_theme(thm)
   })
   
   
