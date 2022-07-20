@@ -172,6 +172,14 @@ gcrop_values <- c("Developed",
                   "Other", 
                   "Row crops", 
                   "Small grains", "Tree crops*", "Water", "Wetlands")
+pcrop_values <- c("Developed", 
+                  "Double cropped", 
+                  "Forages", 
+                  "Forested", 
+                  "Horticulture crops", 
+                  "Other", 
+                  "Row crops", 
+                  "Small grains", "Tree crops", "Water", "Wetlands")
 gcrop_values21 <- c("Developed", 
                     "Double cropped", 
                     "Forages", 
@@ -187,6 +195,8 @@ gcrop_palette <- colorBin(palette = "viridis", as.numeric(gcrop_values), bins = 
 gcrop_colors <- gcrop_palette(unclass(gcrop_values))
 gcrop_colors[11] <- "#4D4D4D" # the color is similar to 
 gcrop_legendpalette <- colorFactor(palette = gcrop_colors,levels=gcrop_values)
+pcrop_legendpalette <- colorFactor(palette = gcrop_colors,levels=pcrop_values)
+
 gcrop_legendpalette21 <- colorFactor(palette = gcrop_colors[-9],levels=gcrop_values21)
 
 croplayer1 <- read.csv("data/ag_analysis.csv")
@@ -217,25 +227,25 @@ gcrop12 <-ggplotly(gcrop12, tooltip = c("text"))
 
 pcrop21 <- croplayer1 %>% 
   filter(County == "Powhatan", Year==2021) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Combined`)) + 
   geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() + 
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") + 
-  scale_fill_viridis() + 
+  scale_fill_manual(values = gcrop_colors)+ 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 pcrop21 <-ggplotly(pcrop21, tooltip = c("text"))
 
 pcrop12 <- croplayer1 %>% 
   filter(County == "Powhatan", Year== 2012) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Combined`)) + 
   geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() + 
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") + 
-  scale_fill_viridis() + 
+  scale_fill_manual(values = gcrop_colors) + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 pcrop12 <- ggplotly(pcrop12, tooltip = c("text"))
 
@@ -1677,15 +1687,27 @@ server <- function(input, output){
       setView(lng=-77.9188, lat=37.5415 , zoom=10)
     
     if(input$p.cropYear == 2012){
-      my.crop.plt <- my.crop.plt %>%
-        addPolygons(data = p.cropMap12,
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE) 
+      for (i in 1:11){
+        my.crop.plt <- addPolygons(my.crop.plt,data=p.cropMap12 %>% filter(p.cropMap12$New.Label==pcrop_values[i]), 
+                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i]) #color keeps the same with Gooch
+      }
+      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = pcrop_legendpalette, values = pcrop_values,
+                                               title = "Crop Layer Land Type",
+                                               labFormat = labelFormat(),
+                                               opacity = 1,
+                                               data=p.cropMap12)
     }
     # Adds crop layer 2021
     else {
-      my.crop.plt <- my.crop.plt %>%
-        addPolygons(data = p.cropMap21,
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+      for (i in 1:11){
+        my.crop.plt <- addPolygons(my.crop.plt,data=p.cropMap21 %>% filter(p.cropMap21$Comb_Class==pcrop_values[i]), 
+                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i]) #color keeps the same with Gooch
+      }
+      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = pcrop_legendpalette, values = pcrop_values,
+                                               title = "Crop Layer Land Type",
+                                               labFormat = labelFormat(),
+                                               opacity = 1,
+                                               data=p.cropMap21)
 
     }
   })
