@@ -215,11 +215,7 @@ pcrop12 <- croplayer1 %>%
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 pcrop12 <- ggplotly(pcrop12, tooltip = c("text"))
 
-g.cropMap12 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-g.cropMap21 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
-p.cropMap12 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-p.cropMap21 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
 
@@ -369,21 +365,60 @@ luPlotFunction <- function(inputYear, county) {
   lu.plt
 }
 
+g.cropMap12 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+g.cropMap21 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+
+p.cropMap12 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+p.cropMap21 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+
 gcrop_values <- c("Developed", 
                 "Double cropped", 
                 "Forages", 
                 "Forested", 
                 "Horticulture crops", 
-                "Other", 
+                "Wetlands", 
                 "Row crops", 
-                "Small grains", "Tree crops", "Water", "Wetlands")
+                "Small grains", "Water", "Tree crops", "Other")
 
 gcrop_values <- factor(gcrop_values, levels = gcrop_values)
 
 gcrop_palette <- colorBin(palette = "viridis", as.numeric(gcrop_values), bins = 11)
 gcrop_colors <- gcrop_palette(unclass(gcrop_values))
-gcrop_colors[11] <- "#4D4D4D" # the color is similar to 
+gcrop_colors[11] <- "#4D4D4D" # makes it gray 
 gcrop_legendpalette <- colorFactor(palette = gcrop_colors,levels=gcrop_values)
+
+
+gcrop21_values <- c("Developed", 
+                  "Double cropped", 
+                  "Forages", 
+                  "Forested", 
+                  "Horticulture crops", 
+                  "Wetlands", 
+                  "Row crops", 
+                  "Small grains", "Water", "Other")
+
+gcrop21_values <- factor(gcrop21_values, levels = gcrop21_values)
+
+gcrop21_colors <- gcrop_colors[-10]
+gcrop21_colors[10] <- "#4D4D4D"
+gcrop21_legendpalette <- colorFactor(palette=gcrop21_colors,levels=gcrop21_values)
+
+
+pcrop_values <- c("Developed", 
+                  "Double cropped", 
+                  "Forages", 
+                  "Forested", 
+                  "Horticulture crops", 
+                  "Wetlands", 
+                  "Row crops", 
+                  "Small grains", "Water", "Tree crops", "Other")
+
+pcrop_values <- factor(pcrop_values, levels = pcrop_values)
+
+pcrop_palette <- colorBin(palette = "viridis", as.numeric(pcrop_values), bins = 11)
+pcrop_colors <- pcrop_palette(unclass(pcrop_values))
+pcrop_colors[11] <- "#4D4D4D" # makes it gray 
+pcrop_legendpalette <- colorFactor(palette = pcrop_colors,levels=pcrop_values)
 
 parc.func <- function(data, range, county, cnty){
   
@@ -1087,11 +1122,7 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
-<<<<<<< HEAD
-                                                                
-=======
                                                                 h4(strong("Crop Layer Graphs")),
->>>>>>> 7eef3f45d337e6988d66a1904c26c2fa9f1d0342
                                                                 radioButtons(inputId = "p.cropYear", label = "Select Year: ", 
                                                                              choices = c("2012", "2021"), 
                                                                              selected = "2012"),
@@ -1571,6 +1602,7 @@ server <- function(input, output){
       addPolygons(data = gl_cnty, fillColor = "transparent") %>% 
       setView(lng=-77.885376, lat=37.684143, zoom = 10)
     
+
     
     if(input$g.cropYear == 2012){
         for (i in 1:11){
@@ -1586,9 +1618,15 @@ server <- function(input, output){
     
     # Adds crop layer 2021
     else {
-      my.crop.plt <- my.crop.plt %>%
-        addPolygons(data = g.cropMap21,
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+      for (i in 1:10){
+        my.crop.plt <- addPolygons(my.crop.plt,data=g.cropMap21 %>% filter(g.cropMap21$New_Label==gcrop_values[i]), 
+                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop21_colors[i])
+      }
+      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = gcrop21_legendpalette, values = gcrop21_values,
+                                               title = "Crop Layer Land Type",
+                                               labFormat = labelFormat(),
+                                               opacity = 1,
+                                               data=g.cropMap21)
     }
     
     
@@ -1602,15 +1640,27 @@ server <- function(input, output){
       setView(lng=-77.9188, lat=37.5415 , zoom=10)
     
     if(input$p.cropYear == 2012){
-      my.crop.plt <- my.crop.plt %>%
-        addPolygons(data = p.cropMap12,
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE) 
+      for (i in 1:11){
+        my.crop.plt <- addPolygons(my.crop.plt,data=p.cropMap12 %>% filter(p.cropMap12$New.Label==pcrop_values[i]), 
+                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = pcrop_colors[i])
+      }
+      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = pcrop_legendpalette, values = pcrop_values,
+                                               title = "Crop Layer Land Type",
+                                               labFormat = labelFormat(),
+                                               opacity = 1,
+                                               data=p.cropMap12) 
     }
     # Adds crop layer 2021
     else {
-      my.crop.plt <- my.crop.plt %>%
-        addPolygons(data = p.cropMap21,
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+      for (i in 1:11){
+        my.crop.plt <- addPolygons(my.crop.plt,data=p.cropMap21 %>% filter(p.cropMap21$Comb_Class==pcrop_values[i]), 
+                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = pcrop_colors[i])
+      }
+      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = pcrop_legendpalette, values = pcrop_values,
+                                               title = "Crop Layer Land Type",
+                                               labFormat = labelFormat(),
+                                               opacity = 1,
+                                               data=p.cropMap21)
 
     }
   })
