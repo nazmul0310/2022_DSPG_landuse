@@ -129,17 +129,22 @@ edu.func <- function(inputYear, inputCounty) {
 
 gcon<- st_read("data/Conservation/Gooch_Preservation.shp")
 gcon <- st_transform(gcon, "+proj=longlat +datum=WGS84")
+gooch_boundary2<- st_read("data/cnty_bndry/Goochland_Boundary.shp")
+gooch_boundary2<- st_transform(gooch_boundary2, "+proj=longlat +datum=WGS84")
 
 goochland_con <- leaflet()%>%
   addTiles() %>%
-  setView(lng=-78, lat=37.7, zoom=10.48) %>% 
-  addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="purple")
+  setView(lng=-78, lat=37.75, zoom=10.48) %>% 
+  addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="purple")%>%
+  addPolygons(data=gooch_boundary2, weight=1, color="black", fillOpacity=0)
 
     # Powhatan
 
 pcon<- st_read("data/Conservation/Powhatan_Natural_Conservation.shp")
 pcon <- st_transform(pcon, "+proj=longlat +datum=WGS84")
 pcon$col=sample(c('red','yellow','green'),nrow(pcon),1)
+pow_boundary <- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>%
+  st_transform(crs = st_crs("EPSG:4326"))
 
 powhatan_con <- leaflet()%>%
   addTiles() %>%
@@ -147,6 +152,7 @@ powhatan_con <- leaflet()%>%
   addPolygons(data=pcon[1,], weight=0, fillOpacity = 0.5, fillColor = "orange", group = "Priority Conservation Areas")%>%
   addPolygons(data=pcon[2,], weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "Protected Lands")%>%
   addPolygons(data=pcon[3,], weight=0, fillOpacity = 0.5, fillColor = "green", group = "AFD")%>%
+  addPolygons(data=pow_boundary, weight=1, color="black", fillOpacity=0)%>%
   addLayersControl(
     overlayGroups = c("Priority Conservation Areas", "Protected Lands", "AFD"),
     position = "bottomleft",
@@ -289,52 +295,6 @@ psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Va
   labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") 
 psoil <-ggplotly(psoil, tooltip = "text")
 
-
-gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp")
-gtraffic <- st_transform(gtraffic, "+proj=longlat +datum=WGS84")
-groads<- st_read("data/Traffic_Hotspot/Gooch_roads.shp")
-groads<- st_transform(groads, "+proj=longlat +datum=WGS84")
-
-
-goochland_traffic_volume <- leaflet()%>%
-  addTiles() %>%
-  setView(lng=-77.885376, lat=37.684143, zoom = 10)  %>% 
-  addPolygons(data=groads, weight=1, color = "black", fillOpacity=0)%>%
-  addPolygons(data=filter(gtraffic, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
-  addPolygons(data=filter(gtraffic, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
-  addPolygons(data=filter(gtraffic, gridcode==3), weight=0, fillOpacity = 0.5, fillColor = "orange", group = "5,000 to 10,000")%>%
-  addPolygons(data=filter(gtraffic, gridcode==4), weight=0, fillOpacity = 0.5, fillColor = 'red', group= "10,000 to 25,000")%>%
-  addPolygons(data=filter(gtraffic, gridcode==5), weight=0, fillOpacity = 0.5, fillColor ='maroon', group= "More than 25,000")%>%
-  addLayersControl(
-    overlayGroups = c("Less than 1,000", "1,000 to 5,000", "5,000 to 10,000", "10,000 to 25,000", "More than 25,000"),
-    position = "bottomleft",
-    options = layersControlOptions(collapsed = FALSE))
-
-
-ptraffic<- st_read("data/Traffic_Hotspot/Powhatan_Traffic_Heatmap.shp")
-ptraffic <- st_transform(ptraffic, "+proj=longlat +datum=WGS84")
-proads<- st_read("data/Traffic_Hotspot/Pow_roads.shp")
-proads<- st_transform(proads, "+proj=longlat +datum=WGS84")
-
-powhatan_traffic_volume <- leaflet()%>%
-  addTiles() %>%
-  setView(lng=-77.9188, lat=37.5415 , zoom=10.49) %>% 
-  addPolygons(data=proads, weight=1, color = "black", fillOpacity=0)%>%
-  addPolygons(data=filter(ptraffic, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
-  addPolygons(data=filter(ptraffic, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
-  addPolygons(data=filter(ptraffic, gridcode==3), weight=0, fillOpacity = 0.5, fillColor = "orange", group = "5,000 to 10,000")%>%
-  addPolygons(data=filter(ptraffic, gridcode==4), weight=0, fillOpacity = 0.5, fillColor = 'red', group= "10,000 to 25,000")%>%
-  addPolygons(data=filter(ptraffic, gridcode==5), weight=0, fillOpacity = 0.5, fillColor ='maroon', group= "More than 25,000")%>%
-  addLayersControl(
-    overlayGroups = c("Less than 1,000", "1,000 to 5,000", "5,000 to 10,000", "10,000 to 25,000", "More than 25,000"),
-    position = "bottomleft",
-    options = layersControlOptions(collapsed = FALSE))
-
-
-harbour<- leaflet() %>% 
-  addTiles() %>% 
-  setView(lng=-77.949, lat=37.742, zoom=9)
-
 GoochlandAllParcel <- read_sf("data/luParcelData/GoochAll.shp") %>% rename(FIN_MLUSE = LUC_FIN)
 PowhatanAllParcel <- read_sf("data/luParcelData/PowAll.shp")
 
@@ -407,6 +367,39 @@ luPlotFunction <- function(inputYear, county) {
               data=parcelData) 
   lu.plt
 }
+
+gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+groads<- st_read("data/Traffic_Hotspot/Gooch_roads.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+ptraffic<- st_read("data/Traffic_Hotspot/Powhatan_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+proads<- st_read("data/Traffic_Hotspot/Pow_roads.shp") %>%  st_transform("+proj=longlat +datum=WGS84")
+
+trafficVol.func <- function(county){
+  trafficVol.plt <- leaflet() %>%
+    addTiles()
+  
+  if(county == "Powhatan"){
+    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10) %>% addPolygons(data = po_cnty, fillOpacity = 0)
+    roadData <- proads
+    trafficData <- ptraffic
+  }
+  else{
+    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
+    roadData <- groads
+    trafficData <- gtraffic
+  }
+  
+  trafficVol.plt <- trafficVol.plt %>%
+    addPolygons(data=roadData, weight=1, color = "black", fillOpacity=0)%>%
+    addPolygons(data=filter(trafficData, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
+    addPolygons(data=filter(trafficData, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
+    addPolygons(data=filter(trafficData, gridcode==3), weight=0, fillOpacity = 0.5, fillColor = "orange", group = "5,000 to 10,000")%>%
+    addPolygons(data=filter(trafficData, gridcode==4), weight=0, fillOpacity = 0.5, fillColor = 'red', group= "10,000 to 25,000")%>%
+    addPolygons(data=filter(trafficData, gridcode==5), weight=0, fillOpacity = 0.5, fillColor ='maroon', group= "More than 25,000")%>%
+    addLegend(position = "bottomright", labels = c("Less than 1,000", "1,000 to 5,000", "5,000 to 10,000", "10,000 to 25,000", "More than 25,000"),
+              colors = c("green", "yellow", "orange", "red", "maroon"))
+  trafficVol.plt
+}
+
 
 g.cropMap12 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 g.cropMap21 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
@@ -594,16 +587,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                    align = "justify",
                                    column(4,
                                           h2(strong("Project Background")),
-                                          p(strong("The setting:"), "Powhatan and Goochland County are two counties on the urban fringe outside of Richmond, Virginia. Both counties are known for their 
-                                            rich agricultural histories. Communities on the urban fringe are located between both rural and urban areas. Although Powhatan County has been growing and 
-                                            devolving faster than the average rate, they like Goochland County would like to keep their agricultural roots."),
+                                          p(strong("The setting:"), "The setting: Goochland and Powhatan County are two counties on the urban fringe outside of Richmond, Virginia. Communities on the urban fringe are located between both rural and urban areas. Both counties are known for 
+                                            their rich agricultural histories as well as their proximity to the state capital. Although Powhatan County has been growing and evolving faster than the average rate, they like Goochland County would like to keep their agricultural roots."),
                                           p(),
-                                          p(strong("The problem:"), "Both Powhatan and Goochland County are approximately 40 minutes away from Richmond. Being this close to a large city  
-                                             has its advantages, but also its drawbacks. One of the biggest drawbacks is land conversion. Land conversion is when land shifts its use from one 
-                                            use to another. In the case of Powhatan and Goochland, it means land is changing from agricultural land to residential. This really could hurt the economies 
-                                            of the mostly agricultural counties. Both counties have enacted policies to help combat land conversion: Powhatan with their land tax deferral and Goochland with 
-                                            their 85:15 comprehensive plan. Both counties keep administrative data, but do not have the resources or the knowledge to analyze the data. This 
-                                            is a key step in understanding the factors that cause land conversation or the probability that a parcel of land will convert. "),
+                                          p(strong("The problem:"), "Both Goochland and Powhatan County are approximately 40 minutes away from Richmond. Being this close to a large city has its advantages, but also its drawbacks. One of the biggest drawbacks is land conversion. 
+                                            Land conversion is when land shifts its use from one to another. In the case of the two counties, it means land is changing from agricultural land to residential. This has the possibility to hurt the economies of the largely rural counties. 
+                                            Both counties have enacted policies to help combat land conversion: Powhatan with their land tax deferral program and Goochland with their 85:15 rural land commitment. Both counties keep administrative data, but do not have the resources or 
+                                            the knowledge to analyze it. This is a key step in understanding the factors that cause land conversation as well as the probability that a parcel of land will parcelize further."),
                                           p(),
                                           p(strong("The project:"), "This Virginia Tech", a(href = "https://aaec.vt.edu/index.html", "Department of Argicultural and Applied Economics", target = "_blank"),
                                             "Data Science for Public Good (DSPG) project uses data science to analyze land conversion in Goochland and Powhatan counties in order to provide stakeholders with 
@@ -611,27 +601,30 @@ ui <- navbarPage(title = "DSPG 2022",
                                    ),
                                    column(4,
                                           h2(strong("Our Work")),
-                                          p("Our research team worked with Powhatan County and Goochland County to help find a way to minimize land conversion. Both counties want to stay mostly agricultural even going as far to introduce 
-                                            policies including Powhatan’s land use tax deferral program and Goochland’s eighty-five- fifteen comprehensive plan. Our research team studied background information and past reports to get an 
-                                            understanding and feel for the project and the data we would be analyzing. The team also meet with their stakeholders on a regular basic to make sure the project was finished on schedule and 
-                                            that it pleased the stakeholders.  In addition to the meetings with the stakeholders, there was also contact by email to answer any questions pertaining to the project. "),
+                                          p('Our team worked with Goochland County and Powhatan County to help analyze land conversion and agriculture loss by using existing administrative data. Both counties want to retain their rural/agricultural 
+                                            character and have introduced policies to encourage the conservation of land and discourage development that may require further land conversion. Our team researched background information on both counties 
+                                            as well as looked into data from sources including the counties, the US Census, and the Virginia Department of Transportation. All of the data sources that have been referenced in our analysis can be found 
+                                            under the "Data Sources" tab. The team also met with the stakeholders on a regular basis to make sure that the project was in line with what they were expecting and to allow county administrators and 
+                                            AGRICULTURE ASSOCIATION members to look over our findings and make suggestions. In addition to the meetings, we also maintained contact by email to ask questions pertaining to the project and the data provided.'),
                                           p(),
-                                          p("We collected all of our data from the ACS and county level administrative data to create our graphs, maps, and tables. These visualizations allowed us to analyze and present our findings timely and accurately. We:"),
-                                          tags$li("Provided census tract and county-level maps of Goochland and Powhatan County residents'", strong("sociodemographic and socioeconomic characteristics,"), " highlighting underprivileged areas."),
-                                          tags$li("Used crop layer data to create a map of", strong("all crops grown (and acreage)"), "in the counties. "),
-                                          tags$li("Mapped locations of", strong("land parcels"), "at census block group level to highlight the surface water sources and the potential contaminations sources in the county.  "),
-                                          tags$li("Mapped traffic data to show ", strong("commute times"), "to Richmond, Virginia from both counties."),
-                                          tags$li("Created a", strong("Multinomial Logistic regression model"), "to show probability of land conversion. "), 
+                                          p("We collected data from several sources to create our graphs, maps, and tables. These visualizations allowed us to analyze and present our findings timely and accurately. More specifically, we:"),
+                                          tags$li("Provided census tract- and county-level graphs of Goochland and Powhatan County residents'", strong("sociodemographic and socioeconomic characteristics,"), " highlighting underprivileged areas."),
+                                          tags$li("Used USDA data to create a map of", strong("crops and land types"), "in the counties. "),
+                                          tags$li("Used USDA data to create a map of", strong("soil quality"), "throughout the counties."),
+                                          tags$li("Mapped traffic data to show ", strong("traffic volume and commute times"), "to Richmond, Virginia."),
+                                          tags$li("Mapped the locations of", strong("land parcels"), "to provide insight on the frequency of parcellation and identify any patterns."),
+                                          tags$li("Created a", strong("Multinomial Logistic regression model"), "to estimate the probability of land conversion. "), 
                                           p(),
                                           p("This dashboard compiles our findings and allows extension professionals, stakeholders, and other users to explore the information interactively."),
                                    ),
                                    column(4,
                                           h2(strong("Dashboard Aims")),
                                           p("Our dashboard is aimed at:"),
-                                          p(strong("Powhatan and Goochland county’s government."), "This dashboard will show them the probability of a land parcel converting and the factors 
-                                            that make them convert. These factors will help make more policies to combat land conversion. "),
-                                          p(strong("Researchers working on land use conversion."), "Land conversion is a problem all over the country not just Powhatan and Goochland counties. 
-                                            Those could use our dashboard as an idea on how to show their findings and what data to use to calculate the probability of land use conversion.")
+                                          p(strong("Powhatan and Goochland County governments."), "Our analyses will provide further insight to the counties and allow them to better understand if and how land conversion is occuring. 
+                                            Our statistical analysis looks at and explains the relationship between land conversion and several factors including traffic, ..., and ... We hope that our findings will inform decision-making
+                                            regarding land conversion and conservation within the counties. "),
+                                          p(strong("Researchers working on land use conversion."), "Land conversion is a problem all over the country, not just Goochland and Powhatan counties. Our dashboard can act as an example 
+                                            or template to those researching the topic as well as a starting off point for those looking specifically at Goochland and Powhatan.")
                                    )
                           ),
                           fluidRow(align = "center",
@@ -993,10 +986,14 @@ The transition matrix under the map shows the land conversion from 2018-2022 in 
                                                                 
                                                                 
                                                                 leafletOutput(outputId = "luPlot.g"),
+<<<<<<< HEAD
                                                                 br(),
                                                                 h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
                                                         
                                                                 highchartOutput("gooch_sankey",height = 600),
+=======
+                                                                highchartOutput("gooch_sankey", height = "150%"),
+>>>>>>> cd020d98b3b9a93bb2901826315b35d0cf0666fc
                                                                 p(tags$small("Data Source: Goochland County Administrative Data")))  ,
                                                          column(12,
                                                                 
@@ -1029,7 +1026,7 @@ The transition matrix under the map shows the land conversion from 2018-2022 in 
                                                                 h4(strong("Crop Layer Map")),
                                                                 radioButtons(inputId = "g.cropYear", label = "Select Year: ", 
                                                                              choices = c("2012", "2021"), 
-                                                                             selected = "2012"),
+                                                                             selected = "2021"),
                            
                                                                 leafletOutput("g.cropMap"),
                                                                 br(),
@@ -1111,6 +1108,7 @@ The transition matrix under the map shows the land conversion from 2018-2022 in 
                                                                   "Proximity to Richmond" = "grich")
                                                                 ),
                                                                 leafletOutput("goochland_traffic"),
+                                                                p(tags$small("Source: VDOT")),
                                                                 
                                                          ),
                                                          column(12, 
@@ -1152,9 +1150,14 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                                 
                                                                 leafletOutput(outputId = "luPlot.p"),
                                                                 
+<<<<<<< HEAD
                                                                 h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
                                                                 br(),
                                                                 highchartOutput("pow_sankey",height = 600),
+=======
+                                                                h4(strong("Land Use Transition Matrix")),
+                                                                highchartOutput("pow_sankey", width = "150%"),
+>>>>>>> cd020d98b3b9a93bb2901826315b35d0cf0666fc
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
                                                          
                                                          column(12, 
@@ -1183,11 +1186,11 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
-                                                                h4(strong("Crop Layer Graphs")),
                                                                 radioButtons(inputId = "p.cropYear", label = "Select Year: ", 
                                                                              choices = c("2012", "2021"), 
-                                                                             selected = "2012"),
-                                                                leafletOutput("p.cropMap"),                                                                h4(strong("Crop Layer Graphs")),
+                                                                             selected = "2021"),
+                                                                leafletOutput("p.cropMap"),                                                                
+                                                                h4(strong("Crop Layer Graphs")),
                                                                 
                                                           
                                                                 selectInput("pcrop", "Select Variable:", width = "100%", choices = c(
@@ -1241,8 +1244,6 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
                                                                 leafletOutput("p.soilMap"),
-                                                                
-                                                                #                plotlyOutput("trend1", height = "600px")
                                                                 h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("psoil", heigh = "500px"),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
@@ -1265,9 +1266,9 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Traffic Visualizations")),
-                                                                selectInput("pow_traffic", "Select Variable:", width = "100%", choices = c(
+                                                                selectInput(inputId = "pow_traffic", label = "Select Variable:", width = "100%", choices = c(
                                                                   "Traffic Volume" = "pvol",
-                                                                  "Proximity to Richmond" = "prich")
+                                                                  "Proximity to Richmond" = "prich"), 
                                                                 ),
                                                                 leafletOutput("powhatan_traffic"),
                                                                 
@@ -1650,10 +1651,6 @@ server <- function(input, output){
     powhatan_con
   })
   
-  output$harbour<- renderLeaflet({
-    harbour
-  })
-  
   ### CROP LAYERS ================================================
   
   output$g.cropMap <- renderLeaflet({
@@ -1795,29 +1792,20 @@ server <- function(input, output){
     psoil
   })
   
-  gooch_traffic <- reactive({
-    input$gooch_traffic
-  })
-  
   output$goochland_traffic <- renderLeaflet({
-    if(gooch_traffic() == "gvol"){
-      goochland_traffic_volume
+    if(input$gooch_traffic == "gvol"){
+      trafficVol.func("Goochland")
     }
-    if(gooch_traffic() == "grich"){
+    else if(input$gooch_traffic == "grich"){
       travelTime.func("Goochland")
     }
   })
   
-  
-  pow_traffic <- reactive({
-    input$pow_traffic
-  })
-  
   output$powhatan_traffic <- renderLeaflet({
-    if(pow_traffic() == "pvol"){
-      powhatan_traffic_volume
+    if(input$pow_traffic == "pvol"){
+      trafficVol.func("Powhatan")
     }
-    if(pow_traffic() == "prich"){
+    else if(input$pow_traffic == "prich"){
       travelTime.func("Powhatan")
     }
   })
