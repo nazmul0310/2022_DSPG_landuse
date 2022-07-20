@@ -154,8 +154,6 @@ powhatan_con <- leaflet()%>%
 
 
 # Land use
-
-
 gooch_boundary<- st_read("data/cnty_bndry/Goochland_Boundary.shp")
 gooch_boundary <- st_transform(gooch_boundary, "+proj=longlat +datum=WGS84")
 
@@ -165,29 +163,55 @@ m <- leaflet()%>%
   addPolygons(data=gooch_boundary,
               fillColor = "transparent") 
 
+
+gcrop_values <- c("Developed", 
+                  "Double cropped", 
+                  "Forages", 
+                  "Forested", 
+                  "Horticulture crops*", 
+                  "Other", 
+                  "Row crops", 
+                  "Small grains", "Tree crops*", "Water", "Wetlands")
+gcrop_values21 <- c("Developed", 
+                    "Double cropped", 
+                    "Forages", 
+                    "Forested", 
+                    "Horticulture crops*", 
+                    "Other", 
+                    "Row crops", 
+                    "Small grains", "Water", "Wetlands")
+gcrop_values <- factor(gcrop_values, levels = gcrop_values)
+gcrop_values21 <- factor(gcrop_values21, levels = gcrop_values21)
+
+gcrop_palette <- colorBin(palette = "viridis", as.numeric(gcrop_values), bins = 11)
+gcrop_colors <- gcrop_palette(unclass(gcrop_values))
+gcrop_colors[11] <- "#4D4D4D" # the color is similar to 
+gcrop_legendpalette <- colorFactor(palette = gcrop_colors,levels=gcrop_values)
+gcrop_legendpalette21 <- colorFactor(palette = gcrop_colors[-9],levels=gcrop_values21)
+
 croplayer1 <- read.csv("data/ag_analysis.csv")
 
 gcrop21 <- croplayer1 %>% 
   filter(County == "Goochland", Year==2021) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Combined`)) + 
   geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() +  
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") +     
-  scale_fill_viridis() + 
+  scale_fill_manual(values = gcrop_colors) + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type") 
 gcrop21 <-ggplotly(gcrop21, tooltip = c("text")) 
 
 gcrop12 <- croplayer1 %>% 
   filter(County == "Goochland", Year== 2012) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Combined`)) + 
   geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() + 
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") + 
-  scale_fill_viridis() + 
+  scale_fill_manual(values = gcrop_colors) + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 gcrop12 <-ggplotly(gcrop12, tooltip = c("text"))
 
@@ -233,7 +257,9 @@ soilPalette <- colorBin(palette = "viridis", as.numeric(soilClass), bins = 9)
 soilColors <- soilPalette(unclass(soilClass))
 soilColors[9] <- "#4D4D4D" # the color is similar to 
 soilLegend <- colorFactor(palette = soilColors,levels=soilClass)
+
 g.soilColors <- soilColors[-c(1,8)] #gooch doesnt have category I and VIII
+g.soilLegend <- colorFactor(palette = g.soilColors,levels=soilClass[-c(1,8)])
 
 
 soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
@@ -428,22 +454,6 @@ travelTime.func <- function(county){
   
   travelTime.plt
 }
-
-gcrop_values <- c("Developed", 
-                "Double cropped", 
-                "Forages", 
-                "Forested", 
-                "Horticulture crops", 
-                "Other", 
-                "Row crops", 
-                "Small grains", "Tree crops", "Water", "Wetlands")
-
-gcrop_values <- factor(gcrop_values, levels = gcrop_values)
-
-gcrop_palette <- colorBin(palette = "viridis", as.numeric(gcrop_values), bins = 11)
-gcrop_colors <- gcrop_palette(unclass(gcrop_values))
-gcrop_colors[11] <- "#4D4D4D" # the color is similar to 
-gcrop_legendpalette <- colorFactor(palette = gcrop_colors,levels=gcrop_values)
 
 parc.func <- function(data, range, county, cnty){
   
@@ -1643,9 +1653,17 @@ server <- function(input, output){
     
     # Adds crop layer 2021
     else {
-      my.crop.plt <- my.crop.plt %>%
-        addPolygons(data = g.cropMap21,
-                    smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE)
+      gcrop_colors <- gcrop_colors[-9]
+      for (i in 1:10){
+        my.crop.plt <- addPolygons(my.crop.plt, data = g.cropMap21%>% filter(g.cropMap21$New_Label==gcrop_values21[i]),
+                       smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i])
+      }
+      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = gcrop_legendpalette21, values = gcrop_values21,
+                                               title = "Crop Layer Land Type",
+                                               labFormat = labelFormat(),
+                                               opacity = 1,
+                                               data=g.cropMap21)
+      
     }
     
     
@@ -1706,7 +1724,7 @@ server <- function(input, output){
     for (i in 2:7){
       g.map <- addPolygons(g.map, data=g.soilData %>% filter(NirrCpCls==i), smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = soilColors[i])
     }
-      g.map <-g.map %>% addLegend("bottomright", pal = soilLegend, values = soilClass,
+      g.map <-g.map %>% addLegend("bottomright", pal = g.soilLegend, values = soilClass[-c(1,8)],
                            title = "Soil Quality Class",
                            labFormat = labelFormat(),
                            opacity = 1,
