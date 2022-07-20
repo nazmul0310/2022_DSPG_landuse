@@ -295,52 +295,6 @@ psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Va
   labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") 
 psoil <-ggplotly(psoil, tooltip = "text")
 
-
-gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp")
-gtraffic <- st_transform(gtraffic, "+proj=longlat +datum=WGS84")
-groads<- st_read("data/Traffic_Hotspot/Gooch_roads.shp")
-groads<- st_transform(groads, "+proj=longlat +datum=WGS84")
-
-
-goochland_traffic_volume <- leaflet()%>%
-  addTiles() %>%
-  setView(lng=-77.885376, lat=37.684143, zoom = 10)  %>% 
-  addPolygons(data=groads, weight=1, color = "black", fillOpacity=0)%>%
-  addPolygons(data=filter(gtraffic, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
-  addPolygons(data=filter(gtraffic, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
-  addPolygons(data=filter(gtraffic, gridcode==3), weight=0, fillOpacity = 0.5, fillColor = "orange", group = "5,000 to 10,000")%>%
-  addPolygons(data=filter(gtraffic, gridcode==4), weight=0, fillOpacity = 0.5, fillColor = 'red', group= "10,000 to 25,000")%>%
-  addPolygons(data=filter(gtraffic, gridcode==5), weight=0, fillOpacity = 0.5, fillColor ='maroon', group= "More than 25,000")%>%
-  addLayersControl(
-    overlayGroups = c("Less than 1,000", "1,000 to 5,000", "5,000 to 10,000", "10,000 to 25,000", "More than 25,000"),
-    position = "bottomleft",
-    options = layersControlOptions(collapsed = FALSE))
-
-
-ptraffic<- st_read("data/Traffic_Hotspot/Powhatan_Traffic_Heatmap.shp")
-ptraffic <- st_transform(ptraffic, "+proj=longlat +datum=WGS84")
-proads<- st_read("data/Traffic_Hotspot/Pow_roads.shp")
-proads<- st_transform(proads, "+proj=longlat +datum=WGS84")
-
-powhatan_traffic_volume <- leaflet()%>%
-  addTiles() %>%
-  setView(lng=-77.9188, lat=37.5415 , zoom=10.49) %>% 
-  addPolygons(data=proads, weight=1, color = "black", fillOpacity=0)%>%
-  addPolygons(data=filter(ptraffic, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
-  addPolygons(data=filter(ptraffic, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
-  addPolygons(data=filter(ptraffic, gridcode==3), weight=0, fillOpacity = 0.5, fillColor = "orange", group = "5,000 to 10,000")%>%
-  addPolygons(data=filter(ptraffic, gridcode==4), weight=0, fillOpacity = 0.5, fillColor = 'red', group= "10,000 to 25,000")%>%
-  addPolygons(data=filter(ptraffic, gridcode==5), weight=0, fillOpacity = 0.5, fillColor ='maroon', group= "More than 25,000")%>%
-  addLayersControl(
-    overlayGroups = c("Less than 1,000", "1,000 to 5,000", "5,000 to 10,000", "10,000 to 25,000", "More than 25,000"),
-    position = "bottomleft",
-    options = layersControlOptions(collapsed = FALSE))
-
-
-harbour<- leaflet() %>% 
-  addTiles() %>% 
-  setView(lng=-77.949, lat=37.742, zoom=9)
-
 GoochlandAllParcel <- read_sf("data/luParcelData/GoochAll.shp") %>% rename(FIN_MLUSE = LUC_FIN)
 PowhatanAllParcel <- read_sf("data/luParcelData/PowAll.shp")
 
@@ -413,6 +367,39 @@ luPlotFunction <- function(inputYear, county) {
               data=parcelData) 
   lu.plt
 }
+
+gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+groads<- st_read("data/Traffic_Hotspot/Gooch_roads.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+ptraffic<- st_read("data/Traffic_Hotspot/Powhatan_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+proads<- st_read("data/Traffic_Hotspot/Pow_roads.shp") %>%  st_transform("+proj=longlat +datum=WGS84")
+
+trafficVol.func <- function(county){
+  trafficVol.plt <- leaflet() %>%
+    addTiles()
+  
+  if(county == "Powhatan"){
+    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10) %>% addPolygons(data = po_cnty, fillOpacity = 0)
+    roadData <- proads
+    trafficData <- ptraffic
+  }
+  else{
+    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
+    roadData <- groads
+    trafficData <- gtraffic
+  }
+  
+  trafficVol.plt <- trafficVol.plt %>%
+    addPolygons(data=roadData, weight=1, color = "black", fillOpacity=0)%>%
+    addPolygons(data=filter(trafficData, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
+    addPolygons(data=filter(trafficData, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
+    addPolygons(data=filter(trafficData, gridcode==3), weight=0, fillOpacity = 0.5, fillColor = "orange", group = "5,000 to 10,000")%>%
+    addPolygons(data=filter(trafficData, gridcode==4), weight=0, fillOpacity = 0.5, fillColor = 'red', group= "10,000 to 25,000")%>%
+    addPolygons(data=filter(trafficData, gridcode==5), weight=0, fillOpacity = 0.5, fillColor ='maroon', group= "More than 25,000")%>%
+    addLegend(position = "bottomright", labels = c("Less than 1,000", "1,000 to 5,000", "5,000 to 10,000", "10,000 to 25,000", "More than 25,000"),
+              colors = c("green", "yellow", "orange", "red", "maroon"))
+  trafficVol.plt
+}
+
 
 g.cropMap12 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 g.cropMap21 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
@@ -566,6 +553,16 @@ pow_bndry <- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>%
 #transition matrix
 g.sankey <- read.csv("data/luParcelData/g_sankey.csv") %>% select(LUC_old,LUC_new) 
 p.sankey <- read.csv("data/luParcelData/p_sankey.csv") %>% select(MLUSE_old,MLUSE_new) 
+
+thm <- hc_theme(colors = c("#440154", "#443A83", "#31688E", "#21908D", "#35B779",
+                           "#8FD644", "#FDE725", "#4D4D4D"),
+                chart = list(backgroundColor = "#ffffff"),
+                title = list(style = list(color ='#000000',
+                                          fontFamily = "Arial")),
+                subtitle = list(style = list(color ='#000000',
+                                             fontFamily = "Arial")),
+                legend = list(itemStyle = list(fontFamily ='Arial',color ='black')
+                              ,itemHoverStyle = list(color ='black')))
 
 # ui --------------------------------------------------------------------------------------------------------------------
 
@@ -998,7 +995,10 @@ ui <- navbarPage(title = "DSPG 2022",
 
                                                                 leafletOutput(outputId = "luPlot.g"),
                                                                 h4(strong("Land Use Transition Matrix")),
-                                                                highchartOutput("gooch_sankey"),
+                                                                br(),
+                                                                h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
+                                                        
+                                                                highchartOutput("gooch_sankey",height = 600),
                                                                 p(tags$small("Data Source: Goochland County Administrative Data")))  ,
                                                          column(12,
                                                                 
@@ -1165,9 +1165,10 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                                 
                                                                 leafletOutput(outputId = "luPlot.p"),
-                                                                
+                                                                h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
+                                                                br(),
+                                                                highchartOutput("pow_sankey",height = 600),
                                                                 h4(strong("Land Use Transition Matrix")),
-                                                                highchartOutput("pow_sankey"),
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
                                                          
                                                          column(12, 
@@ -1254,8 +1255,6 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
                                                                 leafletOutput("p.soilMap"),
-                                                                
-                                                                #                plotlyOutput("trend1", height = "600px")
                                                                 h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("psoil", heigh = "500px"),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
@@ -1278,9 +1277,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Traffic Visualizations")),
-                                                                selectInput("pow_traffic", "Select Variable:", width = "100%", choices = c(
+                                                                selectInput(inputId = "pow_traffic", label = "Select Variable:", width = "100%", choices = c(
                                                                   "Traffic Volume" = "pvol",
-                                                                  "Proximity to Richmond" = "prich")
+                                                                  "Proximity to Richmond" = "prich"), 
                                                                 ),
                                                                 leafletOutput("powhatan_traffic"),
                                                                 
@@ -1663,10 +1662,6 @@ server <- function(input, output){
     powhatan_con
   })
   
-  output$harbour<- renderLeaflet({
-    harbour
-  })
-  
   ### CROP LAYERS ================================================
   
   output$g.cropMap <- renderLeaflet({
@@ -1808,29 +1803,20 @@ server <- function(input, output){
     psoil
   })
   
-  gooch_traffic <- reactive({
-    input$gooch_traffic
-  })
-  
   output$goochland_traffic <- renderLeaflet({
-    if(gooch_traffic() == "gvol"){
-      goochland_traffic_volume
+    if(input$gooch_traffic == "gvol"){
+      trafficVol.func("Goochland")
     }
-    if(gooch_traffic() == "grich"){
+    else if(input$gooch_traffic == "grich"){
       travelTime.func("Goochland")
     }
   })
   
-  
-  pow_traffic <- reactive({
-    input$pow_traffic
-  })
-  
   output$powhatan_traffic <- renderLeaflet({
-    if(pow_traffic() == "pvol"){
-      powhatan_traffic_volume
+    if(input$pow_traffic == "pvol"){
+      trafficVol.func("Powhatan")
     }
-    if(pow_traffic() == "prich"){
+    else if(input$pow_traffic == "prich"){
       travelTime.func("Powhatan")
     }
   })
@@ -1847,12 +1833,12 @@ server <- function(input, output){
   
   output$gooch_sankey <- renderHighchart({ 
     hchart(data_to_sankey(g.sankey), "sankey") %>%
-      hc_title(text = "Land Use Conversion in Goochland (Counts): 2018-2022") 
+      hc_add_theme(thm)
   })
   
   output$pow_sankey <- renderHighchart({ 
     hchart(data_to_sankey(p.sankey), "sankey") %>%
-      hc_title(text = "Land Use Conversion in Powhatan (Counts): 2012-2021") 
+      hc_add_theme(thm)
   })
   
   

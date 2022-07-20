@@ -164,7 +164,7 @@ map <-leaflet() %>%
             title = "Travel Times in Minutes (2021)", 
             opacity = 1) %>%
   addLayersControl(
-    baseGroups=c("Within 30", "Within 45", "Within 60"),
+    overlayGroups=c("Within 30", "Within 45", "Within 60"),
     position = "bottomleft",
     options = layersControlOptions(collapsed = FALSE)
   )
