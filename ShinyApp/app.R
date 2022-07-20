@@ -974,21 +974,30 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Use in Goochland County")),
-                                                                p("Each parcel of land in Goochland County has an assigned land use. These land uses are: Single Family Urban, Single Family Suburban, Multi-Family Residential, Commercial & Industrial, Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), Other, and Undefined. We used the state of Virginia’s land use codes to make our maps cleaner. This involved condensing some of the categories from Goochland’s system into the other category. In our data, we also had some parcels with no land use category. Those parcels make up the undefined category.
-Based on the Goochland County map on the right, Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) are the two biggest land use categories for all years. Single Family Suburban is third biggest in acreage. The map itself doesn’t change a lot but the number of parcels that change is a lot. 
-The transition matrix under the map shows the land conversion from 2018-2022 in Goochland County. Based on the matrix the three categories that are changing the most are Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), and Undefined. While the category that goes the most is Single Family Urban. This category grew by 530 parcels. Both Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) lost many parcels of land to different land uses. Most of the parcels that changed from both Agriculture/Undeveloped (20-99) and Agriculture/Undeveloped (100+ Acres) changed to Single Family Urban. 
-")
+                                                                p("Each parcel of land in Goochland County has an assigned land use. These land uses are: Single Family Urban, Single Family Suburban, 
+                                                                  Multi-Family Residential, Commercial & Industrial, Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), Other, 
+                                                                  and Undefined. We used the state of Virginia’s land use codes to make our maps cleaner. This involved condensing some of the categories 
+                                                                  from Goochland’s system into the other category. In our data, we also had some parcels with no land use category. Those parcels make up the 
+                                                                  undefined category."),
+                                                                p("Based on the Goochland County map on the right, Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) are the 
+                                                                  two biggest land use categories for all years. Single Family Suburban is third biggest in acreage. The map itself doesn’t change a lot but the
+                                                                  number of parcels that change is a lot."), 
+                                                                h4(strong("Land Use Transition Matrix")),
+                                                                p("The transition matrix under the map shows the land conversion from 2018-2022 in Goochland County. Based on the matrix the three categories that 
+                                                                are changing the most are Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), and Undefined. While the category that 
+                                                                goes the most is Single Family Urban. This category grew by 530 parcels. Both Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) 
+                                                                lost many parcels of land to different land uses. Most of the parcels that changed from both Agriculture/Undeveloped (20-99) and Agriculture/Undeveloped (100+ Acres) 
+                                                                changed to Single Family Urban.")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
                                                                 sliderInput(inputId = "luYear.g", label = "Year:", 
-                                                                            min = 2018, max = 2021, value = 2018, 
+                                                                            min = 2018, max = 2021, value = 2021, 
                                                                             sep = "", width = "150%"),
                                                                 
-                                                                h4(strong("Land Uses Over the Years")),
-                                                                
-                                                                
+
                                                                 leafletOutput(outputId = "luPlot.g"),
+                                                                h4(strong("Land Use Transition Matrix")),
                                                                 highchartOutput("gooch_sankey"),
                                                                 p(tags$small("Data Source: Goochland County Administrative Data")))  ,
                                                          column(12,
@@ -1130,15 +1139,26 @@ The transition matrix under the map shows the land conversion from 2018-2022 in 
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Use in Powhatan County")),
-                                                                p("Each parcel of land in Powhatan County has an assigned land use. These land uses are: Single Family Urban, Single Family Suburban, Multi-Family Residential, Commercial & Industrial, Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), Other, and Undefined. We used the state of Virginia’s land use codes to make our maps cleaner. This involved condensing some of the categories from Powhatan’s system into the other category. In our data, we also had some parcels with no land use category. Those parcels make up the undefined category.
-Based on the Powhatan County map on the right, Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) are the two biggest land use categories for all years. Single Family Suburban is third biggest in acreage. The map itself doesn’t change a lot but the number of parcels that change is a lot. 
-The transition matrix under the map shows the land conversion from 2012-2022 in Powhatan County. Based on the matrix the three categories that are changing the most are Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), and Single-Family Suburban. While the category that goes the most is Single Family Suburban. This category grew by 584 parcels. Both Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) lost many parcels of land to different land uses. Most of the parcels that changed from both Agriculture/Undeveloped (20-99) and Agriculture/Undeveloped (100+ Acres) changed to Single Family Suburban. 
-")
+                                                                p("Each parcel of land in Powhatan County has an assigned land use. These land uses are: Single Family Urban, 
+                                                                Single Family Suburban, Multi-Family Residential, Commercial & Industrial, Agriculture/Undeveloped (20-99 Acres), 
+                                                                Agriculture/Undeveloped (100+ Acres), Other, and Undefined. We used the state of Virginia’s land use codes to make 
+                                                                our maps cleaner. This involved condensing some of the categories from Powhatan’s system into the other category. In 
+                                                                our data, we also had some parcels with no land use category. Those parcels make up the undefined category."),
+                                                                p("Based on the Powhatan County map on the right, Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) 
+                                                                are the two biggest land use categories for all years. Single Family Suburban is third biggest in acreage. The map itself 
+                                                                doesn’t change a lot but the number of parcels that change is a lot."),
+                                                                h4(strong("Land Use Transition Matrix")),
+                                                                p("The transition matrix under the map shows the land conversion from 2012-2022 in Powhatan County. Based on the matrix the three 
+                                                                categories that are changing the most are Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), and 
+                                                                Single-Family Suburban. While the category that goes the most is Single Family Suburban. This category grew by 584 parcels. 
+                                                                Both Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) lost many parcels of land to different land 
+                                                                uses. Most of the parcels that changed from both Agriculture/Undeveloped (20-99) and Agriculture/Undeveloped (100+ Acres) changed 
+                                                                to Single Family Suburban.")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
                                                                 sliderInput(inputId = "luYear.p", label = "Year:", 
-                                                                            min = 2015, max = 2021, value = 2015, 
+                                                                            min = 2015, max = 2021, value = 2021, 
                                                                             sep = "", width = "150%"),
                                                                 
                                                                 h4(strong("Land Uses Over the Years")),
