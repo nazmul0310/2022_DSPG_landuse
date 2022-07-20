@@ -221,35 +221,42 @@ g.cropMap21 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2021.shp") %>% st_transform
 p.cropMap12 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 p.cropMap21 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
+g.soilData <- read_sf("data/Soil_Quality/Goochland/Goochland_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+p.soilData <- read_sf("data/Soil_Quality/Powhatan/Powhatan_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+
+soilClass <- c("Capability Class-I","Capability Class-II","Capability Class-III","Capability Class-IV",
+               "Capability Class-V","Capability Class-VI","Capability Class-VII","Capability Class-VIII",
+               "NODATA")
+soilClass <- factor(soilClass, levels = soilClass)
+
+soilPalette <- colorBin(palette = "viridis", as.numeric(soilClass), bins = 9)
+soilColors <- soilPalette(unclass(soilClass))
+soilColors[9] <- "#4D4D4D" # the color is similar to 
+soilLegend <- colorFactor(palette = soilColors,levels=soilClass)
+g.soilColors <- soilColors[-c(1,8)] #gooch doesnt have category I and VIII
+
+
 soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
 
-gsoil <- ggplot(soil_quality, aes(x = `G_Value`, y = `G_Area_acre`, fill = `G_Area_acre`)) +
+gsoil <- ggplot(soil_quality, aes(x = `G_Value`, y = `G_Area_acre`, fill = `G_Value`)) +
   geom_bar(stat = "identity",hoverinfo = "text", aes(text = paste0(`G_Value`, "\n", "Total Acres: ", round(`G_Area_acre`, 0))))+
   coord_flip() +
   theme(legend.position = "none") +
   scale_x_discrete(limits = rev) +
-  scale_fill_viridis() + 
-  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification")
+  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification")+
+  scale_fill_manual(values=soilColors)
 gsoil <-ggplotly(gsoil, tooltip = "text")
 
-psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Area_acre`)) +
+psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Value`)) +
   geom_bar(stat = "identity",hoverinfo ="text", aes(text = paste0(`P_Value`, "\n", "Total Acres: ", round(`P_Area_acre`, 0))))+
   geom_errorbarh(aes(xmax=as.numeric(`P_Value`)+0.45,xmin=as.numeric(`P_Value`)-0.45,height=0),position=position_dodge(width=0.9)) +
   coord_flip() +
   theme(legend.position = "none") +
   scale_x_discrete(limits = rev) +
-  scale_fill_viridis() +
+  scale_fill_manual(values=soilColors)+
   labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") 
 psoil <-ggplotly(psoil, tooltip = "text")
 
-g.soilData <- read_sf("data/Soil_Quality/Goochland/Goochland_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-p.soilData <- read_sf("data/Soil_Quality/Powhatan/Powhatan_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-
-soilClass <- c(1:8)
-soilPalette <- colorBin(palette = "viridis", soilClass, bins = 8)
-soilColors <- soilPalette(soilClass)
-soilColors[8] <- "#4D4D4D" # the color is similar to 
-soilLegend <- colorFactor(palette = soilColors,levels=soilClass)
 
 gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp")
 gtraffic <- st_transform(gtraffic, "+proj=longlat +datum=WGS84")
@@ -1087,11 +1094,7 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
-<<<<<<< HEAD
-                                                                
-=======
                                                                 h4(strong("Crop Layer Graphs")),
->>>>>>> 7eef3f45d337e6988d66a1904c26c2fa9f1d0342
                                                                 radioButtons(inputId = "p.cropYear", label = "Select Year: ", 
                                                                              choices = c("2012", "2021"), 
                                                                              selected = "2012"),
