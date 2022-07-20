@@ -249,11 +249,7 @@ pcrop12 <- croplayer1 %>%
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 pcrop12 <- ggplotly(pcrop12, tooltip = c("text"))
 
-g.cropMap12 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-g.cropMap21 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
-p.cropMap12 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-p.cropMap21 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 g.soilData <- read_sf("data/Soil_Quality/Goochland/Goochland_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 p.soilData <- read_sf("data/Soil_Quality/Powhatan/Powhatan_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
@@ -411,6 +407,12 @@ luPlotFunction <- function(inputYear, county) {
               data=parcelData) 
   lu.plt
 }
+
+g.cropMap12 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+g.cropMap21 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+
+p.cropMap12 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+p.cropMap21 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 pow.travelTimes <- st_read("data/travelTimes/Powhatan_Travel_Time/Powhatan_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 gooch.travelTimes <- st_read("data/travelTimes/Goochland_Travel_Time/Goochland_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
@@ -1167,7 +1169,6 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
-
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 radioButtons(inputId = "p.cropYear", label = "Select Year: ", 
                                                                              choices = c("2012", "2021"), 
@@ -1648,6 +1649,7 @@ server <- function(input, output){
       addPolygons(data = gl_cnty, fillColor = "transparent") %>% 
       setView(lng=-77.885376, lat=37.684143, zoom = 10)
     
+
     
     if(input$g.cropYear == 2012){
         for (i in 1:11){
@@ -1673,7 +1675,6 @@ server <- function(input, output){
                                                labFormat = labelFormat(),
                                                opacity = 1,
                                                data=g.cropMap21)
-      
     }
     
     
