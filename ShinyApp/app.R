@@ -558,10 +558,10 @@ thm <- hc_theme(colors = c("#440154", "#443A83", "#31688E", "#21908D", "#35B779"
                            "#8FD644", "#FDE725", "#4D4D4D"),
                 chart = list(backgroundColor = "#ffffff"),
                 title = list(style = list(color ='#000000',
-                                          fontFamily = "Arial")),
+                                          fontFamily = "Lumen")),
                 subtitle = list(style = list(color ='#000000',
-                                             fontFamily = "Arial")),
-                legend = list(itemStyle = list(fontFamily ='Arial',color ='black')
+                                             fontFamily = "Lumen")),
+                legend = list(itemStyle = list(fontFamily ='Lumen',color ='black')
                               ,itemHoverStyle = list(color ='black')))
 
 # ui --------------------------------------------------------------------------------------------------------------------
@@ -986,14 +986,10 @@ The transition matrix under the map shows the land conversion from 2018-2022 in 
                                                                 
                                                                 
                                                                 leafletOutput(outputId = "luPlot.g"),
-<<<<<<< HEAD
                                                                 br(),
                                                                 h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
                                                         
                                                                 highchartOutput("gooch_sankey",height = 600),
-=======
-                                                                highchartOutput("gooch_sankey", height = "150%"),
->>>>>>> cd020d98b3b9a93bb2901826315b35d0cf0666fc
                                                                 p(tags$small("Data Source: Goochland County Administrative Data")))  ,
                                                          column(12,
                                                                 
@@ -1150,14 +1146,8 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                                 
                                                                 leafletOutput(outputId = "luPlot.p"),
                                                                 
-<<<<<<< HEAD
                                                                 h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
-                                                                br(),
                                                                 highchartOutput("pow_sankey",height = 600),
-=======
-                                                                h4(strong("Land Use Transition Matrix")),
-                                                                highchartOutput("pow_sankey", width = "150%"),
->>>>>>> cd020d98b3b9a93bb2901826315b35d0cf0666fc
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
                                                          
                                                          column(12, 
