@@ -129,17 +129,22 @@ edu.func <- function(inputYear, inputCounty) {
 
 gcon<- st_read("data/Conservation/Gooch_Preservation.shp")
 gcon <- st_transform(gcon, "+proj=longlat +datum=WGS84")
+gooch_boundary2<- st_read("data/cnty_bndry/Goochland_Boundary.shp")
+gooch_boundary2<- st_transform(gooch_boundary2, "+proj=longlat +datum=WGS84")
 
 goochland_con <- leaflet()%>%
   addTiles() %>%
-  setView(lng=-78, lat=37.7, zoom=10.48) %>% 
-  addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="purple")
+  setView(lng=-78, lat=37.75, zoom=10.48) %>% 
+  addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="purple")%>%
+  addPolygons(data=gooch_boundary2, weight=1, color="black", fillOpacity=0)
 
     # Powhatan
 
 pcon<- st_read("data/Conservation/Powhatan_Natural_Conservation.shp")
 pcon <- st_transform(pcon, "+proj=longlat +datum=WGS84")
 pcon$col=sample(c('red','yellow','green'),nrow(pcon),1)
+pow_boundary <- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>%
+  st_transform(crs = st_crs("EPSG:4326"))
 
 powhatan_con <- leaflet()%>%
   addTiles() %>%
@@ -147,6 +152,7 @@ powhatan_con <- leaflet()%>%
   addPolygons(data=pcon[1,], weight=0, fillOpacity = 0.5, fillColor = "orange", group = "Priority Conservation Areas")%>%
   addPolygons(data=pcon[2,], weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "Protected Lands")%>%
   addPolygons(data=pcon[3,], weight=0, fillOpacity = 0.5, fillColor = "green", group = "AFD")%>%
+  addPolygons(data=pow_boundary, weight=1, color="black", fillOpacity=0)%>%
   addLayersControl(
     overlayGroups = c("Priority Conservation Areas", "Protected Lands", "AFD"),
     position = "bottomleft",
@@ -154,8 +160,6 @@ powhatan_con <- leaflet()%>%
 
 
 # Land use
-
-
 gooch_boundary<- st_read("data/cnty_bndry/Goochland_Boundary.shp")
 gooch_boundary <- st_transform(gooch_boundary, "+proj=longlat +datum=WGS84")
 
@@ -165,53 +169,89 @@ m <- leaflet()%>%
   addPolygons(data=gooch_boundary,
               fillColor = "transparent") 
 
+
+gcrop_values <- c("Developed", 
+                  "Double cropped", 
+                  "Forages", 
+                  "Forested", 
+                  "Horticulture crops*", 
+                  "Other", 
+                  "Row crops", 
+                  "Small grains", "Tree crops*", "Water", "Wetlands")
+pcrop_values <- c("Developed", 
+                  "Double cropped", 
+                  "Forages", 
+                  "Forested", 
+                  "Horticulture crops", 
+                  "Other", 
+                  "Row crops", 
+                  "Small grains", "Tree crops", "Water", "Wetlands")
+gcrop_values21 <- c("Developed", 
+                    "Double cropped", 
+                    "Forages", 
+                    "Forested", 
+                    "Horticulture crops*", 
+                    "Other", 
+                    "Row crops", 
+                    "Small grains", "Water", "Wetlands")
+gcrop_values <- factor(gcrop_values, levels = gcrop_values)
+gcrop_values21 <- factor(gcrop_values21, levels = gcrop_values21)
+
+gcrop_palette <- colorBin(palette = "viridis", as.numeric(gcrop_values), bins = 11)
+gcrop_colors <- gcrop_palette(unclass(gcrop_values))
+gcrop_colors[11] <- "#4D4D4D" # the color is similar to 
+gcrop_legendpalette <- colorFactor(palette = gcrop_colors,levels=gcrop_values)
+pcrop_legendpalette <- colorFactor(palette = gcrop_colors,levels=pcrop_values)
+
+gcrop_legendpalette21 <- colorFactor(palette = gcrop_colors[-9],levels=gcrop_values21)
+
 croplayer1 <- read.csv("data/ag_analysis.csv")
 
 gcrop21 <- croplayer1 %>% 
   filter(County == "Goochland", Year==2021) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Combined`)) + 
   geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() +  
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") +     
-  scale_fill_viridis() + 
+  scale_fill_manual(values = gcrop_colors) + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type") 
 gcrop21 <-ggplotly(gcrop21, tooltip = c("text")) 
 
 gcrop12 <- croplayer1 %>% 
   filter(County == "Goochland", Year== 2012) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Combined`)) + 
   geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() + 
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") + 
-  scale_fill_viridis() + 
+  scale_fill_manual(values = gcrop_colors) + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 gcrop12 <-ggplotly(gcrop12, tooltip = c("text"))
 
 pcrop21 <- croplayer1 %>% 
   filter(County == "Powhatan", Year==2021) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Combined`)) + 
   geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() + 
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") + 
-  scale_fill_viridis() + 
+  scale_fill_manual(values = gcrop_colors)+ 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 pcrop21 <-ggplotly(pcrop21, tooltip = c("text"))
 
 pcrop12 <- croplayer1 %>% 
   filter(County == "Powhatan", Year== 2012) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Area.Acre`)) + 
+  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Combined`)) + 
   geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() + 
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") + 
-  scale_fill_viridis() + 
+  scale_fill_manual(values = gcrop_colors) + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 pcrop12 <- ggplotly(pcrop12, tooltip = c("text"))
 
@@ -229,7 +269,9 @@ soilPalette <- colorBin(palette = "viridis", as.numeric(soilClass), bins = 9)
 soilColors <- soilPalette(unclass(soilClass))
 soilColors[9] <- "#4D4D4D" # the color is similar to 
 soilLegend <- colorFactor(palette = soilColors,levels=soilClass)
+
 g.soilColors <- soilColors[-c(1,8)] #gooch doesnt have category I and VIII
+g.soilLegend <- colorFactor(palette = g.soilColors,levels=soilClass[-c(1,8)])
 
 
 soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
@@ -418,55 +460,6 @@ travelTime.func <- function(county){
   travelTime.plt
 }
 
-gcrop_values <- c("Developed", 
-                "Double cropped", 
-                "Forages", 
-                "Forested", 
-                "Horticulture crops", 
-                "Wetlands", 
-                "Row crops", 
-                "Small grains", "Water", "Tree crops", "Other")
-
-gcrop_values <- factor(gcrop_values, levels = gcrop_values)
-
-gcrop_palette <- colorBin(palette = "viridis", as.numeric(gcrop_values), bins = 11)
-gcrop_colors <- gcrop_palette(unclass(gcrop_values))
-gcrop_colors[11] <- "#4D4D4D" # makes it gray 
-gcrop_legendpalette <- colorFactor(palette = gcrop_colors,levels=gcrop_values)
-
-
-gcrop21_values <- c("Developed", 
-                  "Double cropped", 
-                  "Forages", 
-                  "Forested", 
-                  "Horticulture crops", 
-                  "Wetlands", 
-                  "Row crops", 
-                  "Small grains", "Water", "Other")
-
-gcrop21_values <- factor(gcrop21_values, levels = gcrop21_values)
-
-gcrop21_colors <- gcrop_colors[-10]
-gcrop21_colors[10] <- "#4D4D4D"
-gcrop21_legendpalette <- colorFactor(palette=gcrop21_colors,levels=gcrop21_values)
-
-
-pcrop_values <- c("Developed", 
-                  "Double cropped", 
-                  "Forages", 
-                  "Forested", 
-                  "Horticulture crops", 
-                  "Wetlands", 
-                  "Row crops", 
-                  "Small grains", "Water", "Tree crops", "Other")
-
-pcrop_values <- factor(pcrop_values, levels = pcrop_values)
-
-pcrop_palette <- colorBin(palette = "viridis", as.numeric(pcrop_values), bins = 11)
-pcrop_colors <- pcrop_palette(unclass(pcrop_values))
-pcrop_colors[11] <- "#4D4D4D" # makes it gray 
-pcrop_legendpalette <- colorFactor(palette = pcrop_colors,levels=pcrop_values)
-
 parc.func <- function(data, range, county, cnty){
   
   # Declares initial leaflet, nothing added to it.
@@ -584,16 +577,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                    align = "justify",
                                    column(4,
                                           h2(strong("Project Background")),
-                                          p(strong("The setting:"), "Powhatan and Goochland County are two counties on the urban fringe outside of Richmond, Virginia. Both counties are known for their 
-                                            rich agricultural histories. Communities on the urban fringe are located between both rural and urban areas. Although Powhatan County has been growing and 
-                                            devolving faster than the average rate, they like Goochland County would like to keep their agricultural roots."),
+                                          p(strong("The setting:"), "The setting: Goochland and Powhatan County are two counties on the urban fringe outside of Richmond, Virginia. Communities on the urban fringe are located between both rural and urban areas. Both counties are known for 
+                                            their rich agricultural histories as well as their proximity to the state capital. Although Powhatan County has been growing and evolving faster than the average rate, they like Goochland County would like to keep their agricultural roots."),
                                           p(),
-                                          p(strong("The problem:"), "Both Powhatan and Goochland County are approximately 40 minutes away from Richmond. Being this close to a large city  
-                                             has its advantages, but also its drawbacks. One of the biggest drawbacks is land conversion. Land conversion is when land shifts its use from one 
-                                            use to another. In the case of Powhatan and Goochland, it means land is changing from agricultural land to residential. This really could hurt the economies 
-                                            of the mostly agricultural counties. Both counties have enacted policies to help combat land conversion: Powhatan with their land tax deferral and Goochland with 
-                                            their 85:15 comprehensive plan. Both counties keep administrative data, but do not have the resources or the knowledge to analyze the data. This 
-                                            is a key step in understanding the factors that cause land conversation or the probability that a parcel of land will convert. "),
+                                          p(strong("The problem:"), "Both Goochland and Powhatan County are approximately 40 minutes away from Richmond. Being this close to a large city has its advantages, but also its drawbacks. One of the biggest drawbacks is land conversion. 
+                                            Land conversion is when land shifts its use from one to another. In the case of the two counties, it means land is changing from agricultural land to residential. This has the possibility to hurt the economies of the largely rural counties. 
+                                            Both counties have enacted policies to help combat land conversion: Powhatan with their land tax deferral program and Goochland with their 85:15 rural land commitment. Both counties keep administrative data, but do not have the resources or 
+                                            the knowledge to analyze it. This is a key step in understanding the factors that cause land conversation as well as the probability that a parcel of land will parcelize further."),
                                           p(),
                                           p(strong("The project:"), "This Virginia Tech", a(href = "https://aaec.vt.edu/index.html", "Department of Argicultural and Applied Economics", target = "_blank"),
                                             "Data Science for Public Good (DSPG) project uses data science to analyze land conversion in Goochland and Powhatan counties in order to provide stakeholders with 
@@ -601,27 +591,30 @@ ui <- navbarPage(title = "DSPG 2022",
                                    ),
                                    column(4,
                                           h2(strong("Our Work")),
-                                          p("Our research team worked with Powhatan County and Goochland County to help find a way to minimize land conversion. Both counties want to stay mostly agricultural even going as far to introduce 
-                                            policies including Powhatan’s land use tax deferral program and Goochland’s eighty-five- fifteen comprehensive plan. Our research team studied background information and past reports to get an 
-                                            understanding and feel for the project and the data we would be analyzing. The team also meet with their stakeholders on a regular basic to make sure the project was finished on schedule and 
-                                            that it pleased the stakeholders.  In addition to the meetings with the stakeholders, there was also contact by email to answer any questions pertaining to the project. "),
+                                          p('Our team worked with Goochland County and Powhatan County to help analyze land conversion and agriculture loss by using existing administrative data. Both counties want to retain their rural/agricultural 
+                                            character and have introduced policies to encourage the conservation of land and discourage development that may require further land conversion. Our team researched background information on both counties 
+                                            as well as looked into data from sources including the counties, the US Census, and the Virginia Department of Transportation. All of the data sources that have been referenced in our analysis can be found 
+                                            under the "Data Sources" tab. The team also met with the stakeholders on a regular basis to make sure that the project was in line with what they were expecting and to allow county administrators and 
+                                            AGRICULTURE ASSOCIATION members to look over our findings and make suggestions. In addition to the meetings, we also maintained contact by email to ask questions pertaining to the project and the data provided.'),
                                           p(),
-                                          p("We collected all of our data from the ACS and county level administrative data to create our graphs, maps, and tables. These visualizations allowed us to analyze and present our findings timely and accurately. We:"),
-                                          tags$li("Provided census tract and county-level maps of Goochland and Powhatan County residents'", strong("sociodemographic and socioeconomic characteristics,"), " highlighting underprivileged areas."),
-                                          tags$li("Used crop layer data to create a map of", strong("all crops grown (and acreage)"), "in the counties. "),
-                                          tags$li("Mapped locations of", strong("land parcels"), "at census block group level to highlight the surface water sources and the potential contaminations sources in the county.  "),
-                                          tags$li("Mapped traffic data to show ", strong("commute times"), "to Richmond, Virginia from both counties."),
-                                          tags$li("Created a", strong("Multinomial Logistic regression model"), "to show probability of land conversion. "), 
+                                          p("We collected data from several sources to create our graphs, maps, and tables. These visualizations allowed us to analyze and present our findings timely and accurately. More specifically, we:"),
+                                          tags$li("Provided census tract- and county-level graphs of Goochland and Powhatan County residents'", strong("sociodemographic and socioeconomic characteristics,"), " highlighting underprivileged areas."),
+                                          tags$li("Used USDA data to create a map of", strong("crops and land types"), "in the counties. "),
+                                          tags$li("Used USDA data to create a map of", strong("soil quality"), "throughout the counties."),
+                                          tags$li("Mapped traffic data to show ", strong("traffic volume and commute times"), "to Richmond, Virginia."),
+                                          tags$li("Mapped the locations of", strong("land parcels"), "to provide insight on the frequency of parcellation and identify any patterns."),
+                                          tags$li("Created a", strong("Multinomial Logistic regression model"), "to estimate the probability of land conversion. "), 
                                           p(),
                                           p("This dashboard compiles our findings and allows extension professionals, stakeholders, and other users to explore the information interactively."),
                                    ),
                                    column(4,
                                           h2(strong("Dashboard Aims")),
                                           p("Our dashboard is aimed at:"),
-                                          p(strong("Powhatan and Goochland county’s government."), "This dashboard will show them the probability of a land parcel converting and the factors 
-                                            that make them convert. These factors will help make more policies to combat land conversion. "),
-                                          p(strong("Researchers working on land use conversion."), "Land conversion is a problem all over the country not just Powhatan and Goochland counties. 
-                                            Those could use our dashboard as an idea on how to show their findings and what data to use to calculate the probability of land use conversion.")
+                                          p(strong("Powhatan and Goochland County governments."), "Our analyses will provide further insight to the counties and allow them to better understand if and how land conversion is occuring. 
+                                            Our statistical analysis looks at and explains the relationship between land conversion and several factors including traffic, ..., and ... We hope that our findings will inform decision-making
+                                            regarding land conversion and conservation within the counties. "),
+                                          p(strong("Researchers working on land use conversion."), "Land conversion is a problem all over the country, not just Goochland and Powhatan counties. Our dashboard can act as an example 
+                                            or template to those researching the topic as well as a starting off point for those looking specifically at Goochland and Powhatan.")
                                    )
                           ),
                           fluidRow(align = "center",
@@ -1016,7 +1009,7 @@ The transition matrix under the map shows the land conversion from 2018-2022 in 
                                                                 h4(strong("Crop Layer Map")),
                                                                 radioButtons(inputId = "g.cropYear", label = "Select Year: ", 
                                                                              choices = c("2012", "2021"), 
-                                                                             selected = "2012"),
+                                                                             selected = "2021"),
                            
                                                                 leafletOutput("g.cropMap"),
                                                                 br(),
@@ -1098,6 +1091,7 @@ The transition matrix under the map shows the land conversion from 2018-2022 in 
                                                                   "Proximity to Richmond" = "grich")
                                                                 ),
                                                                 leafletOutput("goochland_traffic"),
+                                                                p(tags$small("Source: VDOT")),
                                                                 
                                                          ),
                                                          column(12, 
@@ -1169,11 +1163,11 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
-                                                                h4(strong("Crop Layer Graphs")),
                                                                 radioButtons(inputId = "p.cropYear", label = "Select Year: ", 
                                                                              choices = c("2012", "2021"), 
-                                                                             selected = "2012"),
-                                                                leafletOutput("p.cropMap"),                                                                h4(strong("Crop Layer Graphs")),
+                                                                             selected = "2021"),
+                                                                leafletOutput("p.cropMap"),                                                                
+                                                                h4(strong("Crop Layer Graphs")),
                                                                 
                                                           
                                                                 selectInput("pcrop", "Select Variable:", width = "100%", choices = c(
@@ -1659,11 +1653,12 @@ server <- function(input, output){
     
     # Adds crop layer 2021
     else {
+      gcrop_colors <- gcrop_colors[-9]
       for (i in 1:10){
-        my.crop.plt <- addPolygons(my.crop.plt,data=g.cropMap21 %>% filter(g.cropMap21$New_Label==gcrop_values[i]), 
-                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop21_colors[i])
+        my.crop.plt <- addPolygons(my.crop.plt, data = g.cropMap21%>% filter(g.cropMap21$New_Label==gcrop_values21[i]),
+                       smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i])
       }
-      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = gcrop21_legendpalette, values = gcrop21_values,
+      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = gcrop_legendpalette21, values = gcrop_values21,
                                                title = "Crop Layer Land Type",
                                                labFormat = labelFormat(),
                                                opacity = 1,
@@ -1683,19 +1678,19 @@ server <- function(input, output){
     if(input$p.cropYear == 2012){
       for (i in 1:11){
         my.crop.plt <- addPolygons(my.crop.plt,data=p.cropMap12 %>% filter(p.cropMap12$New.Label==pcrop_values[i]), 
-                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = pcrop_colors[i])
+                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i]) #color keeps the same with Gooch
       }
       my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = pcrop_legendpalette, values = pcrop_values,
                                                title = "Crop Layer Land Type",
                                                labFormat = labelFormat(),
                                                opacity = 1,
-                                               data=p.cropMap12) 
+                                               data=p.cropMap12)
     }
     # Adds crop layer 2021
     else {
       for (i in 1:11){
         my.crop.plt <- addPolygons(my.crop.plt,data=p.cropMap21 %>% filter(p.cropMap21$Comb_Class==pcrop_values[i]), 
-                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = pcrop_colors[i])
+                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i]) #color keeps the same with Gooch
       }
       my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = pcrop_legendpalette, values = pcrop_values,
                                                title = "Crop Layer Land Type",
@@ -1740,7 +1735,7 @@ server <- function(input, output){
     for (i in 2:7){
       g.map <- addPolygons(g.map, data=g.soilData %>% filter(NirrCpCls==i), smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = soilColors[i])
     }
-      g.map <-g.map %>% addLegend("bottomright", pal = soilLegend, values = soilClass,
+      g.map <-g.map %>% addLegend("bottomright", pal = g.soilLegend, values = soilClass[-c(1,8)],
                            title = "Soil Quality Class",
                            labFormat = labelFormat(),
                            opacity = 1,
