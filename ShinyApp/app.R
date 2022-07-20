@@ -1734,6 +1734,9 @@ server <- function(input, output){
     psoil
   })
   
+
+  
+      ### TRAFFIC ======================================
   gooch_traffic <- reactive({
     input$gooch_traffic
   })
