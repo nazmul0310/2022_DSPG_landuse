@@ -1087,11 +1087,9 @@ The transition matrix under the map shows the land conversion from 2012-2022 in 
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
-<<<<<<< HEAD
-                                                                
-=======
+
+                                                            
                                                                 h4(strong("Crop Layer Graphs")),
->>>>>>> 7eef3f45d337e6988d66a1904c26c2fa9f1d0342
                                                                 radioButtons(inputId = "p.cropYear", label = "Select Year: ", 
                                                                              choices = c("2012", "2021"), 
                                                                              selected = "2012"),
