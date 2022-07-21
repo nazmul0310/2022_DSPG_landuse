@@ -121,22 +121,18 @@ edu.func <- function(inputYear, inputCounty) {
 
 gcon<- st_read("data/Conservation/Gooch_Preservation.shp")
 gcon <- st_transform(gcon, "+proj=longlat +datum=WGS84")
-gooch_boundary2<- st_read("data/cnty_bndry/Goochland_Boundary.shp")
-gooch_boundary2<- st_transform(gooch_boundary2, "+proj=longlat +datum=WGS84")
 
 goochland_con <- leaflet()%>%
   addTiles() %>%
   setView(lng=-78, lat=37.75, zoom=10.48) %>% 
   addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="purple")%>%
-  addPolygons(data=gooch_boundary2, weight=1, color="black", fillOpacity=0)
+  addPolygons(data=gl_cnty, weight=1, color="black", fillOpacity=0)
 
     # Powhatan
 
 pcon<- st_read("data/Conservation/Powhatan_Natural_Conservation.shp")
 pcon <- st_transform(pcon, "+proj=longlat +datum=WGS84")
 pcon$col=sample(c('red','yellow','green'),nrow(pcon),1)
-pow_boundary <- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>%
-  st_transform(crs = st_crs("EPSG:4326"))
 
 powhatan_con <- leaflet()%>%
   addTiles() %>%
@@ -144,7 +140,7 @@ powhatan_con <- leaflet()%>%
   addPolygons(data=pcon[1,], weight=0, fillOpacity = 0.5, fillColor = "orange", group = "Priority Conservation Areas")%>%
   addPolygons(data=pcon[2,], weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "Protected Lands")%>%
   addPolygons(data=pcon[3,], weight=0, fillOpacity = 0.5, fillColor = "green", group = "AFD")%>%
-  addPolygons(data=pow_boundary, weight=1, color="black", fillOpacity=0)%>%
+  addPolygons(data=po_cnty, weight=1, color="black", fillOpacity=0)%>%
   addLayersControl(
     overlayGroups = c("Priority Conservation Areas", "Protected Lands", "AFD"),
     position = "bottomleft",
@@ -532,15 +528,11 @@ harbour<- leaflet() %>%
 gooch_parcellation <- st_read("data/parcellationData/Gooch_Parcellation_LT.shp") %>%
   st_transform(crs = st_crs("EPSG:4326"))
 gooch_parcellation$year <- substr(gooch_parcellation$UNIQID_1, 1, 4)
-gooch_bndry <- st_read("data/cnty_bndry/Goochland_Boundary.shp" )%>%
-  st_transform(crs = st_crs("EPSG:4326"))
 
 # pow
 pow_parcellation <- read_sf("data/parcellationData/Powhatan_Parcellation_LT.shp") %>%
   st_transform(crs = st_crs("EPSG:4326"))
 pow_parcellation$year <- substr(pow_parcellation$UNIQ_ID_12, 1, 4)
-pow_bndry <- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>%
-  st_transform(crs = st_crs("EPSG:4326"))
 
 
 #transition matrix
@@ -1761,6 +1753,7 @@ server <- function(input, output){
   output$g.soilMap <- renderLeaflet({
     g.map <- leaflet() %>% 
       addTiles() %>% 
+      addProviderTiles(providers$CartoDB.Positron) %>%
       setView(lng=-78, lat=37.7, zoom=10.48) 
     
     for (i in 2:7){
@@ -1777,6 +1770,7 @@ server <- function(input, output){
   output$p.soilMap <- renderLeaflet({
     p.map <- leaflet() %>% 
       addTiles() %>% 
+      addProviderTiles(providers$CartoDB.Positron) %>%
       setView(lng=-77.9188, lat=37.5415 , zoom=10) 
     
     for (i in 1:8){
@@ -1829,7 +1823,7 @@ server <- function(input, output){
   })
   
   output$gooch_sankey <- renderHighchart({ 
-    hchart(data_to_sankey(g.sankey), "sankey") %>%
+    hchart(data_to_sankey(g.sankey), "sankey", ) %>%
       hc_add_theme(thm)
   })
   
@@ -1887,12 +1881,12 @@ server <- function(input, output){
   
   output$g.parcellationPlot <- renderLeaflet({
     yearRange <- abs(input$g.parcellationRange[1]:input$g.parcellationRange[2])
-    parc.func(gooch_parcellation, yearRange, "Goochland", gooch_bndry)
+    parc.func(gooch_parcellation, yearRange, "Goochland", gl_cnty)
   })
   
   output$p.parcellationPlot <- renderLeaflet({
     yearRange <- abs(input$p.parcellationRange[1]:input$p.parcellationRange[2])
-    parc.func(pow_parcellation, yearRange, "Powhatan", pow_bndry)
+    parc.func(pow_parcellation, yearRange, "Powhatan", po_cnty)
     
   })
   
