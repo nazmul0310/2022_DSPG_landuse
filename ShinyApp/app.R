@@ -24,7 +24,6 @@ library(dplyr)
 library(leaflet)
 library(tidycensus)
 library(tidyverse)
-library(stringr)
 library(viridis)
 library(readxl)
 library(RColorBrewer)
@@ -36,7 +35,7 @@ library(htmlwidgets) #for transition matrix
 options(scipen=999)
 options(shiny.maxRequestSize = 100*1024^2)
 
-# data --------------------------------------------------------------------------------------------------------------------
+# DATA --------------------------------------------------------------------------------------------------------------------
       # soc
 popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny ap
 industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
@@ -47,14 +46,7 @@ gl_cnty<- st_read("data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+p
 po_cnty<- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 
-
-
-
-
-
-
-
-# Sociodemographic
+## SOCIODEMOGRAPHICS =================================================
 
 age.func <- function(inputYear, inputCounty) {
   
@@ -123,7 +115,7 @@ edu.func <- function(inputYear, inputCounty) {
 }
 
 
-# Policy
+## POLICY =================================================
 
     # Goochland
 
@@ -159,14 +151,12 @@ powhatan_con <- leaflet()%>%
     options = layersControlOptions(collapsed = FALSE))
 
 
-# Land use
-gooch_boundary<- st_read("data/cnty_bndry/Goochland_Boundary.shp")
-gooch_boundary <- st_transform(gooch_boundary, "+proj=longlat +datum=WGS84")
+  ## LAND USE  =================================================
 
 m <- leaflet()%>%
   addTiles() %>%
   setView(lng=-77.949, lat=37.742, zoom=10.48) %>% 
-  addPolygons(data=gooch_boundary,
+  addPolygons(data=gl_cnty,
               fillColor = "transparent") 
 
 
@@ -368,6 +358,7 @@ luPlotFunction <- function(inputYear, county) {
   lu.plt
 }
 
+## TRAFFIC ===============================================
 gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 groads<- st_read("data/Traffic_Hotspot/Gooch_roads.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 ptraffic<- st_read("data/Traffic_Hotspot/Powhatan_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
@@ -460,6 +451,8 @@ travelTime.func <- function(county){
   travelTime.plt
 }
 
+
+## PARCELLATION ============================================
 parc.func <- function(data, range, county, cnty){
   
   # Declares initial leaflet, nothing added to it.
@@ -994,10 +987,6 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
 
                                                                 leafletOutput(outputId = "luPlot.g"),
-<<<<<<< HEAD
-                                                                h4(strong("Land Use Transition Matrix")),
-=======
->>>>>>> 7b9289b0eb3c6d3999609452d7ea4d2e70457da4
                                                                 br(),
                                                                 h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
                                                         
@@ -1107,7 +1096,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Traffic in Goochland County")),
-                                                                p("Insert text")
+                                                                p("Traffic information is a very good indicator as to who lives in an area and how it is used, more 
+Traffic data is another very good variable to look at when it comes to land-use, we wanted to look into these metrics to see if there were correlations to where more residential housing was to how accessible the area was from big roads. We also wanted to track the distance away from the City of Richmond to see if more residential housing was built closer, or further away from a larger metropolitan area. "),
+                                                                p("Goochland has one interstate, and two state highway routes, that we can see affect travel times and volume throughout the county. Interstate 64 leads to an increase in traffic volume on the north end of the county and also influences how far someone can drive from the city of Richmond outward through Goochland. We can also see that both of the state routes, 288 and 525, see a good majority of the traffic going veritcally through the county.")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Traffic Visualizations")),
@@ -1168,17 +1159,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                                 
                                                                 leafletOutput(outputId = "luPlot.p"),
-<<<<<<< HEAD
-=======
-                                                                
->>>>>>> 7b9289b0eb3c6d3999609452d7ea4d2e70457da4
                                                                 h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
                                                                 highchartOutput("pow_sankey",height = 600),
-<<<<<<< HEAD
-                                                                h4(strong("Land Use Transition Matrix")),
-=======
->>>>>>> 7b9289b0eb3c6d3999609452d7ea4d2e70457da4
-                                                                p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
+                                                                p(tags$small("Data Source: Powhatan County Administrative Data"))),
                                                          
                                                          column(12, 
                                                                 
@@ -1201,7 +1184,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   land. This number is a decrease from the 75.82% in 2012. A big reason why that number is reduced is that Powhatan is rapidly developing. 
                                                                   Developed land in Powhatan increased from 3.46% to 6.88% in 10 years. Most of this developed land is in the east side of the county closer to Richmond, VA. Forages 
                                                                   is the second biggest crop layer category with 15.42%. Forage is bulky food such as grass or hay for horses and cattle. Croplands are spread out throughout the 
-                                                                  county andmake up only use 4.1% of the land in the county. From an agricultural perspective, the land is most often used for raising livestock instead of growing crops. 
+                                                                  county and make up only use 4.1% of the land in the county. From an agricultural perspective, the land is most often used for raising livestock instead of growing crops. 
                                                                   There is a heavy concentration of row crops on the north boundary of Powhatan. The James River also acts as a boundary between Powhatan County and Goochland County.")
                                                          ), 
                                                          column(8, 
@@ -1282,8 +1265,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Traffic in Powhatan County")),
-                                                                p("Insert text")
+                                                                p("Traffic information is a very good indicator as to who lives in an area and how it is used, more 
+Traffic data is another very good variable to look at when it comes to land-use, we wanted to look into these metrics to see if there were correlations to where more residential housing was to how accessible the area was from big roads. We also wanted to track the distance away from the City of Richmond to see if more residential housing was built closer, or further away from a larger metropolitan area. "),
+                                                                p("Although Powhatan has no interstates running through it, the two state routes that it does have are able to provide fast travel throughout the county. State Route 60, which runs horizontally through the county holds a lot of annual traffic, while Route 525 provides travel through the county vertically. Although Powhatan is on the edge of the City of Richmond, travel times are pretty high while driving from Richmond through Powhatan."),
                                                          ), 
+                                                         
                                                          column(8, 
                                                                 h4(strong("Traffic Visualizations")),
                                                                 selectInput(inputId = "pow_traffic", label = "Select Variable:", width = "100%", choices = c(
