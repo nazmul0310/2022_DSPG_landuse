@@ -994,10 +994,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
 
                                                                 leafletOutput(outputId = "luPlot.g"),
-<<<<<<< HEAD
                                                                 h4(strong("Land Use Transition Matrix")),
-=======
->>>>>>> 7b9289b0eb3c6d3999609452d7ea4d2e70457da4
                                                                 br(),
                                                                 h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
                                                         
@@ -1168,16 +1165,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                                 
                                                                 leafletOutput(outputId = "luPlot.p"),
-<<<<<<< HEAD
-=======
-                                                                
->>>>>>> 7b9289b0eb3c6d3999609452d7ea4d2e70457da4
                                                                 h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
                                                                 highchartOutput("pow_sankey",height = 600),
-<<<<<<< HEAD
                                                                 h4(strong("Land Use Transition Matrix")),
-=======
->>>>>>> 7b9289b0eb3c6d3999609452d7ea4d2e70457da4
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
                                                          
                                                          column(12, 
