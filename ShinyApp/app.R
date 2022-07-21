@@ -994,10 +994,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
 
                                                                 leafletOutput(outputId = "luPlot.g"),
-<<<<<<< HEAD
                                                                 h4(strong("Land Use Transition Matrix")),
-=======
->>>>>>> 7b9289b0eb3c6d3999609452d7ea4d2e70457da4
                                                                 br(),
                                                                 h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
                                                         
@@ -1168,17 +1165,10 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                                 
                                                                 leafletOutput(outputId = "luPlot.p"),
-<<<<<<< HEAD
-=======
                                                                 
->>>>>>> 7b9289b0eb3c6d3999609452d7ea4d2e70457da4
                                                                 h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
                                                                 highchartOutput("pow_sankey",height = 600),
-<<<<<<< HEAD
-                                                                h4(strong("Land Use Transition Matrix")),
-=======
->>>>>>> 7b9289b0eb3c6d3999609452d7ea4d2e70457da4
-                                                                p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
+                                                                h4(strong("Land Use Transition Matrix")),                                                                p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
                                                          
                                                          column(12, 
                                                                 
@@ -1325,13 +1315,12 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Parcels in Goochland County")),
-                                                                p("Solid red represents new split parcels in the selected latest year. Lighter red represents new split parcels of the years before the selected latest year."), 
+                                                                p("Drag the slider on the right to select the year range of interest. Solid red represents new split parcels in the selected latest year. Lighter red represents new split parcels of the years before the selected latest year."), 
                                                                 p("New parcels spread across Goochland in 2019-2022. Meanwhile, there are always new parcels in the southeastern region which is close to Richmond. It implies 
                                                                 that metropolis might have some impacts on the parcellation. It is seeming that the northwestern has more parcels generated. In fact, the southeastern has 
                                                                 generated new parcels more frequently according to the hotspot maps. It is because new parcels in the southeast are smaller and lots of the new parcels are 
-                                                                single-family housing. While new parcels in the northwest are larger. Besides, parcellation happened less frequently along the James River. A suggestion is 
-                                                                that soil quality along the river is more fertile and suitable for agriculture (wait to check with soil quality). The map of Land Uses Over the Years shows 
-                                                                that most of the land along the James River is large-size arilcultural/undeveloped land.")
+                                                                single-family housing. While new parcels in the northwest are larger. Besides, parcellation happened less frequently along the James River. The map of Land Uses Over the Years shows 
+                                                                that most of the land along the James River is large-size agricultural/undeveloped land.")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Parcellation Map")),
@@ -1406,9 +1395,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Parcels in Powhatan County")),
-                                                                p("The more solid the circle is, the more frequently parcellation has happened in this area during the selected period. 
-                                                                Solid red represents new split parcels in the selected latest year. Lighter red represents new split parcels of the 
-                                                                years before the selected latest year."), 
+                                                                p("Drag the slider on the right to select the year range of interest. 
+                                                                  Solid red represents new split parcels in the selected latest year. 
+                                                                  Lighter red represents new split parcels of the years before the selected latest year."), 
                                                                 p("New parcels spread across Powhatan in 2012-2020. Some large-size parcels are generated along the James River. (I cannot find other patterns)")
                                                          ), 
                                                          column(8, 
@@ -1441,8 +1430,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Parcellation Hot Spots in Powhatan County")),
-                                                                p("There are new parcels split from their mother parcels every year in Goochland. The hot spot map shows the area where parcellation happens the most frequently 
-                                                                  with red polygons. After selecting the year range via the slider, the map will show the parcellation frequency during the period."),
+                                                                p("There are new parcels split from their mother parcels every year in Goochland. The hot spot map shows the area where parcellation happens 
+                                                                  the most frequently with red polygons. After selecting the year range via the slider, the map will show the parcellation frequency during the period. 
+                                                                  The more solid the circle is, the more frequently parcellation has happened in this area during the selected period."),
                                                                 p("From the hot spot map of parcellation in Powhatan over years, a pattern can be observed. Parcellation happened more frequently in 
                                                                   the center part, east and west edges of Powhatan. The high frequency of parcellation in the center part persisted in 2015-2021. 
                                                                   In the middle area, it became more often in 2021 and 2022. Parcellation in the east area might be driven by the proximity to the metropolis.")
