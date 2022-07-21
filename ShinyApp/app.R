@@ -987,6 +987,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
 
                                                                 leafletOutput(outputId = "luPlot.g"),
+                                                                h4(strong("Land Use Transition Matrix")),
                                                                 br(),
                                                                 h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
                                                         
@@ -1161,7 +1162,8 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                 leafletOutput(outputId = "luPlot.p"),
                                                                 h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
                                                                 highchartOutput("pow_sankey",height = 600),
-                                                                p(tags$small("Data Source: Powhatan County Administrative Data"))),
+                                                                h4(strong("Land Use Transition Matrix")),
+                                                                p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
                                                          
                                                          column(12, 
                                                                 
