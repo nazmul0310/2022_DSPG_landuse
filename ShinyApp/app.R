@@ -1165,10 +1165,17 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                                 
                                                                 leafletOutput(outputId = "luPlot.p"),
+<<<<<<< HEAD
                                                                 
                                                                 h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
                                                                 highchartOutput("pow_sankey",height = 600),
                                                                 h4(strong("Land Use Transition Matrix")),                                                                p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
+=======
+                                                                h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
+                                                                highchartOutput("pow_sankey",height = 600),
+                                                                h4(strong("Land Use Transition Matrix")),
+                                                                p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
+>>>>>>> 3077ea4125cb9138624ab3982d3ac290f61793f2
                                                          
                                                          column(12, 
                                                                 
