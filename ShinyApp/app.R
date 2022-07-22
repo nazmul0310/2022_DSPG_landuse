@@ -134,9 +134,10 @@ gooch_boundary2<- st_transform(gooch_boundary2, "+proj=longlat +datum=WGS84")
 
 goochland_con <- leaflet()%>%
   addTiles() %>%
-  setView(lng=-78, lat=37.75, zoom=10.48) %>% 
-  addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="purple")%>%
-  addPolygons(data=gooch_boundary2, weight=1, color="black", fillOpacity=0)
+  addProviderTiles(providers$CartoDB.Positron)%>%
+  setView(lng=-77.9, lat=37.73, zoom=10.48) %>% 
+  addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="#721f81")%>%
+  addPolygons(data=gooch_boundary2, weight=2, color="black", fillOpacity=0)
 
     # Powhatan
 
@@ -148,11 +149,12 @@ pow_boundary <- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>%
 
 powhatan_con <- leaflet()%>%
   addTiles() %>%
-  setView(lng=-78, lat=37.58, zoom=10.49) %>% 
-  addPolygons(data=pcon[1,], weight=0, fillOpacity = 0.5, fillColor = "orange", group = "Priority Conservation Areas")%>%
-  addPolygons(data=pcon[2,], weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "Protected Lands")%>%
-  addPolygons(data=pcon[3,], weight=0, fillOpacity = 0.5, fillColor = "green", group = "AFD")%>%
-  addPolygons(data=pow_boundary, weight=1, color="black", fillOpacity=0)%>%
+  addProviderTiles(providers$CartoDB.Positron)%>%
+  setView(lng=-77.97, lat=37.58, zoom=10.495) %>% 
+  addPolygons(data=pcon[1,], weight=0, fillOpacity = 0.5, fillColor = "#f89540", group = "Priority Conservation Areas")%>%
+  addPolygons(data=pcon[2,], weight=0, fillOpacity = 0.5, fillColor = "#b73779", group = "Protected Lands")%>%
+  addPolygons(data=pcon[3,], weight=0, fillOpacity = 0.5, fillColor = "#21918c", group = "AFD")%>%
+  addPolygons(data=pow_boundary, weight=2, color="black", fillOpacity=0)%>%
   addLayersControl(
     overlayGroups = c("Priority Conservation Areas", "Protected Lands", "AFD"),
     position = "bottomleft",
@@ -383,7 +385,7 @@ trafficVol.func <- function(county){
     trafficData <- ptraffic
   }
   else{
-    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
+    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.9, lat=37.73, zoom = 10) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
     roadData <- groads
     trafficData <- gtraffic
   }
@@ -424,7 +426,7 @@ travelTime.func <- function(county){
     travelTime.plt <- travelTime.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
     data <- pow.travelTimes
   } else {
-    travelTime.plt <- travelTime.plt %>% setView(lng=-77.885376, lat=37.694143, zoom = 10)
+    travelTime.plt <- travelTime.plt %>% setView(lng=-77.9, lat=37.73, zoom = 10)
     data <- gooch.travelTimes
   }
   
@@ -930,7 +932,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                                 tags$li("The green layer represents", strong("Agricultural Forestal Districts (AFD)"),"which are areas of land that are recognized by the county as being economically and environmentally valuable resources for all"),
                                                                 
-                                                                tags$li("The yellow layer represents", strong("Protected Lands"), "which are protected due to their natural, cultural, or ecological value."),
+                                                                tags$li("The red layer represents", strong("Protected Lands"), "which are protected due to their natural, cultural, or ecological value."),
                                                                 
                                                                 tags$li("The orange layer represents", strong("Priority Conservation Areas"), "which are protected for long term conservation."),
 
@@ -994,10 +996,6 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
 
                                                                 leafletOutput(outputId = "luPlot.g"),
-<<<<<<< HEAD
-                                                                h4(strong("Land Use Transition Matrix")),
-=======
->>>>>>> 7b9289b0eb3c6d3999609452d7ea4d2e70457da4
                                                                 br(),
                                                                 h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
                                                         
@@ -1168,16 +1166,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                                 
                                                                 leafletOutput(outputId = "luPlot.p"),
-<<<<<<< HEAD
-=======
-                                                                
->>>>>>> 7b9289b0eb3c6d3999609452d7ea4d2e70457da4
                                                                 h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
                                                                 highchartOutput("pow_sankey",height = 600),
-<<<<<<< HEAD
-                                                                h4(strong("Land Use Transition Matrix")),
-=======
->>>>>>> 7b9289b0eb3c6d3999609452d7ea4d2e70457da4
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
                                                          
                                                          column(12, 
@@ -1678,7 +1668,7 @@ server <- function(input, output){
       addTiles() %>%
       addProviderTiles(providers$CartoDB.Positron) %>%
       addPolygons(data = gl_cnty, fillColor = "transparent") %>% 
-      setView(lng=-77.885376, lat=37.684143, zoom = 10)
+      setView(lng=-77.9, lat=37.73, zoom = 10)
     
 
     
@@ -1773,7 +1763,7 @@ server <- function(input, output){
   output$g.soilMap <- renderLeaflet({
     g.map <- leaflet() %>% 
       addTiles() %>% 
-      setView(lng=-78, lat=37.7, zoom=10.48) 
+      setView(lng=-77.9, lat=37.73, zoom=10.48) 
     
     for (i in 2:7){
       g.map <- addPolygons(g.map, data=g.soilData %>% filter(NirrCpCls==i), smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = soilColors[i])
