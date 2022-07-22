@@ -24,7 +24,6 @@ library(dplyr)
 library(leaflet)
 library(tidycensus)
 library(tidyverse)
-library(stringr)
 library(viridis)
 library(readxl)
 library(RColorBrewer)
@@ -36,7 +35,7 @@ library(htmlwidgets) #for transition matrix
 options(scipen=999)
 options(shiny.maxRequestSize = 100*1024^2)
 
-# data --------------------------------------------------------------------------------------------------------------------
+# DATA --------------------------------------------------------------------------------------------------------------------
       # soc
 popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny ap
 industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
@@ -47,14 +46,7 @@ gl_cnty<- st_read("data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+p
 po_cnty<- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 
-
-
-
-
-
-
-
-# Sociodemographic
+## SOCIODEMOGRAPHICS =================================================
 
 age.func <- function(inputYear, inputCounty) {
   
@@ -123,29 +115,25 @@ edu.func <- function(inputYear, inputCounty) {
 }
 
 
-# Policy
+## POLICY =================================================
 
     # Goochland
 
 gcon<- st_read("data/Conservation/Gooch_Preservation.shp")
 gcon <- st_transform(gcon, "+proj=longlat +datum=WGS84")
-gooch_boundary2<- st_read("data/cnty_bndry/Goochland_Boundary.shp")
-gooch_boundary2<- st_transform(gooch_boundary2, "+proj=longlat +datum=WGS84")
 
 goochland_con <- leaflet()%>%
   addTiles() %>%
   addProviderTiles(providers$CartoDB.Positron)%>%
-  setView(lng=-77.9, lat=37.73, zoom=10.48) %>% 
-  addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="#721f81")%>%
-  addPolygons(data=gooch_boundary2, weight=2, color="black", fillOpacity=0)
+  setView(lng=-78, lat=37.75, zoom=10.48) %>% 
+  addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="purple")%>%
+  addPolygons(data=gl_cnty, weight=1, color="black", fillOpacity=0)
 
     # Powhatan
 
 pcon<- st_read("data/Conservation/Powhatan_Natural_Conservation.shp")
 pcon <- st_transform(pcon, "+proj=longlat +datum=WGS84")
 pcon$col=sample(c('red','yellow','green'),nrow(pcon),1)
-pow_boundary <- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>%
-  st_transform(crs = st_crs("EPSG:4326"))
 
 powhatan_con <- leaflet()%>%
   addTiles() %>%
@@ -154,21 +142,19 @@ powhatan_con <- leaflet()%>%
   addPolygons(data=pcon[1,], weight=0, fillOpacity = 0.5, fillColor = "#f89540", group = "Priority Conservation Areas")%>%
   addPolygons(data=pcon[2,], weight=0, fillOpacity = 0.5, fillColor = "#b73779", group = "Protected Lands")%>%
   addPolygons(data=pcon[3,], weight=0, fillOpacity = 0.5, fillColor = "#21918c", group = "AFD")%>%
-  addPolygons(data=pow_boundary, weight=2, color="black", fillOpacity=0)%>%
+  addPolygons(data=po_cnty, weight=2, color="black", fillOpacity=0)%>%
   addLayersControl(
     overlayGroups = c("Priority Conservation Areas", "Protected Lands", "AFD"),
     position = "bottomleft",
     options = layersControlOptions(collapsed = FALSE))
 
 
-# Land use
-gooch_boundary<- st_read("data/cnty_bndry/Goochland_Boundary.shp")
-gooch_boundary <- st_transform(gooch_boundary, "+proj=longlat +datum=WGS84")
+  ## LAND USE  =================================================
 
 m <- leaflet()%>%
   addTiles() %>%
   setView(lng=-77.949, lat=37.742, zoom=10.48) %>% 
-  addPolygons(data=gooch_boundary,
+  addPolygons(data=gl_cnty,
               fillColor = "transparent") 
 
 
@@ -370,6 +356,7 @@ luPlotFunction <- function(inputYear, county) {
   lu.plt
 }
 
+## TRAFFIC ===============================================
 gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 groads<- st_read("data/Traffic_Hotspot/Gooch_roads.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 ptraffic<- st_read("data/Traffic_Hotspot/Powhatan_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
@@ -462,6 +449,8 @@ travelTime.func <- function(county){
   travelTime.plt
 }
 
+
+## PARCELLATION ============================================
 parc.func <- function(data, range, county, cnty){
   
   # Declares initial leaflet, nothing added to it.
@@ -541,15 +530,11 @@ harbour<- leaflet() %>%
 gooch_parcellation <- st_read("data/parcellationData/Gooch_Parcellation_LT.shp") %>%
   st_transform(crs = st_crs("EPSG:4326"))
 gooch_parcellation$year <- substr(gooch_parcellation$UNIQID_1, 1, 4)
-gooch_bndry <- st_read("data/cnty_bndry/Goochland_Boundary.shp" )%>%
-  st_transform(crs = st_crs("EPSG:4326"))
 
 # pow
 pow_parcellation <- read_sf("data/parcellationData/Powhatan_Parcellation_LT.shp") %>%
   st_transform(crs = st_crs("EPSG:4326"))
 pow_parcellation$year <- substr(pow_parcellation$UNIQ_ID_12, 1, 4)
-pow_bndry <- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>%
-  st_transform(crs = st_crs("EPSG:4326"))
 
 
 #transition matrix
@@ -996,6 +981,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
 
                                                                 leafletOutput(outputId = "luPlot.g"),
+
+
                                                                 br(),
                                                                 h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
                                                         
@@ -1105,7 +1092,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Traffic in Goochland County")),
-                                                                p("Insert text")
+                                                                p("Traffic information is a very good indicator as to who lives in an area and how it is used, more 
+                                                                Traffic data is another very good variable to look at when it comes to land-use, we wanted to look into these metrics to see if there were correlations to where more residential housing was to how accessible the area was from big roads. We also wanted to track the distance away from the City of Richmond to see if more residential housing was built closer, or further away from a larger metropolitan area. "),
+                                                                p("Goochland has one interstate, and two state highway routes, that we can see affect travel times and volume throughout the county. Interstate 64 leads to an increase in traffic volume on the north end of the county and also influences how far someone can drive from the city of Richmond outward through Goochland. We can also see that both of the state routes, 288 and 525, see a good majority of the traffic going veritcally through the county.")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Traffic Visualizations")),
@@ -1166,10 +1155,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                                 
                                                                 leafletOutput(outputId = "luPlot.p"),
+                                                                p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
+
                                                                 h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
                                                                 highchartOutput("pow_sankey",height = 600),
+
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
-                                                         
+
                                                          column(12, 
                                                                 
                                                                 h4("References") , 
@@ -1191,7 +1183,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   land. This number is a decrease from the 75.82% in 2012. A big reason why that number is reduced is that Powhatan is rapidly developing. 
                                                                   Developed land in Powhatan increased from 3.46% to 6.88% in 10 years. Most of this developed land is in the east side of the county closer to Richmond, VA. Forages 
                                                                   is the second biggest crop layer category with 15.42%. Forage is bulky food such as grass or hay for horses and cattle. Croplands are spread out throughout the 
-                                                                  county andmake up only use 4.1% of the land in the county. From an agricultural perspective, the land is most often used for raising livestock instead of growing crops. 
+                                                                  county and make up only use 4.1% of the land in the county. From an agricultural perspective, the land is most often used for raising livestock instead of growing crops. 
                                                                   There is a heavy concentration of row crops on the north boundary of Powhatan. The James River also acts as a boundary between Powhatan County and Goochland County.")
                                                          ), 
                                                          column(8, 
@@ -1272,8 +1264,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Traffic in Powhatan County")),
-                                                                p("Insert text")
+                                                                p("Traffic information is a very good indicator as to who lives in an area and how it is used, more 
+Traffic data is another very good variable to look at when it comes to land-use, we wanted to look into these metrics to see if there were correlations to where more residential housing was to how accessible the area was from big roads. We also wanted to track the distance away from the City of Richmond to see if more residential housing was built closer, or further away from a larger metropolitan area. "),
+                                                                p("Although Powhatan has no interstates running through it, the two state routes that it does have are able to provide fast travel throughout the county. State Route 60, which runs horizontally through the county holds a lot of annual traffic, while Route 525 provides travel through the county vertically. Although Powhatan is on the edge of the City of Richmond, travel times are pretty high while driving from Richmond through Powhatan."),
                                                          ), 
+                                                         
                                                          column(8, 
                                                                 h4(strong("Traffic Visualizations")),
                                                                 selectInput(inputId = "pow_traffic", label = "Select Variable:", width = "100%", choices = c(
@@ -1301,7 +1296,7 @@ ui <- navbarPage(title = "DSPG 2022",
                             
                             
                             
-                 ),
+                 ,
                  
                  ## Tab Parcellation --------------------------------------------
                  
@@ -1315,13 +1310,12 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Parcels in Goochland County")),
-                                                                p("Solid red represents new split parcels in the selected latest year. Lighter red represents new split parcels of the years before the selected latest year."), 
+                                                                p("Drag the slider on the right to select the year range of interest. Solid red represents new split parcels in the selected latest year. Lighter red represents new split parcels of the years before the selected latest year."), 
                                                                 p("New parcels spread across Goochland in 2019-2022. Meanwhile, there are always new parcels in the southeastern region which is close to Richmond. It implies 
                                                                 that metropolis might have some impacts on the parcellation. It is seeming that the northwestern has more parcels generated. In fact, the southeastern has 
                                                                 generated new parcels more frequently according to the hotspot maps. It is because new parcels in the southeast are smaller and lots of the new parcels are 
-                                                                single-family housing. While new parcels in the northwest are larger. Besides, parcellation happened less frequently along the James River. A suggestion is 
-                                                                that soil quality along the river is more fertile and suitable for agriculture (wait to check with soil quality). The map of Land Uses Over the Years shows 
-                                                                that most of the land along the James River is large-size arilcultural/undeveloped land.")
+                                                                single-family housing. While new parcels in the northwest are larger. Besides, parcellation happened less frequently along the James River. The map of Land Uses Over the Years shows 
+                                                                that most of the land along the James River is large-size agricultural/undeveloped land.")
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Land Parcellation Map")),
@@ -1396,9 +1390,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Land Parcels in Powhatan County")),
-                                                                p("The more solid the circle is, the more frequently parcellation has happened in this area during the selected period. 
-                                                                Solid red represents new split parcels in the selected latest year. Lighter red represents new split parcels of the 
-                                                                years before the selected latest year."), 
+                                                                p("Drag the slider on the right to select the year range of interest. 
+                                                                  Solid red represents new split parcels in the selected latest year. 
+                                                                  Lighter red represents new split parcels of the years before the selected latest year."), 
                                                                 p("New parcels spread across Powhatan in 2012-2020. Some large-size parcels are generated along the James River. (I cannot find other patterns)")
                                                          ), 
                                                          column(8, 
@@ -1431,8 +1425,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Parcellation Hot Spots in Powhatan County")),
-                                                                p("There are new parcels split from their mother parcels every year in Goochland. The hot spot map shows the area where parcellation happens the most frequently 
-                                                                  with red polygons. After selecting the year range via the slider, the map will show the parcellation frequency during the period."),
+                                                                p("There are new parcels split from their mother parcels every year in Goochland. The hot spot map shows the area where parcellation happens 
+                                                                  the most frequently with red polygons. After selecting the year range via the slider, the map will show the parcellation frequency during the period. 
+                                                                  The more solid the circle is, the more frequently parcellation has happened in this area during the selected period."),
                                                                 p("From the hot spot map of parcellation in Powhatan over years, a pattern can be observed. Parcellation happened more frequently in 
                                                                   the center part, east and west edges of Powhatan. The high frequency of parcellation in the center part persisted in 2015-2021. 
                                                                   In the middle area, it became more often in 2021 and 2022. Parcellation in the east area might be driven by the proximity to the metropolis.")
@@ -1763,7 +1758,8 @@ server <- function(input, output){
   output$g.soilMap <- renderLeaflet({
     g.map <- leaflet() %>% 
       addTiles() %>% 
-      setView(lng=-77.9, lat=37.73, zoom=10.48) 
+      addProviderTiles(providers$CartoDB.Positron) %>%
+      setView(lng=-78, lat=37.7, zoom=10.48) 
     
     for (i in 2:7){
       g.map <- addPolygons(g.map, data=g.soilData %>% filter(NirrCpCls==i), smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = soilColors[i])
@@ -1779,6 +1775,7 @@ server <- function(input, output){
   output$p.soilMap <- renderLeaflet({
     p.map <- leaflet() %>% 
       addTiles() %>% 
+      addProviderTiles(providers$CartoDB.Positron) %>%
       setView(lng=-77.9188, lat=37.5415 , zoom=10) 
     
     for (i in 1:8){
@@ -1831,7 +1828,7 @@ server <- function(input, output){
   })
   
   output$gooch_sankey <- renderHighchart({ 
-    hchart(data_to_sankey(g.sankey), "sankey") %>%
+    hchart(data_to_sankey(g.sankey), "sankey", ) %>%
       hc_add_theme(thm)
   })
   
@@ -1889,12 +1886,12 @@ server <- function(input, output){
   
   output$g.parcellationPlot <- renderLeaflet({
     yearRange <- abs(input$g.parcellationRange[1]:input$g.parcellationRange[2])
-    parc.func(gooch_parcellation, yearRange, "Goochland", gooch_bndry)
+    parc.func(gooch_parcellation, yearRange, "Goochland", gl_cnty)
   })
   
   output$p.parcellationPlot <- renderLeaflet({
     yearRange <- abs(input$p.parcellationRange[1]:input$p.parcellationRange[2])
-    parc.func(pow_parcellation, yearRange, "Powhatan", pow_bndry)
+    parc.func(pow_parcellation, yearRange, "Powhatan", po_cnty)
     
   })
   
