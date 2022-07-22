@@ -1151,11 +1151,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             min = 2015, max = 2021, value = 2021, 
                                                                             sep = "", width = "150%"),
                                                                 
-                                                                h4(strong("Land Uses Over the Years")),
-                                                                
-                                                                
+
                                                                 leafletOutput(outputId = "luPlot.p"),
-                                                                p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
 
                                                                 h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
                                                                 highchartOutput("pow_sankey",height = 600),
@@ -1291,12 +1288,11 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                 p(tags$small("[8]  Virginia Employment Commission")) ) 
                                                 )
                                               ) 
-                                     ), 
-                            ) 
+                                     )), 
+
                             
                             
-                            
-                 ,
+                 ),
                  
                  ## Tab Parcellation --------------------------------------------
                  
