@@ -428,21 +428,7 @@ travelTime.func <- function(county){
     addPolygons(data = data, color = "black",
                 fillColor = colors,
                 smoothFactor = 0.1, fillOpacity=.6, weight = 1,stroke = FALSE) %>%
-    
-    addPolygons(data = Rmnd30, color = "Black",
-                opacity = 1, weight = 2, fillColor = "transparent", fillOpacity = 0,
-                group = "Within 30") %>%
-    addPolygons(data = Rmnd45, color = "Black",
-                opacity = 1, weight = 2, fillColor = "transparent", fillOpacity = 0,
-                group = "Within 45") %>%
-    addPolygons(data = Rmnd60, color = "Black",
-                opacity = 1, weight = 2, fillColor = "transparent", fillOpacity = 0,
-                group = "Within 60") %>%
     addCircleMarkers(lat = 37.534379575044426, lng = -77.44071077873014, label = "Richmond") %>%
-    addLayersControl(
-      overlayGroups=c("Within 30", "Within 45", "Within 60"),
-      position = "bottomleft",
-      options = layersControlOptions(collapsed = FALSE)) %>%
     addLegend(position = "bottomright", labels = c("Within 30 minutes", "Within 45 minutes", "Within 1 hour", "More than 1 hour"), 
               colors = sorted_colors)
   
