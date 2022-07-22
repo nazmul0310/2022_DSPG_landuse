@@ -15,13 +15,13 @@ library(writexl)
 library(ggpubr)
 library(dplyr)
 library(viridis)
-setwd("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse")
+setwd("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/Review/John")
 ```
 
 ```{r}
-goochland2022 <- read.csv("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/LUC_codes/Cleaned_parcel_Data/2022_goochlandCLEANED.csv")
-goochland2018 <- read.csv("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/LUC_codes/Cleaned_parcel_Data/2018_goochlandCLEANED.csv")
-goochland2018.22<- read.csv("C:/Users/malla/OneDrive/Desktop/DSPG/2022_DSPG_landuse/Gooch_Parcellation_2018_2022.csv")
+goochland2022 <- read.csv("LUC_codes/Cleaned_parcel_Data/2022_goochlandCLEANED.csv")
+goochland2018 <- read.csv("LUC_codes/Cleaned_parcel_Data/2018_goochlandCLEANED.csv")
+goochland2018.22<- read.csv("LUC_codes/Gooch_Parcellation_2018_2022.csv")
 
 gooch2022.LUC <- data.frame(LUC = unique(goochland2022$LUC))
 gooch2018.LUC <- data.frame(LUC = unique(goochland2018$LUC))
