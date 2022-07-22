@@ -124,6 +124,7 @@ gcon <- st_transform(gcon, "+proj=longlat +datum=WGS84")
 
 goochland_con <- leaflet()%>%
   addTiles() %>%
+  addProviderTiles(providers$CartoDB.Positron)%>%
   setView(lng=-78, lat=37.75, zoom=10.48) %>% 
   addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="purple")%>%
   addPolygons(data=gl_cnty, weight=1, color="black", fillOpacity=0)
@@ -136,11 +137,12 @@ pcon$col=sample(c('red','yellow','green'),nrow(pcon),1)
 
 powhatan_con <- leaflet()%>%
   addTiles() %>%
-  setView(lng=-78, lat=37.58, zoom=10.49) %>% 
-  addPolygons(data=pcon[1,], weight=0, fillOpacity = 0.5, fillColor = "orange", group = "Priority Conservation Areas")%>%
-  addPolygons(data=pcon[2,], weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "Protected Lands")%>%
-  addPolygons(data=pcon[3,], weight=0, fillOpacity = 0.5, fillColor = "green", group = "AFD")%>%
-  addPolygons(data=po_cnty, weight=1, color="black", fillOpacity=0)%>%
+  addProviderTiles(providers$CartoDB.Positron)%>%
+  setView(lng=-77.97, lat=37.58, zoom=10.495) %>% 
+  addPolygons(data=pcon[1,], weight=0, fillOpacity = 0.5, fillColor = "#f89540", group = "Priority Conservation Areas")%>%
+  addPolygons(data=pcon[2,], weight=0, fillOpacity = 0.5, fillColor = "#b73779", group = "Protected Lands")%>%
+  addPolygons(data=pcon[3,], weight=0, fillOpacity = 0.5, fillColor = "#21918c", group = "AFD")%>%
+  addPolygons(data=po_cnty, weight=2, color="black", fillOpacity=0)%>%
   addLayersControl(
     overlayGroups = c("Priority Conservation Areas", "Protected Lands", "AFD"),
     position = "bottomleft",
@@ -370,7 +372,7 @@ trafficVol.func <- function(county){
     trafficData <- ptraffic
   }
   else{
-    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
+    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.9, lat=37.73, zoom = 10) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
     roadData <- groads
     trafficData <- gtraffic
   }
@@ -411,7 +413,7 @@ travelTime.func <- function(county){
     travelTime.plt <- travelTime.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
     data <- pow.travelTimes
   } else {
-    travelTime.plt <- travelTime.plt %>% setView(lng=-77.885376, lat=37.694143, zoom = 10)
+    travelTime.plt <- travelTime.plt %>% setView(lng=-77.9, lat=37.73, zoom = 10)
     data <- gooch.travelTimes
   }
   
@@ -915,7 +917,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                                 tags$li("The green layer represents", strong("Agricultural Forestal Districts (AFD)"),"which are areas of land that are recognized by the county as being economically and environmentally valuable resources for all"),
                                                                 
-                                                                tags$li("The yellow layer represents", strong("Protected Lands"), "which are protected due to their natural, cultural, or ecological value."),
+                                                                tags$li("The red layer represents", strong("Protected Lands"), "which are protected due to their natural, cultural, or ecological value."),
                                                                 
                                                                 tags$li("The orange layer represents", strong("Priority Conservation Areas"), "which are protected for long term conservation."),
 
@@ -979,7 +981,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
 
                                                                 leafletOutput(outputId = "luPlot.g"),
-                                                                h4(strong("Land Use Transition Matrix")),
+
+
                                                                 br(),
                                                                 h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
                                                         
@@ -1090,7 +1093,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(4, 
                                                                 h4(strong("Traffic in Goochland County")),
                                                                 p("Traffic information is a very good indicator as to who lives in an area and how it is used, more 
-Traffic data is another very good variable to look at when it comes to land-use, we wanted to look into these metrics to see if there were correlations to where more residential housing was to how accessible the area was from big roads. We also wanted to track the distance away from the City of Richmond to see if more residential housing was built closer, or further away from a larger metropolitan area. "),
+                                                                Traffic data is another very good variable to look at when it comes to land-use, we wanted to look into these metrics to see if there were correlations to where more residential housing was to how accessible the area was from big roads. We also wanted to track the distance away from the City of Richmond to see if more residential housing was built closer, or further away from a larger metropolitan area. "),
                                                                 p("Goochland has one interstate, and two state highway routes, that we can see affect travel times and volume throughout the county. Interstate 64 leads to an increase in traffic volume on the north end of the county and also influences how far someone can drive from the city of Richmond outward through Goochland. We can also see that both of the state routes, 288 and 525, see a good majority of the traffic going veritcally through the county.")
                                                          ), 
                                                          column(8, 
@@ -1148,22 +1151,14 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                             min = 2015, max = 2021, value = 2021, 
                                                                             sep = "", width = "150%"),
                                                                 
-                                                                h4(strong("Land Uses Over the Years")),
-                                                                
-                                                                
+
                                                                 leafletOutput(outputId = "luPlot.p"),
-<<<<<<< HEAD
-                                                                
+
                                                                 h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
                                                                 highchartOutput("pow_sankey",height = 600),
-                                                                h4(strong("Land Use Transition Matrix")),                                                                p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
-=======
-                                                                h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
-                                                                highchartOutput("pow_sankey",height = 600),
-                                                                h4(strong("Land Use Transition Matrix")),
+
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
->>>>>>> 3077ea4125cb9138624ab3982d3ac290f61793f2
-                                                         
+
                                                          column(12, 
                                                                 
                                                                 h4("References") , 
@@ -1293,9 +1288,8 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                 p(tags$small("[8]  Virginia Employment Commission")) ) 
                                                 )
                                               ) 
-                                     ), 
-                            ) 
-                            
+                                     )), 
+
                             
                             
                  ),
@@ -1665,7 +1659,7 @@ server <- function(input, output){
       addTiles() %>%
       addProviderTiles(providers$CartoDB.Positron) %>%
       addPolygons(data = gl_cnty, fillColor = "transparent") %>% 
-      setView(lng=-77.885376, lat=37.684143, zoom = 10)
+      setView(lng=-77.9, lat=37.73, zoom = 10)
     
 
     
