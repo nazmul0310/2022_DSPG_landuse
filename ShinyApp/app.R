@@ -68,9 +68,9 @@ ind.func <- function(inputYear, inputCounty) {
   
   ind <- industry %>% 
     filter(county == inputCounty, year==inputYear) %>%
-    ggplot(aes(x = reorder(name, desc(name)), y = value, fill = value)) + 
+    ggplot(aes(x = name, y = value, fill = name)) + 
     geom_bar(stat = "identity") + theme(legend.position = "none") +
-    coord_flip() + scale_fill_viridis()  + 
+    coord_flip() + scale_fill_viridis_d()  + 
     theme_light() + 
     theme(legend.position="none") + 
     theme(axis.text.y = element_text(hjust=0)) +
@@ -197,48 +197,52 @@ croplayer1 <- read.csv("data/ag_analysis.csv")
 
 gcrop21 <- croplayer1 %>% 
   filter(County == "Goochland", Year==2021) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Combined`)) + 
+  ggplot(aes(x = `Combined`, y = `Area.Acre`, fill = `Combined`)) + 
   geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() +  
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") +     
   scale_fill_manual(values = gcrop_colors) + 
+  ylim(0, 130000) + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type") 
 gcrop21 <-ggplotly(gcrop21, tooltip = c("text")) 
 
 gcrop12 <- croplayer1 %>% 
   filter(County == "Goochland", Year== 2012) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Combined`)) + 
+  ggplot(aes(x = `Combined`, y = `Area.Acre`, fill = `Combined`)) + 
   geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() + 
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") + 
   scale_fill_manual(values = gcrop_colors) + 
+  ylim(0, 130000) + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 gcrop12 <-ggplotly(gcrop12, tooltip = c("text"))
 
 pcrop21 <- croplayer1 %>% 
   filter(County == "Powhatan", Year==2021) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Combined`)) + 
+  ggplot(aes(x = `Combined`, y = `Area.Acre`, fill = `Combined`)) + 
   geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() + 
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") + 
+  ylim(0, 13000) + 
   scale_fill_manual(values = gcrop_colors)+ 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 pcrop21 <-ggplotly(pcrop21, tooltip = c("text"))
 
 pcrop12 <- croplayer1 %>% 
   filter(County == "Powhatan", Year== 2012) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Combined`)) + 
+  ggplot(aes(x = `Combined`, y = `Area.Acre`, fill = `Combined`)) + 
   geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() + 
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") + 
+  ylim(0, 130000) + 
   scale_fill_manual(values = gcrop_colors) + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 pcrop12 <- ggplotly(pcrop12, tooltip = c("text"))
@@ -283,7 +287,8 @@ psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Va
   labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") 
 psoil <-ggplotly(psoil, tooltip = "text")
 
-GoochlandAllParcel <- read_sf("data/luParcelData/GoochAll.shp") %>% rename(FIN_MLUSE = LUC_FIN)
+GoochlandAllParcel <- read_sf("data/luParcelData/GoochAll.shp")
+names(GoochlandAllParcel) <- c("FIN_MLUSE", "year", "geometry")
 PowhatanAllParcel <- read_sf("data/luParcelData/PowAll.shp")
 
 luPlotFunction <- function(inputYear, county) {
@@ -406,8 +411,7 @@ travelTime.func <- function(county){
   
   # Initial plot
   travelTime.plt <- leaflet() %>%
-    addTiles() %>%
-    addProviderTiles("Esri")  
+    addTiles()
   
   if(county == "Powhatan"){
     travelTime.plt <- travelTime.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
@@ -428,21 +432,7 @@ travelTime.func <- function(county){
     addPolygons(data = data, color = "black",
                 fillColor = colors,
                 smoothFactor = 0.1, fillOpacity=.6, weight = 1,stroke = FALSE) %>%
-    
-    addPolygons(data = Rmnd30, color = "Black",
-                opacity = 1, weight = 2, fillColor = "transparent", fillOpacity = 0,
-                group = "Within 30") %>%
-    addPolygons(data = Rmnd45, color = "Black",
-                opacity = 1, weight = 2, fillColor = "transparent", fillOpacity = 0,
-                group = "Within 45") %>%
-    addPolygons(data = Rmnd60, color = "Black",
-                opacity = 1, weight = 2, fillColor = "transparent", fillOpacity = 0,
-                group = "Within 60") %>%
     addCircleMarkers(lat = 37.534379575044426, lng = -77.44071077873014, label = "Richmond") %>%
-    addLayersControl(
-      overlayGroups=c("Within 30", "Within 45", "Within 60"),
-      position = "bottomleft",
-      options = layersControlOptions(collapsed = FALSE)) %>%
     addLegend(position = "bottomright", labels = c("Within 30 minutes", "Within 45 minutes", "Within 1 hour", "More than 1 hour"), 
               colors = sorted_colors)
   
@@ -665,7 +655,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      radioButtons(inputId = "yearSelect_gsoc", label = "Select Year: ", 
                                                                   choices = c("2017", "2018", "2019", "2020"), 
                                                                   selected = "2020"),
-                                                     plotOutput("gsoc", height = "500px"),
+                                                     plotOutput("gsoc", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                       fluidRow(style = "margin: 6px;",
                                                align = "justify",
                                                      h4(strong("Visualization Summaries")),
@@ -738,7 +728,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      radioButtons(inputId = "yearSelect_psoc", label = "Select Year: ", 
                                                                   choices = c("2017", "2018", "2019", "2020"), 
                                                                   selected = "2020"),
-                                                     plotOutput("psoc", height = "500px"),
+                                                     plotOutput("psoc", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                      h4(strong("Visualization Summaries")),
                                                      p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. The 25-44 age group has been 
                                                        the second largest, but has faced more inconsistency and has seen a decrease since 2018."),
@@ -905,8 +895,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      h1(strong("Goochland"), align = "center"),
                                                      p("", style = "padding-top:10px;"),
                                                      fluidRow(style = "margin: 6px;", align = "justify",
+<<<<<<< HEAD
                                                               leafletOutput("goochland_con"),
                                                               p("The areas highlighted in purple represent", strong("Rural Preservation Districts"), "which allow for residential development but continue to allow agricultural uses in the preservation area, equestrian activities, and forest management plans [2]."),
+=======
+                                                              leafletOutput("goochland_con") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
+                                                              p("The areas highlighted in purple represent", strong("Rural Preservation Districts"), "which allow for residential development but continue to allow agricultural uses in the preservation area, equestrian activities, and forest management plans [1]."),
+>>>>>>> f4b8d2a965f004598147f91f1307a37e805172df
                                                               p("Goochland County runs a land use program which assesses land based on use value as opposed to market value. The program was adopted by the county in 1978. There are multiple requirements for land to be eligible for the program as established by the State Land Evaluation Advisory Council:"),
                                                               tags$ul(
                                                                 
@@ -929,15 +924,20 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      h1(strong("Powhatan"), align = "center"),
                                                      p("", style = "padding-top:10px;"),
                                                      fluidRow(style = "margin: 6px;", align = "justify",
-                                                              leafletOutput("powhatan_con"),
+                                                              leafletOutput("powhatan_con") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                               p("The map above highlights the many different types of conservation districts in Powhatan County."), 
                                                               tags$ul(
                                                                 
+<<<<<<< HEAD
                                                                 tags$li("The green layer represents", strong("Agricultural Forestal Districts (AFD)"),"which are areas of land that are recognized by the county as being economically and environmentally valuable resources for all [7]."),
+=======
+                                                                tags$li("The orange layer represents", strong("Priority Conservation Areas"), "which are protected for long term conservation."),
+>>>>>>> f4b8d2a965f004598147f91f1307a37e805172df
                                                                 
                                                                 tags$li("The red layer represents", strong("Protected Lands"), "which are protected due to their natural, cultural, or ecological value."),
                                                                 
-                                                                tags$li("The orange layer represents", strong("Priority Conservation Areas"), "which are protected for long term conservation."),
+                                                                tags$li("The green layer represents", strong("Agricultural Forestal Districts (AFD)"),"which are areas of land that are recognized by the county as being economically and environmentally valuable resources for all"),
+                                                                
 
                                                               ),
                                                               p('Powhatan County land use policy includes a land use deferral program, Powhatan County code Section 70-76, which states that the purpose of land use is
@@ -1005,13 +1005,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             sep = "", width = "150%"),
                                                                 
 
-                                                                leafletOutput(outputId = "luPlot.g"),
+                                                                leafletOutput(outputId = "luPlot.g") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
 
 
                                                                 br(),
                                                                 h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
                                                         
-                                                                highchartOutput("gooch_sankey",height = 600),
+                                                                highchartOutput("gooch_sankey",height = 600) %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                                 p(tags$small("Data Source: Goochland County Administrative Data")))  ,
                                                          column(12,
                                                                 
@@ -1031,7 +1031,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Crops Grown in Goochland County")),
-                                                                p("The map and histogram on the right show the crop layer data for Goochland County. Goochland County is heavily forested, 
+                                                                p("The map and bar chart on the right show the crop layer data for Goochland County. Goochland County is heavily forested, 
                                                                 with forested lands accounting for 63.94% of all land. This number is a decrease from the 69.63% in 2012. 
                                                                   Developed land in Goochland increased from 7.28% to 9.29% in 10 years. Most of the developed land is in the east side of 
                                                                   the county closer to Richmond, VA. Forages is the second biggest crop layer category with 14.99%. Forage is bulky food 
@@ -1046,7 +1046,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                              choices = c("2012", "2021"), 
                                                                              selected = "2021"),
                            
-                                                                leafletOutput("g.cropMap"),
+                                                                leafletOutput("g.cropMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
                                                                 br(),
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 selectInput("gcrop", "Select Variable:", width = "100%", choices = c(
@@ -1054,7 +1054,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   "Total Acreage by Land Type 2012" = "gcrop12")
                                                                 ),
                                                                 
-                                                                plotlyOutput("gcrop_graph", height = "500px"),
+                                                                plotlyOutput("gcrop_graph", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                          ),
                                                          column(12, 
                                                                 
@@ -1098,9 +1098,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
-                                                                leafletOutput("g.soilMap",height = 500), 
+                                                                leafletOutput("g.soilMap",height = 500) %>% withSpinner(type = 4, color = "#861F41", size = 1.5), 
                                                                 h4(strong("Soil Quality Graph")),
-                                                                plotlyOutput("gsoil", height = "500px"),
+                                                                plotlyOutput("gsoil", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
                                                          column(12, 
                                                                 
@@ -1127,7 +1127,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   "Traffic Volume" = "gvol",
                                                                   "Proximity to Richmond" = "grich")
                                                                 ),
-                                                                leafletOutput("goochland_traffic"),
+                                                                leafletOutput("goochland_traffic") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
                                                                 p(tags$small("Source: VDOT")),
                                                                 
                                                          ),
@@ -1177,10 +1177,10 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             sep = "", width = "150%"),
                                                                 
 
-                                                                leafletOutput(outputId = "luPlot.p"),
+                                                                leafletOutput(outputId = "luPlot.p") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
 
                                                                 h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
-                                                                highchartOutput("pow_sankey",height = 600),
+                                                                highchartOutput("pow_sankey",height = 600) %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
 
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
 
@@ -1201,7 +1201,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Crops Grown in Powhatan County")),
-                                                                p("The map and histogram on the right show the crop layer data for Powhatan County. Powhatan County is heavily forested with forested lands account for 67.84% of all 
+                                                                p("The map and bar chart on the right show the crop layer data for Powhatan County. Powhatan County is heavily forested with forested lands account for 67.84% of all 
                                                                   land. This number is a decrease from the 75.82% in 2012. A big reason why that number is reduced is that Powhatan is rapidly developing. 
                                                                   Developed land in Powhatan increased from 3.46% to 6.88% in 10 years. Most of this developed land is in the east side of the county closer to Richmond, VA. Forages 
                                                                   is the second biggest crop layer category with 15.42%. Forage is bulky food such as grass or hay for horses and cattle. Croplands are spread out throughout the 
@@ -1213,7 +1213,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 radioButtons(inputId = "p.cropYear", label = "Select Year: ", 
                                                                              choices = c("2012", "2021"), 
                                                                              selected = "2021"),
-                                                                leafletOutput("p.cropMap"),                                                                
+                                                                leafletOutput("p.cropMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),                                                                
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 
                                                           
@@ -1222,7 +1222,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   "Total Acreage by Land Type 2012" = "pcrop12")
                                                                 ),
                                                                 
-                                                                plotlyOutput("pcrop_graph", height = "500px"),
+                                                                plotlyOutput("pcrop_graph", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                                 p(tags$small("Data Source: ACS 2016-2020")),
                                                          ),
                                                          column(12, 
@@ -1267,9 +1267,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
-                                                                leafletOutput("p.soilMap"),
+                                                                leafletOutput("p.soilMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
                                                                 h4(strong("Soil Quality Graph")),
-                                                                plotlyOutput("psoil", heigh = "500px"),
+                                                                plotlyOutput("psoil", heigh = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
                                                          column(12, 
                                                                 
@@ -1297,7 +1297,7 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                   "Traffic Volume" = "pvol",
                                                                   "Proximity to Richmond" = "prich"), 
                                                                 ),
-                                                                leafletOutput("powhatan_traffic"),
+                                                                leafletOutput("powhatan_traffic") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
                                                                 
                                                          ),
                                                          column(12, 
@@ -1347,7 +1347,7 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                             value = c(2019, 2022),
                                                                             sep = "", 
                                                                             width = "150%"),
-                                                                leafletOutput("g.parcellationPlot")
+                                                                leafletOutput("g.parcellationPlot") %>% withSpinner(type = 4, color = "#861F41", size = 1.5)
                                                                 
                                                          ),
                                                          column(12, 
@@ -1386,7 +1386,7 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                             value = c(2019,2022),
                                                                             width = "150%",
                                                                             sep = ""),
-                                                                leafletOutput("g.hotspotMap"),
+                                                                leafletOutput("g.hotspotMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
                                                                 p(tags$small("Data Source: Goochland County Administrative Data"))),
                                                          column(12, 
                                                                 
@@ -1425,7 +1425,7 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                             value = c(2012, 2020),
                                                                             sep = "", 
                                                                             width = "150%"),
-                                                                leafletOutput("p.parcellationPlot")
+                                                                leafletOutput("p.parcellationPlot") %>% withSpinner(type = 4, color = "#861F41", size = 1.5)
                                                                 
                                                          ),
                                                          column(12, 
@@ -1463,7 +1463,7 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                             value = c(2015,2021),
                                                                             width = "150%",
                                                                             sep = ""),
-                                                                leafletOutput("p.hotspotMap"),
+                                                                leafletOutput("p.hotspotMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data"))
                                                                 
                                                          ),
@@ -1590,7 +1590,7 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                           img(src = "weizhang.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           p(a(href = "https://www.linkedin.com/in/susanchenja/", 'Dr. Susan Chen', target = '_blank'), "(Associate Professor of Econometrics & Data Analytics);",
                                             br(), 
-                                            a(href = '', 'Dr. Wei Zhang', target = '_blank'), "(Assistant Professor of Agricultural & Applied Economics)."),
+                                            a(href = 'https://aaec.vt.edu/people/faculty/Zhang-Wei.html', 'Dr. Wei Zhang', target = '_blank'), "(Assistant Professor of Agricultural & Applied Economics)."),
                                           p("", style = "padding-top:10px;")
                                    )
                           ),
@@ -1605,7 +1605,7 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                             br(), 
                                             a(href = 'https://www.linkedin.com/in/samantha-rippley-58846119b/', 'Samantha Rippley', target = '_blank'), "(Virgina Tech, Graduate in Agricultural Economics);",
                                             br(), 
-                                            a(href = 'www.linkedin.com/in/rachelinman21', 'Yuanyuan Wen', target = '_blank'), "(Virginia Tech, Graduate in Agricultural & Applied Economics)."),
+                                            a(href = 'https://www.linkedin.com/in/yuanyuan-wen-811227246', 'Yuanyuan Wen', target = '_blank'), "(Virginia Tech, Graduate in Agricultural & Applied Economics)."),
                                           p("", style = "padding-top:10px;") 
                                    ),
                                    column(6, align = "center",
@@ -1614,7 +1614,7 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                           img(src = "team-sarah.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           p(a(href = "https://www.linkedin.com/in/rachel-henley-335a0345/", 'Rachel Henley', target = '_blank'), "(Virginia Cooperative Extension, Powhatan County);",
                                             br(), 
-                                            a(href = '', 'Nichole Shuman', target = '_blank'), "(Virginia Cooperative Extension, Goochland County)."),
+                                            a(href = 'https://goochland.ext.vt.edu/staff/Maxwell-Charlotte.html', 'Nichole Shuman', target = '_blank'), "(Virginia Cooperative Extension, Goochland County)."),
                                           p("", style = "padding-top:10px;")
                                    )
                           )) ,
