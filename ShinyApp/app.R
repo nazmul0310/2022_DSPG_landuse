@@ -197,48 +197,52 @@ croplayer1 <- read.csv("data/ag_analysis.csv")
 
 gcrop21 <- croplayer1 %>% 
   filter(County == "Goochland", Year==2021) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Combined`)) + 
+  ggplot(aes(x = `Combined`, y = `Area.Acre`, fill = `Combined`)) + 
   geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() +  
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") +     
   scale_fill_manual(values = gcrop_colors) + 
+  ylim(0, 130000) + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type") 
 gcrop21 <-ggplotly(gcrop21, tooltip = c("text")) 
 
 gcrop12 <- croplayer1 %>% 
   filter(County == "Goochland", Year== 2012) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Combined`)) + 
+  ggplot(aes(x = `Combined`, y = `Area.Acre`, fill = `Combined`)) + 
   geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() + 
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") + 
   scale_fill_manual(values = gcrop_colors) + 
+  ylim(0, 130000) + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 gcrop12 <-ggplotly(gcrop12, tooltip = c("text"))
 
 pcrop21 <- croplayer1 %>% 
   filter(County == "Powhatan", Year==2021) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Combined`)) + 
+  ggplot(aes(x = `Combined`, y = `Area.Acre`, fill = `Combined`)) + 
   geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() + 
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") + 
+  ylim(0, 13000) + 
   scale_fill_manual(values = gcrop_colors)+ 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 pcrop21 <-ggplotly(pcrop21, tooltip = c("text"))
 
 pcrop12 <- croplayer1 %>% 
   filter(County == "Powhatan", Year== 2012) %>%
-  ggplot(aes(x = reorder(`Combined`, `Area.Acre`), y = `Area.Acre`, fill = `Combined`)) + 
+  ggplot(aes(x = `Combined`, y = `Area.Acre`, fill = `Combined`)) + 
   geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
   coord_flip() + 
   theme_light() +
   theme(axis.text.y = element_text(hjust=0)) +
   theme(legend.position = "none") + 
+  ylim(0, 130000) + 
   scale_fill_manual(values = gcrop_colors) + 
   labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
 pcrop12 <- ggplotly(pcrop12, tooltip = c("text"))
@@ -407,8 +411,7 @@ travelTime.func <- function(county){
   
   # Initial plot
   travelTime.plt <- leaflet() %>%
-    addTiles() %>%
-    addProviderTiles("Esri")  
+    addTiles()
   
   if(county == "Powhatan"){
     travelTime.plt <- travelTime.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
@@ -902,11 +905,12 @@ ui <- navbarPage(title = "DSPG 2022",
                                                               p("The map above highlights the many different types of conservation districts in Powhatan County."), 
                                                               tags$ul(
                                                                 
-                                                                tags$li("The green layer represents", strong("Agricultural Forestal Districts (AFD)"),"which are areas of land that are recognized by the county as being economically and environmentally valuable resources for all"),
+                                                                tags$li("The orange layer represents", strong("Priority Conservation Areas"), "which are protected for long term conservation."),
                                                                 
                                                                 tags$li("The red layer represents", strong("Protected Lands"), "which are protected due to their natural, cultural, or ecological value."),
                                                                 
-                                                                tags$li("The orange layer represents", strong("Priority Conservation Areas"), "which are protected for long term conservation."),
+                                                                tags$li("The green layer represents", strong("Agricultural Forestal Districts (AFD)"),"which are areas of land that are recognized by the county as being economically and environmentally valuable resources for all"),
+                                                                
 
                                                               ),
                                                               p('Powhatan County land use policy includes a land use deferral program, Powhatan County code Section 70-76, which states that the purpose of land use is
@@ -993,7 +997,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Crops Grown in Goochland County")),
-                                                                p("The map and histogram on the right show the crop layer data for Goochland County. Goochland County is heavily forested, 
+                                                                p("The map and bar chart on the right show the crop layer data for Goochland County. Goochland County is heavily forested, 
                                                                 with forested lands accounting for 63.94% of all land. This number is a decrease from the 69.63% in 2012. 
                                                                   Developed land in Goochland increased from 7.28% to 9.29% in 10 years. Most of the developed land is in the east side of 
                                                                   the county closer to Richmond, VA. Forages is the second biggest crop layer category with 14.99%. Forage is bulky food 
@@ -1163,7 +1167,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
                                                                 h4(strong("Crops Grown in Powhatan County")),
-                                                                p("The map and histogram on the right show the crop layer data for Powhatan County. Powhatan County is heavily forested with forested lands account for 67.84% of all 
+                                                                p("The map and bar chart on the right show the crop layer data for Powhatan County. Powhatan County is heavily forested with forested lands account for 67.84% of all 
                                                                   land. This number is a decrease from the 75.82% in 2012. A big reason why that number is reduced is that Powhatan is rapidly developing. 
                                                                   Developed land in Powhatan increased from 3.46% to 6.88% in 10 years. Most of this developed land is in the east side of the county closer to Richmond, VA. Forages 
                                                                   is the second biggest crop layer category with 15.42%. Forage is bulky food such as grass or hay for horses and cattle. Croplands are spread out throughout the 
