@@ -283,7 +283,8 @@ psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Va
   labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") 
 psoil <-ggplotly(psoil, tooltip = "text")
 
-GoochlandAllParcel <- read_sf("data/luParcelData/GoochAll.shp") %>% rename(FIN_MLUSE = LUC_FIN)
+GoochlandAllParcel <- read_sf("data/luParcelData/GoochAll.shp")
+names(GoochlandAllParcel) <- c("FIN_MLUSE", "year", "geometry")
 PowhatanAllParcel <- read_sf("data/luParcelData/PowAll.shp")
 
 luPlotFunction <- function(inputYear, county) {
