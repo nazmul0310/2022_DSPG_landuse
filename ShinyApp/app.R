@@ -68,9 +68,9 @@ ind.func <- function(inputYear, inputCounty) {
   
   ind <- industry %>% 
     filter(county == inputCounty, year==inputYear) %>%
-    ggplot(aes(x = reorder(name, desc(name)), y = value, fill = value)) + 
+    ggplot(aes(x = name, y = value, fill = name)) + 
     geom_bar(stat = "identity") + theme(legend.position = "none") +
-    coord_flip() + scale_fill_viridis()  + 
+    coord_flip() + scale_fill_viridis_d()  + 
     theme_light() + 
     theme(legend.position="none") + 
     theme(axis.text.y = element_text(hjust=0)) +
@@ -655,7 +655,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      radioButtons(inputId = "yearSelect_gsoc", label = "Select Year: ", 
                                                                   choices = c("2017", "2018", "2019", "2020"), 
                                                                   selected = "2020"),
-                                                     plotOutput("gsoc", height = "500px"),
+                                                     plotOutput("gsoc", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                       fluidRow(style = "margin: 6px;",
                                                align = "justify",
                                                      h4(strong("Visualization Summaries")),
@@ -725,7 +725,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      radioButtons(inputId = "yearSelect_psoc", label = "Select Year: ", 
                                                                   choices = c("2017", "2018", "2019", "2020"), 
                                                                   selected = "2020"),
-                                                     plotOutput("psoc", height = "500px"),
+                                                     plotOutput("psoc", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                      h4(strong("Visualization Summaries")),
                                                      p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. The 25-44 age group has been 
                                                        the second largest, but has faced more inconsistency and has seen a decrease since 2018."),
@@ -877,7 +877,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      h1(strong("Goochland"), align = "center"),
                                                      p("", style = "padding-top:10px;"),
                                                      fluidRow(style = "margin: 6px;", align = "justify",
-                                                              leafletOutput("goochland_con"),
+                                                              leafletOutput("goochland_con") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                               p("The areas highlighted in purple represent", strong("Rural Preservation Districts"), "which allow for residential development but continue to allow agricultural uses in the preservation area, equestrian activities, and forest management plans [1]."),
                                                               p("Goochland County runs a land use program which assesses land based on use value as opposed to market value. The program was adopted by the county in 1978. There are multiple requirements for land to be eligible for the program as established by the State Land Evaluation Advisory Council:"),
                                                               tags$ul(
@@ -901,7 +901,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      h1(strong("Powhatan"), align = "center"),
                                                      p("", style = "padding-top:10px;"),
                                                      fluidRow(style = "margin: 6px;", align = "justify",
-                                                              leafletOutput("powhatan_con"),
+                                                              leafletOutput("powhatan_con") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                               p("The map above highlights the many different types of conservation districts in Powhatan County."), 
                                                               tags$ul(
                                                                 
@@ -971,13 +971,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             sep = "", width = "150%"),
                                                                 
 
-                                                                leafletOutput(outputId = "luPlot.g"),
+                                                                leafletOutput(outputId = "luPlot.g") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
 
 
                                                                 br(),
                                                                 h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
                                                         
-                                                                highchartOutput("gooch_sankey",height = 600),
+                                                                highchartOutput("gooch_sankey",height = 600) %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                                 p(tags$small("Data Source: Goochland County Administrative Data")))  ,
                                                          column(12,
                                                                 
@@ -1012,7 +1012,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                              choices = c("2012", "2021"), 
                                                                              selected = "2021"),
                            
-                                                                leafletOutput("g.cropMap"),
+                                                                leafletOutput("g.cropMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
                                                                 br(),
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 selectInput("gcrop", "Select Variable:", width = "100%", choices = c(
@@ -1020,7 +1020,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   "Total Acreage by Land Type 2012" = "gcrop12")
                                                                 ),
                                                                 
-                                                                plotlyOutput("gcrop_graph", height = "500px"),
+                                                                plotlyOutput("gcrop_graph", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                          ),
                                                          column(12, 
                                                                 
@@ -1064,9 +1064,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
-                                                                leafletOutput("g.soilMap",height = 500), 
+                                                                leafletOutput("g.soilMap",height = 500) %>% withSpinner(type = 4, color = "#861F41", size = 1.5), 
                                                                 h4(strong("Soil Quality Graph")),
-                                                                plotlyOutput("gsoil", height = "500px"),
+                                                                plotlyOutput("gsoil", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
                                                          column(12, 
                                                                 
@@ -1093,7 +1093,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   "Traffic Volume" = "gvol",
                                                                   "Proximity to Richmond" = "grich")
                                                                 ),
-                                                                leafletOutput("goochland_traffic"),
+                                                                leafletOutput("goochland_traffic") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
                                                                 p(tags$small("Source: VDOT")),
                                                                 
                                                          ),
@@ -1143,10 +1143,10 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             sep = "", width = "150%"),
                                                                 
 
-                                                                leafletOutput(outputId = "luPlot.p"),
+                                                                leafletOutput(outputId = "luPlot.p") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
 
                                                                 h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
-                                                                highchartOutput("pow_sankey",height = 600),
+                                                                highchartOutput("pow_sankey",height = 600) %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
 
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
 
@@ -1179,7 +1179,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 radioButtons(inputId = "p.cropYear", label = "Select Year: ", 
                                                                              choices = c("2012", "2021"), 
                                                                              selected = "2021"),
-                                                                leafletOutput("p.cropMap"),                                                                
+                                                                leafletOutput("p.cropMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),                                                                
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 
                                                           
@@ -1188,7 +1188,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   "Total Acreage by Land Type 2012" = "pcrop12")
                                                                 ),
                                                                 
-                                                                plotlyOutput("pcrop_graph", height = "500px"),
+                                                                plotlyOutput("pcrop_graph", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                                 p(tags$small("Data Source: ACS 2016-2020")),
                                                          ),
                                                          column(12, 
@@ -1233,9 +1233,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          ), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
-                                                                leafletOutput("p.soilMap"),
+                                                                leafletOutput("p.soilMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
                                                                 h4(strong("Soil Quality Graph")),
-                                                                plotlyOutput("psoil", heigh = "500px"),
+                                                                plotlyOutput("psoil", heigh = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
                                                          column(12, 
                                                                 
@@ -1263,7 +1263,7 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                   "Traffic Volume" = "pvol",
                                                                   "Proximity to Richmond" = "prich"), 
                                                                 ),
-                                                                leafletOutput("powhatan_traffic"),
+                                                                leafletOutput("powhatan_traffic") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
                                                                 
                                                          ),
                                                          column(12, 
@@ -1313,7 +1313,7 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                             value = c(2019, 2022),
                                                                             sep = "", 
                                                                             width = "150%"),
-                                                                leafletOutput("g.parcellationPlot")
+                                                                leafletOutput("g.parcellationPlot") %>% withSpinner(type = 4, color = "#861F41", size = 1.5)
                                                                 
                                                          ),
                                                          column(12, 
@@ -1352,7 +1352,7 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                             value = c(2019,2022),
                                                                             width = "150%",
                                                                             sep = ""),
-                                                                leafletOutput("g.hotspotMap"),
+                                                                leafletOutput("g.hotspotMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
                                                                 p(tags$small("Data Source: Goochland County Administrative Data"))),
                                                          column(12, 
                                                                 
@@ -1391,7 +1391,7 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                             value = c(2012, 2020),
                                                                             sep = "", 
                                                                             width = "150%"),
-                                                                leafletOutput("p.parcellationPlot")
+                                                                leafletOutput("p.parcellationPlot") %>% withSpinner(type = 4, color = "#861F41", size = 1.5)
                                                                 
                                                          ),
                                                          column(12, 
@@ -1429,7 +1429,7 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                             value = c(2015,2021),
                                                                             width = "150%",
                                                                             sep = ""),
-                                                                leafletOutput("p.hotspotMap"),
+                                                                leafletOutput("p.hotspotMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data"))
                                                                 
                                                          ),
