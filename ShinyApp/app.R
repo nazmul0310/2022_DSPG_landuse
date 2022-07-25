@@ -1567,7 +1567,7 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                             br(), 
                                             a(href = 'https://www.linkedin.com/in/samantha-rippley-58846119b/', 'Samantha Rippley', target = '_blank'), "(Virgina Tech, Graduate in Agricultural Economics);",
                                             br(), 
-                                            a(href = 'www.linkedin.com/in/rachelinman21', 'Yuanyuan Wen', target = '_blank'), "(Virginia Tech, Graduate in Agricultural & Applied Economics)."),
+                                            a(href = 'https://www.linkedin.com/in/yuanyuan-wen-811227246', 'Yuanyuan Wen', target = '_blank'), "(Virginia Tech, Graduate in Agricultural & Applied Economics)."),
                                           p("", style = "padding-top:10px;") 
                                    ),
                                    column(6, align = "center",
