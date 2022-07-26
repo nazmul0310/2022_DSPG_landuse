@@ -848,13 +848,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      h1(strong("Goochland"), align = "center"),
                                                      p("", style = "padding-top:10px;"),
                                                      fluidRow(style = "margin: 6px;", align = "justify",
-<<<<<<< HEAD
-                                                              leafletOutput("goochland_con"),
-                                                              p("The areas highlighted in purple represent", strong("Rural Preservation Districts"), "which allow for residential development but continue to allow agricultural uses in the preservation area, equestrian activities, and forest management plans [2]."),
-=======
                                                               leafletOutput("goochland_con") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                               p("The areas highlighted in purple represent", strong("Rural Preservation Districts"), "which allow for residential development but continue to allow agricultural uses in the preservation area, equestrian activities, and forest management plans [1]."),
->>>>>>> f4b8d2a965f004598147f91f1307a37e805172df
                                                               p("Goochland County runs a land use program which assesses land based on use value as opposed to market value. The program was adopted by the county in 1978. There are multiple requirements for land to be eligible for the program as established by the State Land Evaluation Advisory Council:"),
                                                               tags$ul(
                                                                 
@@ -881,11 +876,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                               p("The map above highlights the many different types of conservation districts in Powhatan County."), 
                                                               tags$ul(
                                                                 
-<<<<<<< HEAD
-                                                                tags$li("The green layer represents", strong("Agricultural Forestal Districts (AFD)"),"which are areas of land that are recognized by the county as being economically and environmentally valuable resources for all [7]."),
-=======
                                                                 tags$li("The orange layer represents", strong("Priority Conservation Areas"), "which are protected for long term conservation."),
->>>>>>> f4b8d2a965f004598147f91f1307a37e805172df
                                                                 
                                                                 tags$li("The red layer represents", strong("Protected Lands"), "which are protected due to their natural, cultural, or ecological value."),
                                                                 
