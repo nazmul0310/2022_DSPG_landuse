@@ -37,21 +37,24 @@ options(scipen=999)
 options(shiny.maxRequestSize = 100*1024^2)
 
 # DATA --------------------------------------------------------------------------------------------------------------------
-      # soc
-popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny ap
-industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
-inc <- read.csv("data/inc.csv", header=TRUE) 
-educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) 
-      # boundaries
+
+## NECESSITIES =================================================
+
+# necessary imports for many of our plots (county boundary shape files)
 gl_cnty<- st_read("data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 po_cnty<- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 
 ## SOCIODEMOGRAPHICS =================================================
 
+popdist<-read.csv("data/popdist.csv", header = TRUE) #for Shiny ap
+industry <- read.csv("data/industry.csv", header=TRUE) #for Shiny app
+inc <- read.csv("data/inc.csv", header=TRUE) 
+educ_earn <- read.csv("data/educ_earn.csv", header=TRUE) 
+
 age.func <- function(inputYear, inputCounty) {
   
-  age <- popdist %>% # code for Shiny app
+  age <- popdist %>%
     filter(county == inputCounty, year==inputYear) %>%
     ggplot(aes(x=agecat , y=value, fill=agecat))+
     geom_bar(stat="identity") + 
@@ -118,126 +121,34 @@ edu.func <- function(inputYear, inputCounty) {
 
 ## POLICY =================================================
 
-    # Goochland
-
 gcon <- st_read("data/Conservation/Gooch_Preservation.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+pcon <- st_read("data/Conservation/Powhatan_Natural_Conservation.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 goochland_con <- leaflet()%>%
   addTiles() %>%
   addProviderTiles(providers$CartoDB.Positron)%>%
-  setView(lng=-78, lat=37.75, zoom=10.48) %>% 
+  setView(lng=-77.885376, lat=37.684143, zoom=10.48) %>% 
   addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="purple")%>%
-  addPolygons(data=gl_cnty, weight=1, color="black", fillOpacity=0)
-
-    # Powhatan
-
-pcon <- st_read("data/Conservation/Powhatan_Natural_Conservation.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-pcon$col=sample(c('red','yellow','green'),nrow(pcon),1)
+  addPolygons(data=gl_cnty, weight=2, color="black", fillOpacity=0, opacity = 1)
 
 powhatan_con <- leaflet()%>%
   addTiles() %>%
   addProviderTiles(providers$CartoDB.Positron)%>%
-  setView(lng=-77.97, lat=37.58, zoom=10.495) %>% 
+  setView(lng=-77.9188, lat=37.5415, zoom=10.495) %>% 
   addPolygons(data=pcon[1,], weight=0, fillOpacity = 0.5, fillColor = "#f89540", group = "Priority Conservation Areas")%>%
   addPolygons(data=pcon[2,], weight=0, fillOpacity = 0.5, fillColor = "#b73779", group = "Protected Lands")%>%
   addPolygons(data=pcon[3,], weight=0, fillOpacity = 0.5, fillColor = "#21918c", group = "AFD")%>%
-  addPolygons(data=po_cnty, weight=2, color="black", fillOpacity=0)%>%
+  addPolygons(data=po_cnty, weight=2, color="black", fillOpacity=0, opacity = 1)%>%
   addLayersControl(
     overlayGroups = c("Priority Conservation Areas", "Protected Lands", "AFD"),
     position = "bottomleft",
     options = layersControlOptions(collapsed = FALSE))
 
 
-  ## LAND USE  =================================================
-
-gcrop_values <- c("Developed", 
-                  "Double cropped", 
-                  "Forages", 
-                  "Forested", 
-                  "Horticulture crops*", 
-                  "Other", 
-                  "Row crops", 
-                  "Small grains", "Tree crops*", "Water", "Wetlands")
-pcrop_values <- c("Developed", 
-                  "Double cropped", 
-                  "Forages", 
-                  "Forested", 
-                  "Horticulture crops", 
-                  "Other", 
-                  "Row crops", 
-                  "Small grains", "Tree crops", "Water", "Wetlands")
-gcrop_values21 <- c("Developed", 
-                    "Double cropped", 
-                    "Forages", 
-                    "Forested", 
-                    "Horticulture crops*", 
-                    "Other", 
-                    "Row crops", 
-                    "Small grains", "Water", "Wetlands")
-gcrop_values <- factor(gcrop_values, levels = gcrop_values)
-gcrop_values21 <- factor(gcrop_values21, levels = gcrop_values21)
-
-gcrop_palette <- colorBin(palette = "viridis", as.numeric(gcrop_values), bins = 11)
-gcrop_colors <- gcrop_palette(unclass(gcrop_values))
-gcrop_colors[11] <- "#4D4D4D" # the color is similar to 
-gcrop_legendpalette <- colorFactor(palette = gcrop_colors,levels=gcrop_values)
-pcrop_legendpalette <- colorFactor(palette = gcrop_colors,levels=pcrop_values)
-
-gcrop_legendpalette21 <- colorFactor(palette = gcrop_colors[-9],levels=gcrop_values21)
-
-croplayer1 <- read.csv("data/ag_analysis.csv")
-
-cropPlot.func <- function(county, year){
-  data <- croplayer1 %>% filter(County == county, Year == year)
-  crop.plt <- data %>% ggplot(aes(x = Combined, y = Area.Acre, fill = Combined)) + 
-    geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(Combined, "\nTotal Acres: ", round(Area.Acre, 0)))) + 
-    coord_flip() + 
-    theme_light() + 
-    theme(axis.text.y = element_text(hjust=0), legend.position = "none") +
-    scale_fill_manual(values = gcrop_colors) + 
-    ylim(0, 130000) + 
-    labs(title = "Total Acreage by Land Type", x = "Acreage", y = "Land type") 
-  crop.plt <- ggplotly(crop.plt, tooltip = "text")
-  crop.plt
-}
-
-g.soilData <- read_sf("data/Soil_Quality/Goochland/Goochland_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-p.soilData <- read_sf("data/Soil_Quality/Powhatan/Powhatan_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-
-soilClass <- c("Capability Class-I","Capability Class-II","Capability Class-III","Capability Class-IV",
-               "Capability Class-V","Capability Class-VI","Capability Class-VII","Capability Class-VIII",
-               "NODATA")
-soilClass <- factor(soilClass, levels = soilClass)
-
-soilPalette <- colorBin(palette = "viridis", as.numeric(soilClass), bins = 9)
-soilColors <- soilPalette(unclass(soilClass))
-soilColors[9] <- "#4D4D4D" # the color is similar to 
-soilLegend <- colorFactor(palette = soilColors,levels=soilClass)
-
-g.soilColors <- soilColors[-c(1,8)] #gooch doesnt have category I and VIII
-g.soilLegend <- colorFactor(palette = g.soilColors,levels=soilClass[-c(1,8)])
+## LAND USE  =================================================
 
 
-soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
-
-gsoil <- ggplot(soil_quality, aes(x = `G_Value`, y = `G_Area_acre`, fill = `G_Value`)) +
-  geom_bar(stat = "identity",hoverinfo = "text", aes(text = paste0(`G_Value`, "\n", "Total Acres: ", round(`G_Area_acre`, 0))))+
-  coord_flip() +
-  theme(legend.position = "none") +
-  scale_x_discrete(limits = rev) +
-  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification")+
-  scale_fill_manual(values=soilColors)
-gsoil <-ggplotly(gsoil, tooltip = "text")
-
-psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Value`)) +
-  geom_bar(stat = "identity",hoverinfo ="text", aes(text = paste0(`P_Value`, "\n", "Total Acres: ", round(`P_Area_acre`, 0))))+
-  geom_errorbarh(aes(xmax=as.numeric(`P_Value`)+0.45,xmin=as.numeric(`P_Value`)-0.45,height=0),position=position_dodge(width=0.9)) +
-  coord_flip() +
-  theme(legend.position = "none") +
-  scale_x_discrete(limits = rev) +
-  scale_fill_manual(values=soilColors)+
-  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") 
-psoil <-ggplotly(psoil, tooltip = "text")
+### LAND USE =================================================
 
 GoochlandAllParcel <- read_sf("data/luParcelData/GoochAll.shp")
 names(GoochlandAllParcel) <- c("FIN_MLUSE", "year", "geometry")
@@ -258,6 +169,7 @@ luPlotFunction <- function(inputYear, county) {
     lu.plt <- lu.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
     parcelData <- GoochlandAllParcel %>% filter(year == inputYear) 
   }
+  
   LUC_values <- c("Single Family Residential Urban", 
                   "Single Family Residential Suburban", 
                   "Multi-Family Residential", 
@@ -271,7 +183,7 @@ luPlotFunction <- function(inputYear, county) {
   
   mypalette <- colorBin(palette = "viridis", as.numeric(LUC_values), bins = 8)
   colors <- mypalette(unclass(LUC_values))
-  colors[8] <- "#4D4D4D" # the color is similar to 
+  colors[8] <- "#4D4D4D" # undefined gets a grayed out color
   legendpalette <- colorFactor(palette = colors,levels=LUC_values)
   
   lu.plt <- leaflet() %>%
@@ -305,15 +217,147 @@ luPlotFunction <- function(inputYear, county) {
       overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Undefined"),
       position = "bottomleft",
       options = layersControlOptions(collapsed = FALSE)) %>% 
-    addLegend("bottomright", pal = legendpalette, values = LUC_values,
+    addLegend(data=parcelData, "bottomright", 
+              pal = legendpalette, values = LUC_values,
               title = "Land Use Type",
               labFormat = labelFormat(),
-              opacity = 1,
-              data=parcelData) 
+              opacity = 1) 
   lu.plt
 }
 
-## TRAFFIC ===============================================
+#transition matrix
+agLabels <- c("Agricultural / Undeveloped (20-99 Acres) (before)", "Agricultural / Undeveloped (100+ Acres) (before)")
+g.sankey <- read.csv("data/luParcelData/g_sankey.csv") %>% select(LUC_old,LUC_new) %>% filter(LUC_old %in% agLabels)
+p.sankey <- read.csv("data/luParcelData/p_sankey.csv") %>% select(MLUSE_old,MLUSE_new)  %>% filter(MLUSE_old %in% agLabels)
+
+thm.p <- hc_theme(colors = c("#fde725", "#fde725", "#1fa187", "#addc30", "#3b528b",  "#5ec962", "#1fa187"),
+                chart = list(backgroundColor = "#ffffff"),
+                title = list(style = list(color ='#000000',
+                                          fontFamily = "Lumen")),
+                subtitle = list(style = list(color ='#000000',
+                                             fontFamily = "Lumen")),
+                labels=list(color="#333333", position="absolute"),
+                legend = list(itemStyle = list(fontFamily ='Lumen',color ='#000000')
+                              ,y=50,align='right',itemHoverStyle = list(color ="#FFFf43")))
+# hchart(data_to_sankey(p.sankey), "sankey", ) %>%
+#   hc_add_theme(thm.p) %>%
+#   hc_plotOptions(series = list(dataLabels = list(style = list(fontSize = "10px",color="black", textOutline = "none"))))
+
+thm.g <- hc_theme(colors = c("#fde725", "#fde725", "#1fa187", "#90d743", "#35b779", "#440154", "#31688e", "#443983", "#1fa187"),
+                  chart = list(backgroundColor = "#ffffff"),
+                  title = list(style = list(color ='#000000',
+                                            fontFamily = "Lumen")),
+                  subtitle = list(style = list(color ='#000000',
+                                               fontFamily = "Lumen")),
+                  labels=list(color="#333333", position="absolute"),
+                  legend = list(itemStyle = list(fontFamily ='Lumen',color ='#000000')
+                                ,y=50,align='right',itemHoverStyle = list(color ="#FFFf43")))
+
+# hchart(data_to_sankey(g.sankey), "sankey", ) %>%
+#   hc_add_theme(thm.g) %>%
+#   hc_plotOptions(series = list(dataLabels = list(style = list(fontSize = "10px",color="black", textOutline = "none"))))
+
+
+### CROP LAYER =================================================
+
+  # setting up labels depending on whether it has little to no acreage
+gcrop_values <- c("Developed", 
+                  "Double cropped", 
+                  "Forages", 
+                  "Forested", 
+                  "Horticulture crops*", 
+                  "Other", 
+                  "Row crops", 
+                  "Small grains", "Tree crops*", "Water", "Wetlands")
+pcrop_values <- c("Developed", 
+                  "Double cropped", 
+                  "Forages", 
+                  "Forested", 
+                  "Horticulture crops", 
+                  "Other", 
+                  "Row crops", 
+                  "Small grains", "Tree crops", "Water", "Wetlands")
+gcrop_values21 <- c("Developed", 
+                    "Double cropped", 
+                    "Forages", 
+                    "Forested", 
+                    "Horticulture crops*", 
+                    "Other", 
+                    "Row crops", 
+                    "Small grains", "Water", "Wetlands")
+gcrop_values <- factor(gcrop_values, levels = gcrop_values)
+gcrop_values21 <- factor(gcrop_values21, levels = gcrop_values21)
+
+  # setting up palettes for crop layer map
+gcrop_palette <- colorBin(palette = "viridis", as.numeric(gcrop_values), bins = 11)
+gcrop_colors <- gcrop_palette(unclass(gcrop_values))
+gcrop_colors[11] <- "#4D4D4D" # the color is similar to 
+gcrop_legendpalette <- colorFactor(palette = gcrop_colors,levels=gcrop_values)
+pcrop_legendpalette <- colorFactor(palette = gcrop_colors,levels=pcrop_values)
+
+gcrop_legendpalette21 <- colorFactor(palette = gcrop_colors[-9],levels=gcrop_values21)
+
+
+
+croplayer1 <- read.csv("data/ag_analysis.csv")
+cropPlot.func <- function(county, year){
+  data <- croplayer1 %>% filter(County == county, Year == year)
+  crop.plt <- data %>% ggplot(aes(x = Combined, y = Area.Acre, fill = Combined)) + 
+    geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(Combined, "\nTotal Acres: ", round(Area.Acre, 0)))) + 
+    coord_flip() + 
+    theme_light() + 
+    theme(axis.text.y = element_text(hjust=0), legend.position = "none") +
+    scale_fill_manual(values = gcrop_colors) + 
+    ylim(0, 130000) + 
+    labs(title = "Total Acreage by Land Type", x = "Acreage", y = "Land type") 
+  crop.plt <- ggplotly(crop.plt, tooltip = "text")
+  crop.plt
+}
+
+
+### SOIL QUALITY =================================================
+
+g.soilData <- read_sf("data/Soil_Quality/Goochland/Goochland_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+p.soilData <- read_sf("data/Soil_Quality/Powhatan/Powhatan_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+
+soilClass <- c("Capability Class-I","Capability Class-II","Capability Class-III","Capability Class-IV",
+               "Capability Class-V","Capability Class-VI","Capability Class-VII","Capability Class-VIII",
+               "NODATA")
+soilClass <- factor(soilClass, levels = soilClass)
+
+soilPalette <- colorBin(palette = "viridis", as.numeric(soilClass), bins = 9)
+soilColors <- soilPalette(unclass(soilClass))
+soilColors[9] <- "#4D4D4D" # undefined gets a gray color
+soilLegend <- colorFactor(palette = soilColors,levels=soilClass)
+
+g.soilColors <- soilColors[-c(1,8)] #gooch doesnt have category I and VIII
+g.soilLegend <- colorFactor(palette = g.soilColors,levels=soilClass[-c(1,8)])
+
+
+soil_quality <- read.csv("data/Soil_Quality_Analysis.csv")
+
+gsoil <- ggplot(soil_quality, aes(x = `G_Value`, y = `G_Area_acre`, fill = `G_Value`, 
+                                  text = paste0(`G_Value`, "\n", "Total Acres: ", round(`G_Area_acre`, 0)))) +
+  geom_bar(stat = "identity")+
+  coord_flip() +
+  theme(legend.position = "none") +
+  scale_x_discrete(limits = rev) +
+  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification")+
+  scale_fill_manual(values=soilColors)
+gsoil <-ggplotly(gsoil, tooltip = "text")
+
+psoil <- ggplot(soil_quality, aes(x = `P_Value`, y = `P_Area_acre`, fill = `P_Value`,
+                                  text = paste0(`P_Value`, "\n", "Total Acres: ", round(`P_Area_acre`, 0)))) +
+  geom_bar(stat = "identity") + 
+  coord_flip() +
+  theme(legend.position = "none") +
+  scale_x_discrete(limits = rev) +
+  scale_fill_manual(values=soilColors)+
+  labs( title = "Total Acreage by Soil Quality Classification", y = "Acreage", x = "Soil Quality Classification") 
+psoil <-ggplotly(psoil, tooltip = "text")
+
+
+### TRAFFIC ===============================================
 gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 groads<- st_read("data/Traffic_Hotspot/Gooch_roads.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 ptraffic<- st_read("data/Traffic_Hotspot/Powhatan_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
@@ -329,7 +373,7 @@ trafficVol.func <- function(county){
     trafficData <- ptraffic
   }
   else{
-    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.9, lat=37.73, zoom = 10) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
+    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
     roadData <- groads
     trafficData <- gtraffic
   }
@@ -369,7 +413,7 @@ travelTime.func <- function(county){
     travelTime.plt <- travelTime.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
     data <- pow.travelTimes
   } else {
-    travelTime.plt <- travelTime.plt %>% setView(lng=-77.9, lat=37.73, zoom = 10)
+    travelTime.plt <- travelTime.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
     data <- gooch.travelTimes
   }
   
@@ -384,7 +428,7 @@ travelTime.func <- function(county){
     addPolygons(data = data, color = "black",
                 fillColor = colors,
                 smoothFactor = 0.1, fillOpacity=.6, weight = 1,stroke = FALSE) %>%
-    addCircleMarkers(lat = 37.534379575044426, lng = -77.44071077873014, label = "Richmond") %>%
+    addCircleMarkers(lng = -77.44071077873014, lat = 37.534379575044426, label = "Richmond") %>%
     addLegend(position = "bottomright", labels = c("Within 30 minutes", "Within 45 minutes", "Within 1 hour", "More than 1 hour"), 
               colors = sorted_colors)
   
@@ -393,10 +437,21 @@ travelTime.func <- function(county){
 
 
 ## PARCELLATION ============================================
+gooch_parcellation <- st_read("data/parcellationData/Gooch_Parcellation_LT.shp") %>%
+  st_transform(crs = st_crs("EPSG:4326"))
+gooch_parcellation$year <- substr(gooch_parcellation$UNIQID_1, 1, 4)
+
+pow_parcellation <- read_sf("data/parcellationData/Powhatan_Parcellation_LT.shp") %>%
+  st_transform(crs = st_crs("EPSG:4326"))
+pow_parcellation$year <- substr(pow_parcellation$UNIQ_ID_12, 1, 4)
+
+  # both have substr to get the year from the first four characters of UNIQID_1/_12 
+
+### PARCELS ============================================
 parc.func <- function(data, range, county, cnty){
   
   # Declares initial leaflet, nothing added to it.
-  my.parc.plt <- leaflet()%>%
+  my.parc.plt <- leaflet() %>%
     addTiles() %>%
     addProviderTiles(providers$CartoDB.Positron) %>%
     addPolygons(data = cnty, fillColor = "transparent")
@@ -427,8 +482,9 @@ parc.func <- function(data, range, county, cnty){
   my.parc.plt
 }
 
+### HOTSPOTS ============================================
 hotspot.func <- function(county, range){
-  # Initial plot, fitted
+  
   hotspot.plt <- leaflet()%>%
     addTiles() %>%
     addProviderTiles(providers$CartoDB.Positron)
@@ -458,40 +514,6 @@ hotspot.func <- function(county, range){
   }
   hotspot.plt
 }
-
-
-harbour<- leaflet() %>% 
-  addTiles() %>% 
-  setView(lng=-77.949, lat=37.742, zoom=9)
-
-
-
-# Land Parcellation Imports
-
-# gooch
-gooch_parcellation <- st_read("data/parcellationData/Gooch_Parcellation_LT.shp") %>%
-  st_transform(crs = st_crs("EPSG:4326"))
-gooch_parcellation$year <- substr(gooch_parcellation$UNIQID_1, 1, 4)
-
-# pow
-pow_parcellation <- read_sf("data/parcellationData/Powhatan_Parcellation_LT.shp") %>%
-  st_transform(crs = st_crs("EPSG:4326"))
-pow_parcellation$year <- substr(pow_parcellation$UNIQ_ID_12, 1, 4)
-
-
-#transition matrix
-g.sankey <- read.csv("data/luParcelData/g_sankey.csv") %>% select(LUC_old,LUC_new) 
-p.sankey <- read.csv("data/luParcelData/p_sankey.csv") %>% select(MLUSE_old,MLUSE_new) 
-
-thm <- hc_theme(colors = c("#440154", "#443A83", "#31688E", "#21908D", "#35B779",
-                           "#8FD644", "#FDE725", "#4D4D4D"),
-                chart = list(backgroundColor = "#ffffff"),
-                title = list(style = list(color ='#000000',
-                                          fontFamily = "Lumen")),
-                subtitle = list(style = list(color ='#000000',
-                                             fontFamily = "Lumen")),
-                legend = list(itemStyle = list(fontFamily ='Lumen',color ='black')
-                              ,itemHoverStyle = list(color ='black')))
 
 # ui --------------------------------------------------------------------------------------------------------------------
 
@@ -609,33 +631,33 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   choices = c("2017", "2018", "2019", "2020"), 
                                                                   selected = "2020"),
                                                      plotOutput("gsoc", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
-                                      fluidRow(style = "margin: 6px;",
-                                               align = "justify",
-                                                     h4(strong("Visualization Summaries")),
-                                                     p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. 
+                                                     fluidRow(style = "margin: 6px;",
+                                                              align = "justify",
+                                                              h4(strong("Visualization Summaries")),
+                                                              p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. 
                                                        The 25-44 age group has been the second largest, but has faced more inconsistency and has seen a decrease since 2019."),
-                                                     p("The", strong("employment"), "graphs indicates that the education, health, and social services industry group has been the largest by a wide margin, and specifically saw a large 
+                                                              p("The", strong("employment"), "graphs indicates that the education, health, and social services industry group has been the largest by a wide margin, and specifically saw a large 
                                                        increase between 2018 and 2019. The agricultural, forestal, fishing, hunting, and mining industry group has consistently been the smallest, employing less than 5% of 
                                                        the population every year."),
-                                                     p("The" ,strong("income distribution"), "graph illustrates the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied 
+                                                              p("The" ,strong("income distribution"), "graph illustrates the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied 
                                                        by a decrease in earnings below $75,000. It is also notable that earnings above $100,000 and below $35,000 are the largest categories throughout all years."),
-                                                     p("The" ,strong("median earnings"), "graphs highlight the fact that those with a highest educational attainment of Some college/Associates earn the most. The median earnings for this 
+                                                              p("The" ,strong("median earnings"), "graphs highlight the fact that those with a highest educational attainment of Some college/Associates earn the most. The median earnings for this 
                                                        group were significantly higher than others in 2017 and 2018, but saw a significant decrease to $65,890 in 2019. This number goes back up to $75,313 in 2020; still much lower than the first two years.")),
                                                      
                                               ),
                                      ),
                                      column(12, 
                                             h4("References: "), 
-                                            p(tags$small("[1] United States Department of Agriculture. Goochland County Virginia - county profile. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51075.pdf")), 
-                                            p(tags$small("[2] Goochland County. (n.d.). Parks &amp;&nbsp;recreation. Goochland County, VA - Official Website. Retrieved July 25, 2022, from https://www.goochlandva.us/236/Parks-Recreation")), 
-                                            p(tags$small("[3] U.S. Census Bureau (2022). Age and sex, 2020: ACS 5-Year estimates subject tables. Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?t=Populations%20and%20People&g=0500000US51075&tid=ACSST5Y2020.S0101.")), 
-                                            p(tags$small("[4] U.S. Census Bureau (2022). Race, 2020: DEC redistricting data (PL 94-171). Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?t=Populations%20and%20People&g=0500000US51075.")) ,
-                                            p(tags$small("[5] U.S. Census Bureau (2022). Employment status, 2020: ACS 5-Year estimates subject tables. Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?t=Employment%3AEmployment%20and%20Labor%20Force%20Status&g=0500000US51075&y=2020&tid=ACSST5Y2020.S2301&moe=false.")) ,
-                                            p(tags$small("[6] U.S. Census Bureau (2022). Industry by occupation for the civilian employed population 16 years and over, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Occupation&g=0500000US51075&y=2020&tid=ACSST5Y2020.S2405")),
-                                            p(tags$small("[7] U.S. Census Bureau (2022). Median income in the past 12 months (in 2020 inflation-adjusted dollars), 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Income%20%28Households,%20Families,%20Individuals%29&g=0500000US51075&y=2020&tid=ACSST5Y2020.S1903")),
-                                            p(tags$small("[8] U.S. Census Bureau (2022). Income in the past 12 months (in 2020 inflation-adjusted dollars), 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Income%20%28Households,%20Families,%20Individuals%29&g=0500000US51075&y=2020")),
-                                            p(tags$small("[9] U.S. Census Bureau (2022). Educational attainment, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Education&g=0500000US51075&y=2020")),
-                                            p(tags$small("[10] U.S. Census Bureau (2022). Geographic mobility by selected characteristics in the United States, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Residential%20Mobility&g=0500000US51075&y=2020")),
+                                            p(tags$small("[1] United States Department of Agriculture. Goochland County Virginia - county profile. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51075.pdf", tags$br(),
+                                                         "[2] Goochland County. (n.d.). Parks &amp;&nbsp;recreation. Goochland County, VA - Official Website. Retrieved July 25, 2022, from https://www.goochlandva.us/236/Parks-Recreation", tags$br(), 
+                                                         "[3] U.S. Census Bureau (2022). Age and sex, 2020: ACS 5-Year estimates subject tables. Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?t=Populations%20and%20People&g=0500000US51075&tid=ACSST5Y2020.S0101.", tags$br(), 
+                                                         "[4] U.S. Census Bureau (2022). Race, 2020: DEC redistricting data (PL 94-171). Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?t=Populations%20and%20People&g=0500000US51075." , tags$br(),
+                                                         "[5] U.S. Census Bureau (2022). Employment status, 2020: ACS 5-Year estimates subject tables. Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?t=Employment%3AEmployment%20and%20Labor%20Force%20Status&g=0500000US51075&y=2020&tid=ACSST5Y2020.S2301&moe=false." , tags$br(),
+                                                         "[6] U.S. Census Bureau (2022). Industry by occupation for the civilian employed population 16 years and over, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Occupation&g=0500000US51075&y=2020&tid=ACSST5Y2020.S2405", tags$br(),
+                                                         "[7] U.S. Census Bureau (2022). Median income in the past 12 months (in 2020 inflation-adjusted dollars), 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Income%20%28Households,%20Families,%20Individuals%29&g=0500000US51075&y=2020&tid=ACSST5Y2020.S1903", tags$br(),
+                                                         "[8] U.S. Census Bureau (2022). Income in the past 12 months (in 2020 inflation-adjusted dollars), 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Income%20%28Households,%20Families,%20Individuals%29&g=0500000US51075&y=2020", tags$br(),
+                                                         "[9] U.S. Census Bureau (2022). Educational attainment, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Education&g=0500000US51075&y=2020", tags$br(),
+                                                         "[10] U.S. Census Bureau (2022). Geographic mobility by selected characteristics in the United States, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Residential%20Mobility&g=0500000US51075&y=2020")),
                                             p("", style = "padding-top:10px;")) 
                             ), 
                             tabPanel("Powhatan", 
@@ -691,20 +713,20 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p("The", strong("median earnings"), "graphs highlight the fact that those with a highest educational attainment of Some college/Associates earn the most. The median earnings for this group were significantly higher than others up until 2019, but saw 
                                                        a significant decrease to $66,915 in 2020. This number is nearly identical to the median earnings for those with less than a high school education at $66,716."),
                                               )),
-                                              column(12, 
-                                                     h4("References: "), 
-                                                     p(tags$small("[1] About Powhatan. About Powhatan | Powhatan County, VA - Official Website. (n.d.). Retrieved July 15, 2022, from http://www.powhatanva.gov/317/About-Powhatan")),
-                                                     p(tags$small("[2] Powhatan WMA. Virginia Department of Wildlife Resources. (n.d.). Retrieved July 15, 2022, from https://dwr.virginia.gov/wma/powhatan/")),
-                                                     p(tags$small("[3] U.S. Census Bureau (2022). Age and sex, 2020: ACS 5-Year estimates subject tables. Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?t=Populations%20and%20People&g=0500000US51145&y=2020&tid=ACSST5Y2020.S0101")), 
-                                                     p(tags$small("[4] U.S. Census Bureau (2022). Race, 2020: DEC redistricting data (PL 94-171). Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?g=0500000US51145&y=2020&tid=DECENNIALPL2020.P1")) ,
-                                                     p(tags$small("[5] U.S. Census Bureau (2022). Employment status, 2020: ACS 5-Year estimates subject tables. Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?t=Employment%3AEmployment%20and%20Labor%20Force%20Status&g=0500000US51145&y=2020&tid=ACSST5Y2020.S2301")) ,
-                                                     p(tags$small("[6] U.S. Census Bureau (2022). Industry by occupation for the civilian employed population 16 years and over, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Occupation&g=0500000US51145&y=2020&tid=ACSST5Y2020.S2405")),
-                                                     p(tags$small("[7] U.S. Census Bureau (2022). Median income in the past 12 months (in 2020 inflation-adjusted dollars), 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Income%20%28Households,%20Families,%20Individuals%29&g=0500000US51145&y=2020&tid=ACSST5Y2020.S1903")),
-                                                     p(tags$small("[8] U.S. Census Bureau (2022). Income in the past 12 months (in 2020 inflation-adjusted dollars), 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Income%20%28Households,%20Families,%20Individuals%29&g=0500000US51145&y=2020&tid=ACSST5Y2020.S1901")),
-                                                     p(tags$small("[9] U.S. Census Bureau (2022). Educational attainment, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Education&g=0500000US51145&y=2020&tid=ACSST5Y2020.S1501")),
-                                                     p(tags$small("[10] United States Department of Agriculture. Powhatan County Virginia - county profile. National Agricultural Statistics Survey. Retrieved July 25, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51145.pdf")), 
-                                                     p(tags$small("[11] U.S. Census Bureau (2022). Geographic mobility by selected characteristics in the United States, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Residential%20Mobility&g=0500000US51145&y=2020&tid=ACSST5Y2020.S0701")),
-                                                     p("", style = "padding-top:10px;")) 
+                                     column(12, 
+                                            h4("References: "), 
+                                            p(tags$small("[1] About Powhatan. About Powhatan | Powhatan County, VA - Official Website. (n.d.). Retrieved July 15, 2022, from http://www.powhatanva.gov/317/About-Powhatan", tags$br(),
+                                                         "[2] Powhatan WMA. Virginia Department of Wildlife Resources. (n.d.). Retrieved July 15, 2022, from https://dwr.virginia.gov/wma/powhatan/", tags$br(),
+                                                         "[3] U.S. Census Bureau (2022). Age and sex, 2020: ACS 5-Year estimates subject tables. Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?t=Populations%20and%20People&g=0500000US51145&y=2020&tid=ACSST5Y2020.S0101", tags$br(), 
+                                                         "[4] U.S. Census Bureau (2022). Race, 2020: DEC redistricting data (PL 94-171). Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?g=0500000US51145&y=2020&tid=DECENNIALPL2020.P1", tags$br(),
+                                                         "[5] U.S. Census Bureau (2022). Employment status, 2020: ACS 5-Year estimates subject tables. Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?t=Employment%3AEmployment%20and%20Labor%20Force%20Status&g=0500000US51145&y=2020&tid=ACSST5Y2020.S2301" , tags$br(),
+                                                         "[6] U.S. Census Bureau (2022). Industry by occupation for the civilian employed population 16 years and over, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Occupation&g=0500000US51145&y=2020&tid=ACSST5Y2020.S2405", tags$br(),
+                                                         "[7] U.S. Census Bureau (2022). Median income in the past 12 months (in 2020 inflation-adjusted dollars), 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Income%20%28Households,%20Families,%20Individuals%29&g=0500000US51145&y=2020&tid=ACSST5Y2020.S1903", tags$br(),
+                                                         "[8] U.S. Census Bureau (2022). Income in the past 12 months (in 2020 inflation-adjusted dollars), 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Income%20%28Households,%20Families,%20Individuals%29&g=0500000US51145&y=2020&tid=ACSST5Y2020.S1901", tags$br(),
+                                                         "[9] U.S. Census Bureau (2022). Educational attainment, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Education&g=0500000US51145&y=2020&tid=ACSST5Y2020.S1501", tags$br(),
+                                                         "[10] United States Department of Agriculture. Powhatan County Virginia - county profile. National Agricultural Statistics Survey. Retrieved July 25, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51145.pdf", tags$br(), 
+                                                         "[11] U.S. Census Bureau (2022). Geographic mobility by selected characteristics in the United States, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Residential%20Mobility&g=0500000US51145&y=2020&tid=ACSST5Y2020.S0701")),
+                                            p("", style = "padding-top:10px;")) 
                                      , 
                             ) 
                             
@@ -774,12 +796,12 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      to farmers. They serve as a safety net from drops in crop revenues and prices.')),
                                               column(12,
                                                      h4("References:"),
-                                                     p(tags$small("[1] Lubowski, R. N., Bucholtz, S., Claassen, R., Roberts, M. J., Cooper, J. C., Gueorguieva, A., & Johansson, R. (n.d.). Environmental Effects of Agricultural Land-Use Change United States Department of Agriculture The Role of Economics and Policy. Retrieved July 25, 2022, from www.ers.usda.gov")), 
-                                                     p(tags$small("[2] USDA. (n.d.). Emergency relief. USDA Farm Service Agency. Retrieved July 25, 2022, from https://www.fsa.usda.gov/programs-and-services/emergency-relief/index ")),
-                                                     p(tags$small("[3] USDA. (n.d.). USDA to provide approximately $6 billion to commodity and specialty crop producers impacted by 2020 and 2021 natural disasters. USDA Farm Service Agency. Retrieved July 25, 2022, from https://www.fsa.usda.gov/state-offices/Virginia/news-releases/usda-to-provide-approximately-6-billion-to-commodity-and-specialty-crop-producers-impacted-by-2020-and-2021-natural-disasters- ")),
-                                                     p(tags$small("[4] USDA. (n.d.). Emergency conservation program. USDA Farm Service Agency. Retrieved July 25, 2022, from https://www.fsa.usda.gov/programs-and-services/conservation-programs/emergency-conservation/index")),
-                                                     p(tags$small('[5] "Grassroots" source water protection program. USDA Farm Service Agency. (n.d.). Retrieved July 25, 2022, from https://www.fsa.usda.gov/programs-and-services/conservation-programs/source-water-protection/index')),
-                                                     p(tags$small("[6] USDA. (n.d.). Agriculture risk coverage (ARC) &amp; Price Loss Coverage (PLC). USDA Farm Service Agency. Retrieved July 25, 2022, from https://www.fsa.usda.gov/Assets/USDA-FSA-Public/usdafiles/FactSheets/2019/arc-plc_overview_fact_sheet-aug_2019.pdf")),
+                                                     p(tags$small("[1] Lubowski, R. N., Bucholtz, S., Claassen, R., Roberts, M. J., Cooper, J. C., Gueorguieva, A., & Johansson, R. (n.d.). Environmental Effects of Agricultural Land-Use Change United States Department of Agriculture The Role of Economics and Policy. Retrieved July 25, 2022, from www.ers.usda.gov", tags$br(), 
+                                                                  "[2] USDA. (n.d.). Emergency relief. USDA Farm Service Agency. Retrieved July 25, 2022, from https://www.fsa.usda.gov/programs-and-services/emergency-relief/index ", tags$br(),
+                                                                  "[3] USDA. (n.d.). USDA to provide approximately $6 billion to commodity and specialty crop producers impacted by 2020 and 2021 natural disasters. USDA Farm Service Agency. Retrieved July 25, 2022, from https://www.fsa.usda.gov/state-offices/Virginia/news-releases/usda-to-provide-approximately-6-billion-to-commodity-and-specialty-crop-producers-impacted-by-2020-and-2021-natural-disasters- ", tags$br(),
+                                                                  "[4] USDA. (n.d.). Emergency conservation program. USDA Farm Service Agency. Retrieved July 25, 2022, from https://www.fsa.usda.gov/programs-and-services/conservation-programs/emergency-conservation/index", tags$br(),
+                                                                  '[5] "Grassroots" source water protection program. USDA Farm Service Agency. (n.d.). Retrieved July 25, 2022, from https://www.fsa.usda.gov/programs-and-services/conservation-programs/source-water-protection/index', tags$br(),
+                                                                  "[6] USDA. (n.d.). Agriculture risk coverage (ARC) &amp; Price Loss Coverage (PLC). USDA Farm Service Agency. Retrieved July 25, 2022, from https://www.fsa.usda.gov/Assets/USDA-FSA-Public/usdafiles/FactSheets/2019/arc-plc_overview_fact_sheet-aug_2019.pdf")),
                                                      p("", style = "padding-top:10px;"),
                                               )), 
                                      tabPanel("State",
@@ -809,7 +831,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        education and outreach, and other measures to reduce and prevent NPS pollution from affecting the Commonwealth’s waters" [5].'),
                                                      p(),
                                                      p(),
-                                                   
+                                                     
                                               ) , 
                                               column(6, 
                                                      p("", style = "padding-top:10px;"),
@@ -828,15 +850,15 @@ ui <- navbarPage(title = "DSPG 2022",
                                               ),
                                               column(12,
                                                      h4("References:"),
-                                                     p(tags$small("[1] Land use planning in Virginia. Virginia Places. (n.d.). Retrieved July 25, 2022, from http://www.virginiaplaces.org/landuseplan/")), 
-                                                     p(tags$small("[2] USDA. (n.d.). Conservation reserve enhancement program. USDA Farm Service Agency. Retrieved July 25, 2022, from https://www.fsa.usda.gov/programs-and-services/conservation-programs/conservation-reserve-enhancement/index")) ,
-                                                     p(tags$small("[3] Virginia General Assembly. (n.d.). Code of Virginia. Virginia's Legislative Information System. Retrieved July 25, 2022, from https://law.lis.virginia.gov/vacodepopularnames/agricultural-and-forestal-districts-act/ ")) ,
-                                                     p(tags$small("[4] Virginia Department of Forestry. (n.d.). Agricultural &amp; forestal district program- Louisa County. Virginia Department of Forestry. Retrieved July 25, 2022, from https://dof.virginia.gov/wp-content/uploads/afd-program-brochure_11212019-stone-version.pdf")),
-                                                     p(tags$small("[5] Virginia Nonpoint Source Management Program Plan (2019 Update). (2019).")),
-                                                     p(tags$small("[6] Virginia Department of Environmental Quality. (n.d.). Chesapeake Bay preservation act. Virginia Department of Environmental Quality. Retrieved July 25, 2022, from https://www.deq.virginia.gov/water/chesapeake-bay/chesapeake-bay-preservation-act#:~:text=Under%20the%20Bay%20Act%20framework%2C%20the%20Chesapeake%20Bay,and%20implement%20in%20administering%20their%20Bay%20Act%20programs.")),
-                                                     p(tags$small("[7] Virginia Department of Environmental Quality. (n.d.). Chesapeake Bay TMDLs. Virginia Department of Environmental Quality. Retrieved July 25, 2022, from https://www.deq.virginia.gov/water/chesapeake-bay/chesapeake-bay-tmdls ")),
+                                                     p(tags$small("[1] Land use planning in Virginia. Virginia Places. (n.d.). Retrieved July 25, 2022, from http://www.virginiaplaces.org/landuseplan/", tags$br(), 
+                                                                  "[2] USDA. (n.d.). Conservation reserve enhancement program. USDA Farm Service Agency. Retrieved July 25, 2022, from https://www.fsa.usda.gov/programs-and-services/conservation-programs/conservation-reserve-enhancement/index" , tags$br(),
+                                                                  "[3] Virginia General Assembly. (n.d.). Code of Virginia. Virginia's Legislative Information System. Retrieved July 25, 2022, from https://law.lis.virginia.gov/vacodepopularnames/agricultural-and-forestal-districts-act/ ",tags$br(),
+                                                                  "[4] Virginia Department of Forestry. (n.d.). Agricultural &amp; forestal district program- Louisa County. Virginia Department of Forestry. Retrieved July 25, 2022, from https://dof.virginia.gov/wp-content/uploads/afd-program-brochure_11212019-stone-version.pdf", tags$br(),
+                                                                  "[5] Virginia Nonpoint Source Management Program Plan (2019 Update). (2019).", tags$br(),
+                                                                  "[6] Virginia Department of Environmental Quality. (n.d.). Chesapeake Bay preservation act. Virginia Department of Environmental Quality. Retrieved July 25, 2022, from https://www.deq.virginia.gov/water/chesapeake-bay/chesapeake-bay-preservation-act#:~:text=Under%20the%20Bay%20Act%20framework%2C%20the%20Chesapeake%20Bay,and%20implement%20in%20administering%20their%20Bay%20Act%20programs.", tags$br(),
+                                                                  "[7] Virginia Department of Environmental Quality. (n.d.). Chesapeake Bay TMDLs. Virginia Department of Environmental Quality. Retrieved July 25, 2022, from https://www.deq.virginia.gov/water/chesapeake-bay/chesapeake-bay-tmdls ")),
                                                      p("", style = "padding-top:10px;")),
-                                              ),
+                                     ),
                                      tabPanel("County",
                                               p(),
                                               p('"In urbanizing areas such as the suburbs near Richmond, Hampton Roads, and Northern Virginia, control over how private property 
@@ -849,7 +871,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p("", style = "padding-top:10px;"),
                                                      fluidRow(style = "margin: 6px;", align = "justify",
                                                               leafletOutput("goochland_con") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
-                                                              p("The areas highlighted in purple represent", strong("Rural Preservation Districts"), "which allow for residential development but continue to allow agricultural uses in the preservation area, equestrian activities, and forest management plans [1]."),
+                                                              p("The areas highlighted in purple represent", strong("Rural Preservation Districts"), "which allow for residential development but continue to allow agricultural uses in the preservation area, equestrian activities, and forest management plans [2]."),
                                                               p("Goochland County runs a land use program which assesses land based on use value as opposed to market value. The program was adopted by the county in 1978. There are multiple requirements for land to be eligible for the program as established by the State Land Evaluation Advisory Council:"),
                                                               tags$ul(
                                                                 
@@ -876,13 +898,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                                               p("The map above highlights the many different types of conservation districts in Powhatan County."), 
                                                               tags$ul(
                                                                 
+                                                                tags$li("The green layer represents", strong("Agricultural Forestal Districts (AFD)"),"which are areas of land that are recognized by the county as being economically and environmentally valuable resources for all [7]."),
+                                                                
                                                                 tags$li("The orange layer represents", strong("Priority Conservation Areas"), "which are protected for long term conservation."),
                                                                 
                                                                 tags$li("The red layer represents", strong("Protected Lands"), "which are protected due to their natural, cultural, or ecological value."),
                                                                 
-                                                                tags$li("The green layer represents", strong("Agricultural Forestal Districts (AFD)"),"which are areas of land that are recognized by the county as being economically and environmentally valuable resources for all"),
                                                                 
-
                                                               ),
                                                               p('Powhatan County land use policy includes a land use deferral program, Powhatan County code Section 70-76, which states that the purpose of land use is
                                                      to “preserve real estate devoted to agricultural, horticultural, forest and open space uses within its boundaries in the public interest....". 
@@ -898,16 +920,16 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      conservation of open land and farmland and recognize agriculture as an economic driver of the community.'))),
                                               column(12, 
                                                      h4("References:"),
-                                                     p(tags$small("[1] Land use planning in Virginia. Virginia Places. (n.d.). Retrieved July 25, 2022, from http://www.virginiaplaces.org/landuseplan/")),
-                                                     p(tags$small("[2] Planning and Zoning Initiatives. Planning and Zoning Initiatives | Goochland County, VA - Official Website. (n.d.). Retrieved July 18, 2022, from https://www.goochlandva.us/1058/Planning-and-Zoning-Initiatives ")), 
-                                                     p(tags$small("[3] Goochland County. (n.d.). Land use program information. Goochland County, VA - Official Website. Retrieved July 25, 2022, from https://www.goochlandva.us/339/Land-Use")) ,
-                                                     p(tags$small("[4] Goochland County, Virginia - Code of Ordinances. Municode Library. (n.d.). Retrieved July 25, 2022, from https://library.municode.com/va/goochland_county/codes/code_of_ordinances?nodeId=COOR_CH15ZO")),
-                                                     p(tags$small("[5] Goochland County. (n.d.). Goochland County 2035 Comprehensive Plan. Retrieved July 25, 2022, from https://capitalregionland.org/wp-content/uploads/2021/11/Goochland-County-Comprehensive-Plan-Land-Use-chapter.pdf")),
-                                                     p(tags$small("[6] Goochland County Agricultural Center. (n.d.). A.C.R.E.S. Initiative. Retrieved July 25, 2022, from https://www.goochlandva.us/DocumentCenter/View/6731/ACRES-2019?bidId=")),
-                                                     p(tags$small("[7] Powhatan County. (n.d.). Agricultural &amp; forestal district program. Powhatan County, VA - Official Website. Retrieved July 25, 2022, from http://www.powhatanva.gov/1784/Agricultural-Forestal-District-Program")),
-                                                     p(tags$small("[8] Powhatan County. (n.d.). Land use deferral. Powhatan County, VA - Official Website. Retrieved July 25, 2022, from http://www.powhatanva.gov/216/Land-Use-Deferral#:~:text=Per%20Powhatan%20County%20code%20Section,adopted%20this%20ordinance%20in%201976.")),
-                                                     p(tags$small("[9] Powhatan County Agricultural and Forestal District Advisory Committee. (2020). Powhatan county agricultural and forestal district (AFD) Review. Retrieved July 25, 2022, from http://www.powhatanva.gov/DocumentCenter/View/5923/AFDAC-Review-of-Agricultural-and-Forestal-Districts-AFDs-October-2020")),
-                                                     p(tags$small("[10] Powhatan County. (2019). 2010 Long-Range Comprehensive Plan. Retrieved July 25, 2022, from http://www.powhatanva.gov/DocumentCenter/View/85/2010-Powhatan-County-Long-Range-Comprehensive-Plan-")),
+                                                     p(tags$small("[1] Land use planning in Virginia. Virginia Places. (n.d.). Retrieved July 25, 2022, from http://www.virginiaplaces.org/landuseplan/", tags$br(),
+                                                                  "[2] Planning and Zoning Initiatives. Planning and Zoning Initiatives | Goochland County, VA - Official Website. (n.d.). Retrieved July 18, 2022, from https://www.goochlandva.us/1058/Planning-and-Zoning-Initiatives ", tags$br(), 
+                                                                  "[3] Goochland County. (n.d.). Land use program information. Goochland County, VA - Official Website. Retrieved July 25, 2022, from https://www.goochlandva.us/339/Land-Use" , tags$br(),
+                                                                  "[4] Goochland County, Virginia - Code of Ordinances. Municode Library. (n.d.). Retrieved July 25, 2022, from https://library.municode.com/va/goochland_county/codes/code_of_ordinances?nodeId=COOR_CH15ZO", tags$br(),
+                                                                  "[5] Goochland County. (n.d.). Goochland County 2035 Comprehensive Plan. Retrieved July 25, 2022, from https://capitalregionland.org/wp-content/uploads/2021/11/Goochland-County-Comprehensive-Plan-Land-Use-chapter.pdf", tags$br(),
+                                                                  "[6] Goochland County Agricultural Center. (n.d.). A.C.R.E.S. Initiative. Retrieved July 25, 2022, from https://www.goochlandva.us/DocumentCenter/View/6731/ACRES-2019?bidId=", tags$br(),
+                                                                  "[7] Powhatan County. (n.d.). Agricultural &amp; forestal district program. Powhatan County, VA - Official Website. Retrieved July 25, 2022, from http://www.powhatanva.gov/1784/Agricultural-Forestal-District-Program", tags$br(),
+                                                                  "[8] Powhatan County. (n.d.). Land use deferral. Powhatan County, VA - Official Website. Retrieved July 25, 2022, from http://www.powhatanva.gov/216/Land-Use-Deferral#:~:text=Per%20Powhatan%20County%20code%20Section,adopted%20this%20ordinance%20in%201976.", tags$br(),
+                                                                  "[9] Powhatan County Agricultural and Forestal District Advisory Committee. (2020). Powhatan county agricultural and forestal district (AFD) Review. Retrieved July 25, 2022, from http://www.powhatanva.gov/DocumentCenter/View/5923/AFDAC-Review-of-Agricultural-and-Forestal-Districts-AFDs-October-2020", tags$br(),
+                                                                  "[10] Powhatan County. (2019). 2010 Long-Range Comprehensive Plan. Retrieved July 25, 2022, from http://www.powhatanva.gov/DocumentCenter/View/85/2010-Powhatan-County-Long-Range-Comprehensive-Plan-")),
                                                      p("", style = "padding-top:10px;")) 
                                      )
                                    ) 
@@ -925,23 +947,24 @@ ui <- navbarPage(title = "DSPG 2022",
                                               tabsetPanel(
                                                 tabPanel("Land Use",
                                                          p("", style = "padding-top:10px;"),
-                                                         column(4, 
-                                                                h4(strong("Land Use in Goochland County")),
-                                                                p("Each parcel of land in Goochland County has an assigned land use. These land uses are: Single Family Urban, Single Family Suburban, 
+                                                         column(4,
+                                                                fluidRow(style = "margin: 6px;", align = "justify",
+                                                                         h4(strong("Land Use in Goochland County")),
+                                                                         p("Each parcel of land in Goochland County has an assigned land use. These land uses are: Single Family Urban, Single Family Suburban, 
                                                                   Multi-Family Residential, Commercial & Industrial, Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), Other, 
                                                                   and Undefined. We used the state of Virginia’s land use codes to make our maps cleaner. This involved condensing some of the categories 
                                                                   from Goochland’s system into the other category. In our data, we also had some parcels with no land use category. Those parcels make up the 
                                                                   undefined category."),
-                                                                p("Based on the Goochland County map on the right, Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) are the 
+                                                                         p("Based on the Goochland County map on the right, Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) are the 
                                                                   two biggest land use categories for all years. Single Family Suburban is third biggest in acreage. The map itself doesn’t change a lot but the
                                                                   number of parcels that change is a lot."), 
-                                                                h4(strong("Land Use Transition Matrix")),
-                                                                p("The transition matrix under the map shows the land conversion from 2018-2022 in Goochland County. Based on the matrix the three categories that 
+                                                                         h4(strong("Land Use Transition Matrix")),
+                                                                         p("The transition matrix under the map shows the land conversion from 2018-2022 in Goochland County. Based on the matrix the three categories that 
                                                                 are changing the most are Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), and Undefined. While the category that 
                                                                 goes the most is Single Family Urban. This category grew by 530 parcels. Both Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) 
                                                                 lost many parcels of land to different land uses. Most of the parcels that changed from both Agriculture/Undeveloped (20-99) and Agriculture/Undeveloped (100+ Acres) 
                                                                 changed to Single Family Urban.")
-                                                         ), 
+                                                                )), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
                                                                 chooseSliderSkin(skin = "Shiny", color = "#861F41"),
@@ -949,34 +972,23 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             min = 2018, max = 2021, value = 2021, 
                                                                             sep = "", width = "150%"),
                                                                 
-
+                                                                
                                                                 leafletOutput(outputId = "luPlot.g") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
-
-
+                                                                
+                                                                
                                                                 br(),
                                                                 h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
-                                                        
+                                                                
                                                                 highchartOutput("gooch_sankey",height = 600) %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                                 p(tags$small("Data Source: Goochland County Administrative Data")))  ,
-                                                         column(12,
-                                                                
-                                                                
-                                                                h4("References") , 
-                                                                p(tags$small("[1] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[2] U.S. Census Bureau, Weldon Cooper Center for Public Service")), 
-                                                                p(tags$small("[3] U.S Census Bureau")), 
-                                                                p(tags$small("[4]  2010 Census")), 
-                                                                p(tags$small("[5] U.S. Census Bureau, OnTheMap Application and LEHD Origin-Destination Employment Statistics, 2014")), 
-                                                                p(tags$small("[6] Virginia Employment Commission, Economic Information & Analytics, Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020.")), 
-                                                                p(tags$small("[7] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[8]  Virginia Employment Commission")) )
                                                          
                                                 ), 
                                                 tabPanel("Crop Layer",
                                                          p("", style = "padding-top:10px;"),
-                                                         column(4, 
-                                                                h4(strong("Crops Grown in Goochland County")),
-                                                                p("The map and bar chart on the right show the crop layer data for Goochland County. Goochland County is heavily forested, 
+                                                         column(4,
+                                                                fluidRow(style = "margin: 6px;", align = "justify",
+                                                                         h4(strong("Crops Grown in Goochland County")),
+                                                                         p("The map and bar chart on the right show the crop layer data for Goochland County. Goochland County is heavily forested, 
                                                                 with forested lands accounting for 63.94% of all land. This number is a decrease from the 69.63% in 2012. 
                                                                   Developed land in Goochland increased from 7.28% to 9.29% in 10 years. Most of the developed land is in the east side of 
                                                                   the county closer to Richmond, VA. Forages is the second biggest crop layer category with 14.99%. Forage is bulky food 
@@ -984,13 +996,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   the land. From an agricultural perspective, the land is more often used for raising livestock instead of 
                                                                   growing crops. There is a heavy concentration of row crops on the south boundary of county. The James River also acts as a 
                                                                    boundary between Powhatan County and Goochland County.")
-                                                         ), 
+                                                                )), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
                                                                 radioButtons(inputId = "g.cropYear", label = "Select Year: ", 
                                                                              choices = c("2012", "2021"), 
                                                                              selected = "2021"),
-                           
+                                                                
                                                                 leafletOutput("g.cropMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
                                                                 br(),
                                                                 h4(strong("Crop Layer Graphs")),
@@ -1000,47 +1012,39 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 ),
                                                                 
                                                                 plotlyOutput("gcrop_graph", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
+                                                                p(tags$small("Data Source: United States Department of Agriculture"))
                                                          ),
-                                                         column(12, 
-                                                                
-                                                                h4("References") , 
-                                                                p(tags$small("[1] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[2] U.S. Census Bureau, Weldon Cooper Center for Public Service")), 
-                                                                p(tags$small("[3] U.S Census Bureau")), 
-                                                                p(tags$small("[4]  2010 Census")), 
-                                                                p(tags$small("[5] U.S. Census Bureau, OnTheMap Application and LEHD Origin-Destination Employment Statistics, 2014")), 
-                                                                p(tags$small("[6] Virginia Employment Commission, Economic Information & Analytics, Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020.")), 
-                                                                p(tags$small("[7] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[8]  Virginia Employment Commission")) )) ,
+                                                ) ,
                                                 tabPanel("Soil Quality",
                                                          p("", style = "padding-top:10px;"),
-                                                         column(4, 
-                                                                h4(strong("Soil Quality in Goochland County")),
-                                                                p("Good quality soil is essential for crops to produce. Which makes soil quality a factor that could result in land conversion. 
+                                                         column(4,
+                                                                fluidRow(style = "margin: 6px;", align = "justify",
+                                                                         h4(strong("Soil Quality in Goochland County")),
+                                                                         p("Good quality soil is essential for crops to produce. Which makes soil quality a factor that could result in land conversion. 
                                                                   The National Cooperative Soil Survey is a survey done to classify soil into classes based on its usefulness. Those classes are: "),
-                                                                tags$ul(
-                                                                  
-                                                                  tags$li(strong("Class 1"), "soils have few limitations that restrict their use."),
-                                                                  
-                                                                  tags$li(strong("Class 2"), "soils have moderate limitations that reduce the choice of plants or that require moderate conservation practices."),
-                                                                  
-                                                                  tags$li(strong("Class 3"), "soils have severe limitations that reduce the choice of plants, require special conservation practices, or both."),
-                                                                  
-                                                                  tags$li(strong("Class 4"), "soils have very severe limitations that reduce the choice of plants, require very careful management, or both."),
-                                                                  
-                                                                  tags$li(strong("Class 5"), "soils are subject to little or no erosion but have other limitations, impractical to remove, that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
-                                                                  
-                                                                  tags$li(strong("Class 6"), "soils have severe limitations that make them generally suitable for cultivation and that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
-                                                                  
-                                                                  tags$li(strong("Class 7"), "soils have very severe limitations that make them unsuitable for cultivation and that restrict their use mainly to grazing, forestland, or wildlife habitat."),
-                                                                  
-                                                                  tags$li(strong("Class 8"), "soils and miscellaneous areas have limitations that preclude commercial plant production and that restrict their use to recreational purposes, wildlife habitat, watershed, or esthetic purposes."),
-                                                                  
-                                                                ),
-                                                                p("Most of Goochland County’s soil is in Class 2 or 3. This means that most of the land in Goochland is farmable, but it has limitations that reduce the choice of plants or that require very careful 
+                                                                         tags$ul(
+                                                                           
+                                                                           tags$li(strong("Class 1"), "soils have few limitations that restrict their use."),
+                                                                           
+                                                                           tags$li(strong("Class 2"), "soils have moderate limitations that reduce the choice of plants or that require moderate conservation practices."),
+                                                                           
+                                                                           tags$li(strong("Class 3"), "soils have severe limitations that reduce the choice of plants, require special conservation practices, or both."),
+                                                                           
+                                                                           tags$li(strong("Class 4"), "soils have very severe limitations that reduce the choice of plants, require very careful management, or both."),
+                                                                           
+                                                                           tags$li(strong("Class 5"), "soils are subject to little or no erosion but have other limitations, impractical to remove, that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
+                                                                           
+                                                                           tags$li(strong("Class 6"), "soils have severe limitations that make them generally suitable for cultivation and that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
+                                                                           
+                                                                           tags$li(strong("Class 7"), "soils have very severe limitations that make them unsuitable for cultivation and that restrict their use mainly to grazing, forestland, or wildlife habitat."),
+                                                                           
+                                                                           tags$li(strong("Class 8"), "soils and miscellaneous areas have limitations that preclude commercial plant production and that restrict their use to recreational purposes, wildlife habitat, watershed, or esthetic purposes."),
+                                                                           
+                                                                         ),
+                                                                         p("Most of Goochland County’s soil is in Class 2 or 3. This means that most of the land in Goochland is farmable, but it has limitations that reduce the choice of plants or that require very careful 
                                                                   management, or both.  On the other end of the spectrum, Goochland has zero acres of land in Class 8. Goochland also has a low number of acres with no data with 5,237 acres. Despite the limitations, 
                                                                   it still is possible to farm and for Goochland to be mostly agricultural."),
-                                                         ), 
+                                                                )), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
                                                                 leafletOutput("g.soilMap",height = 500) %>% withSpinner(type = 4, color = "#861F41", size = 1.5), 
@@ -1050,14 +1054,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(12, 
                                                                 
                                                                 h4("References") , 
-                                                                p(tags$small("[1] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[2] U.S. Census Bureau, Weldon Cooper Center for Public Service")), 
-                                                                p(tags$small("[3] U.S Census Bureau")), 
-                                                                p(tags$small("[4]  2010 Census")), 
-                                                                p(tags$small("[5] U.S. Census Bureau, OnTheMap Application and LEHD Origin-Destination Employment Statistics, 2014")), 
-                                                                p(tags$small("[6] Virginia Employment Commission, Economic Information & Analytics, Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020.")), 
-                                                                p(tags$small("[7] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[8]  Virginia Employment Commission")) )) ,
+                                                                p(tags$small("[1] USDA. U.S. Land Use and Soil Classification. (n.d.). Retrieved July 26, 2022, from https://www.ars.usda.gov/ARSUserFiles/np215/Food%20security%20talk%20inputs%20Lunch%203-15-11.pdf")), 
+                                                         )) ,
                                                 tabPanel("Traffic Data",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
@@ -1073,20 +1071,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   "Proximity to Richmond" = "grich")
                                                                 ),
                                                                 leafletOutput("goochland_traffic") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
-                                                                p(tags$small("Source: VDOT")),
+                                                                p(tags$small("Data Source: Virginia Department of Traffic")),
                                                                 
                                                          ),
-                                                         column(12, 
-                                                                
-                                                                h4("References") , 
-                                                                p(tags$small("[1] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[2] U.S. Census Bureau, Weldon Cooper Center for Public Service")), 
-                                                                p(tags$small("[3] U.S Census Bureau")), 
-                                                                p(tags$small("[4]  2010 Census")), 
-                                                                p(tags$small("[5] U.S. Census Bureau, OnTheMap Application and LEHD Origin-Destination Employment Statistics, 2014")), 
-                                                                p(tags$small("[6] Virginia Employment Commission, Economic Information & Analytics, Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020.")), 
-                                                                p(tags$small("[7] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[8]  Virginia Employment Commission")) ) 
                                                 )
                                               ) 
                                      )), 
@@ -1097,62 +1084,53 @@ ui <- navbarPage(title = "DSPG 2022",
                                               tabsetPanel(
                                                 tabPanel("Land Use",
                                                          p("", style = "padding-top:10px;"),
-                                                         column(4, 
-                                                                h4(strong("Land Use in Powhatan County")),
-                                                                p("Each parcel of land in Powhatan County has an assigned land use. These land uses are: Single Family Urban, 
+                                                         column(4,
+                                                                fluidRow(style = "margin: 6px;", align = "justify",
+                                                                         h4(strong("Land Use in Powhatan County")),
+                                                                         p("Each parcel of land in Powhatan County has an assigned land use. These land uses are: Single Family Urban, 
                                                                 Single Family Suburban, Multi-Family Residential, Commercial & Industrial, Agriculture/Undeveloped (20-99 Acres), 
                                                                 Agriculture/Undeveloped (100+ Acres), Other, and Undefined. We used the state of Virginia’s land use codes to make 
                                                                 our maps cleaner. This involved condensing some of the categories from Powhatan’s system into the other category. In 
                                                                 our data, we also had some parcels with no land use category. Those parcels make up the undefined category."),
-                                                                p("Based on the Powhatan County map on the right, Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) 
+                                                                         p("Based on the Powhatan County map on the right, Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) 
                                                                 are the two biggest land use categories for all years. Single Family Suburban is third biggest in acreage. The map itself 
                                                                 doesn’t change a lot but the number of parcels that change is a lot."),
-                                                                h4(strong("Land Use Transition Matrix")),
-                                                                p("The transition matrix under the map shows the land conversion from 2012-2022 in Powhatan County. Based on the matrix the three 
+                                                                         h4(strong("Land Use Transition Matrix")),
+                                                                         p("The transition matrix under the map shows the land conversion from 2012-2022 in Powhatan County. Based on the matrix the three 
                                                                 categories that are changing the most are Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), and 
                                                                 Single-Family Suburban. While the category that goes the most is Single Family Suburban. This category grew by 584 parcels. 
                                                                 Both Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) lost many parcels of land to different land 
                                                                 uses. Most of the parcels that changed from both Agriculture/Undeveloped (20-99) and Agriculture/Undeveloped (100+ Acres) changed 
                                                                 to Single Family Suburban.")
-                                                         ), 
+                                                                )), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
                                                                 sliderInput(inputId = "luYear.p", label = "Year:", 
                                                                             min = 2015, max = 2021, value = 2021, 
                                                                             sep = "", width = "150%"),
                                                                 
-
+                                                                
                                                                 leafletOutput(outputId = "luPlot.p") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
-
+                                                                
                                                                 h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
                                                                 highchartOutput("pow_sankey",height = 600) %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
-
-                                                                p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
-
-                                                         column(12, 
                                                                 
-                                                                h4("References") , 
-                                                                p(tags$small("[1] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[2] U.S. Census Bureau, Weldon Cooper Center for Public Service")), 
-                                                                p(tags$small("[3] U.S Census Bureau")), 
-                                                                p(tags$small("[4]  2010 Census")), 
-                                                                p(tags$small("[5] U.S. Census Bureau, OnTheMap Application and LEHD Origin-Destination Employment Statistics, 2014")), 
-                                                                p(tags$small("[6] Virginia Employment Commission, Economic Information & Analytics, Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020.")), 
-                                                                p(tags$small("[7] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[8]  Virginia Employment Commission")) )
+                                                                p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
+                                                         
                                                          
                                                 ), 
                                                 tabPanel("Crop Layer",
                                                          p("", style = "padding-top:10px;"),
-                                                         column(4, 
-                                                                h4(strong("Crops Grown in Powhatan County")),
-                                                                p("The map and bar chart on the right show the crop layer data for Powhatan County. Powhatan County is heavily forested with forested lands account for 67.84% of all 
+                                                         column(4,
+                                                                fluidRow(style = "margin: 6px;", align = "justify",
+                                                                         h4(strong("Crops Grown in Powhatan County")),
+                                                                         p("The map and bar chart on the right show the crop layer data for Powhatan County. Powhatan County is heavily forested with forested lands account for 67.84% of all 
                                                                   land. This number is a decrease from the 75.82% in 2012. A big reason why that number is reduced is that Powhatan is rapidly developing. 
                                                                   Developed land in Powhatan increased from 3.46% to 6.88% in 10 years. Most of this developed land is in the east side of the county closer to Richmond, VA. Forages 
                                                                   is the second biggest crop layer category with 15.42%. Forage is bulky food such as grass or hay for horses and cattle. Croplands are spread out throughout the 
                                                                   county and make up only use 4.1% of the land in the county. From an agricultural perspective, the land is most often used for raising livestock instead of growing crops. 
                                                                   There is a heavy concentration of row crops on the north boundary of Powhatan. The James River also acts as a boundary between Powhatan County and Goochland County.")
-                                                         ), 
+                                                                )), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
                                                                 radioButtons(inputId = "p.cropYear", label = "Select Year: ", 
@@ -1161,55 +1139,46 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 leafletOutput("p.cropMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),                                                                
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 
-                                                          
+                                                                
                                                                 selectInput("pcrop", "Select Variable:", width = "100%", choices = c(
                                                                   "Total Acreage by Land Type 2021" = "pcrop21",
                                                                   "Total Acreage by Land Type 2012" = "pcrop12")
                                                                 ),
                                                                 
                                                                 plotlyOutput("pcrop_graph", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
-                                                                p(tags$small("Data Source: ACS 2016-2020")),
+                                                                p(tags$small("Data Source: United States Department of Agriculture")),
                                                          ),
-                                                         column(12, 
-                                                                
-                                                                h4("References") , 
-                                                                p(tags$small("[1] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[2] U.S. Census Bureau, Weldon Cooper Center for Public Service")), 
-                                                                p(tags$small("[3] U.S Census Bureau")), 
-                                                                p(tags$small("[4]  2010 Census")), 
-                                                                p(tags$small("[5] U.S. Census Bureau, OnTheMap Application and LEHD Origin-Destination Employment Statistics, 2014")), 
-                                                                p(tags$small("[6] Virginia Employment Commission, Economic Information & Analytics, Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020.")), 
-                                                                p(tags$small("[7] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[8]  Virginia Employment Commission")) )) ,
+                                                ) ,
                                                 tabPanel("Soil Quality",
                                                          p("", style = "padding-top:10px;"),
-                                                         column(4, 
-                                                                h4(strong("Soil Quality in Powhatan County")),
-                                                                p("Good quality soil is essential for crops to produce. Which makes soil quality a factor that could result in land conversion. 
+                                                         column(4,
+                                                                fluidRow(style = "margin: 6px;", align = "justify",
+                                                                         h4(strong("Soil Quality in Powhatan County")),
+                                                                         p("Good quality soil is essential for crops to produce. Which makes soil quality a factor that could result in land conversion. 
                                                                   The National Cooperative Soil Survey is a survey done to classify soil into classes based on its usefulness. Those classes are: "),
-                                                                tags$ul(
-                                                                  
-                                                                  tags$li(strong("Class 1"), "soils have few limitations that restrict their use."),
-                                                                  
-                                                                  tags$li(strong("Class 2"), "soils have moderate limitations that reduce the choice of plants or that require moderate conservation practices."),
-                                                                  
-                                                                  tags$li(strong("Class 3"), "soils have severe limitations that reduce the choice of plants, require special conservation practices, or both."),
-                                                                  
-                                                                  tags$li(strong("Class 4"), "soils have very severe limitations that reduce the choice of plants, require very careful management, or both."),
-                                                                  
-                                                                  tags$li(strong("Class 5"), "soils are subject to little or no erosion but have other limitations, impractical to remove, that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
-                                                                  
-                                                                  tags$li(strong("Class 6"), "soils have severe limitations that make them generally suitable for cultivation and that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
-                                                                  
-                                                                  tags$li(strong("Class 7"), "soils have very severe limitations that make them unsuitable for cultivation and that restrict their use mainly to grazing, forestland, or wildlife habitat."),
-                                                                  
-                                                                  tags$li(strong("Class 8"), "soils and miscellaneous areas have limitations that preclude commercial plant production and that restrict their use to recreational purposes, wildlife habitat, watershed, or esthetic purposes."),
-                                                                  
-                                                                ),
-                                                                p("Powhatan County soil is mostly in Class 2. As mentioned above, Class 2 has moderate limitations so crops can be grown here. Powhatan also has land that is in Class 1. This is the best land
+                                                                         tags$ul(
+                                                                           
+                                                                           tags$li(strong("Class 1"), "soils have few limitations that restrict their use."),
+                                                                           
+                                                                           tags$li(strong("Class 2"), "soils have moderate limitations that reduce the choice of plants or that require moderate conservation practices."),
+                                                                           
+                                                                           tags$li(strong("Class 3"), "soils have severe limitations that reduce the choice of plants, require special conservation practices, or both."),
+                                                                           
+                                                                           tags$li(strong("Class 4"), "soils have very severe limitations that reduce the choice of plants, require very careful management, or both."),
+                                                                           
+                                                                           tags$li(strong("Class 5"), "soils are subject to little or no erosion but have other limitations, impractical to remove, that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
+                                                                           
+                                                                           tags$li(strong("Class 6"), "soils have severe limitations that make them generally suitable for cultivation and that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
+                                                                           
+                                                                           tags$li(strong("Class 7"), "soils have very severe limitations that make them unsuitable for cultivation and that restrict their use mainly to grazing, forestland, or wildlife habitat."),
+                                                                           
+                                                                           tags$li(strong("Class 8"), "soils and miscellaneous areas have limitations that preclude commercial plant production and that restrict their use to recreational purposes, wildlife habitat, watershed, or esthetic purposes [1]."),
+                                                                           
+                                                                         ),
+                                                                         p("Powhatan County soil is mostly in Class 2. As mentioned above, Class 2 has moderate limitations so crops can be grown here. Powhatan also has land that is in Class 1. This is the best land
                                                                   in the county, but it only makes up 1,686 acres. Class 4 soil is also prevalent in Powhatan. However, this soil class is unfavorable for farming as it has very severe limitations. The graph 
                                                                   on the right can be zoomed in on Class 8. This class is the least suitable soil class for any activity. Powhatan has 29 acres in the class. Overall, Powhatan has good farmland and can remain agricultural. "),
-                                                         ), 
+                                                                )), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
                                                                 leafletOutput("p.soilMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
@@ -1219,22 +1188,17 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(12, 
                                                                 
                                                                 h4("References") , 
-                                                                p(tags$small("[1] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[2] U.S. Census Bureau, Weldon Cooper Center for Public Service")), 
-                                                                p(tags$small("[3] U.S Census Bureau")), 
-                                                                p(tags$small("[4]  2010 Census")), 
-                                                                p(tags$small("[5] U.S. Census Bureau, OnTheMap Application and LEHD Origin-Destination Employment Statistics, 2014")), 
-                                                                p(tags$small("[6] Virginia Employment Commission, Economic Information & Analytics, Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020.")), 
-                                                                p(tags$small("[7] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[8]  Virginia Employment Commission")) )) ,
+                                                                p(tags$small("[1] USDA. U.S. Land Use and Soil Classification. (n.d.). Retrieved July 26, 2022, from https://www.ars.usda.gov/ARSUserFiles/np215/Food%20security%20talk%20inputs%20Lunch%203-15-11.pdf")), 
+                                                         )) ,
                                                 tabPanel("Traffic Data",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
-                                                                h4(strong("Traffic in Powhatan County")),
-                                                                p("Traffic information is a very good indicator as to who lives in an area and how it is used, more 
-Traffic data is another very good variable to look at when it comes to land-use, we wanted to look into these metrics to see if there were correlations to where more residential housing was to how accessible the area was from big roads. We also wanted to track the distance away from the City of Richmond to see if more residential housing was built closer, or further away from a larger metropolitan area. "),
-                                                                p("Although Powhatan has no interstates running through it, the two state routes that it does have are able to provide fast travel throughout the county. State Route 60, which runs horizontally through the county holds a lot of annual traffic, while Route 525 provides travel through the county vertically. Although Powhatan is on the edge of the City of Richmond, travel times are pretty high while driving from Richmond through Powhatan."),
-                                                         ), 
+                                                                fluidRow(style = "margin: 6px;", align = "justify",
+                                                                         h4(strong("Traffic in Powhatan County")),
+                                                                         p("Traffic information is a very good indicator as to who lives in an area and how it is used, more 
+                                                                Traffic data is another very good variable to look at when it comes to land-use, we wanted to look into these metrics to see if there were correlations to where more residential housing was to how accessible the area was from big roads. We also wanted to track the distance away from the City of Richmond to see if more residential housing was built closer, or further away from a larger metropolitan area. "),
+                                                                         p("Although Powhatan has no interstates running through it, the two state routes that it does have are able to provide fast travel throughout the county. State Route 60, which runs horizontally through the county holds a lot of annual traffic, while Route 525 provides travel through the county vertically. Although Powhatan is on the edge of the City of Richmond, travel times are pretty high while driving from Richmond through Powhatan."),
+                                                                )), 
                                                          
                                                          column(8, 
                                                                 h4(strong("Traffic Visualizations")),
@@ -1243,23 +1207,14 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                   "Proximity to Richmond" = "prich"), 
                                                                 ),
                                                                 leafletOutput("powhatan_traffic") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
+                                                                p(tags$small("Data Source: Virginia Department of Transportation")),
                                                                 
                                                          ),
-                                                         column(12, 
-                                                                
-                                                                h4("References") , 
-                                                                p(tags$small("[1] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[2] U.S. Census Bureau, Weldon Cooper Center for Public Service")), 
-                                                                p(tags$small("[3] U.S Census Bureau")), 
-                                                                p(tags$small("[4]  2010 Census")), 
-                                                                p(tags$small("[5] U.S. Census Bureau, OnTheMap Application and LEHD Origin-Destination Employment Statistics, 2014")), 
-                                                                p(tags$small("[6] Virginia Employment Commission, Economic Information & Analytics, Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020.")), 
-                                                                p(tags$small("[7] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[8]  Virginia Employment Commission")) ) 
+                                                         
                                                 )
                                               ) 
                                      )), 
-
+                            
                             
                             
                  ),
@@ -1275,14 +1230,15 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                 tabPanel("Parcels",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
-                                                                h4(strong("Land Parcels in Goochland County")),
-                                                                p("Drag the slider on the right to select the year range of interest. Solid red represents new split parcels in the selected latest year. Lighter red represents new split parcels of the years before the selected latest year."), 
-                                                                p("New parcels spread across Goochland in 2019-2022. Meanwhile, there are always new parcels in the southeastern region which is close to Richmond. It implies 
+                                                                fluidRow(style = "margin: 6px;", align = "justify",
+                                                                         h4(strong("Land Parcels in Goochland County")),
+                                                                         p("Drag the slider on the right to select the year range of interest. Solid red represents new split parcels in the selected latest year. Lighter red represents new split parcels of the years before the selected latest year."), 
+                                                                         p("New parcels spread across Goochland in 2019-2022. Meanwhile, there are always new parcels in the southeastern region which is close to Richmond. It implies 
                                                                 that metropolis might have some impacts on the parcellation. It is seeming that the northwestern has more parcels generated. In fact, the southeastern has 
                                                                 generated new parcels more frequently according to the hotspot maps. It is because new parcels in the southeast are smaller and lots of the new parcels are 
                                                                 single-family housing. While new parcels in the northwest are larger. Besides, parcellation happened less frequently along the James River. The map of Land Uses Over the Years shows 
                                                                 that most of the land along the James River is large-size agricultural/undeveloped land.")
-                                                         ), 
+                                                                )), 
                                                          column(8, 
                                                                 h4(strong("Land Parcellation Map")),
                                                                 sliderInput(inputId = "g.parcellationRange",
@@ -1295,32 +1251,22 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                 leafletOutput("g.parcellationPlot") %>% withSpinner(type = 4, color = "#861F41", size = 1.5)
                                                                 
                                                          ),
-                                                         column(12, 
-                                                                
-                                                                h4("References") , 
-                                                                p(tags$small("[1] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[2] U.S. Census Bureau, Weldon Cooper Center for Public Service")), 
-                                                                p(tags$small("[3] U.S Census Bureau")), 
-                                                                p(tags$small("[4]  2010 Census")), 
-                                                                p(tags$small("[5] U.S. Census Bureau, OnTheMap Application and LEHD Origin-Destination Employment Statistics, 2014")), 
-                                                                p(tags$small("[6] Virginia Employment Commission, Economic Information & Analytics, Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020.")), 
-                                                                p(tags$small("[7] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[8]  Virginia Employment Commission")) )
                                                          
                                                 ), 
                                                 
                                                 tabPanel("Hot Spots",
                                                          p("", style = "padding-top:10px;"),
-                                                         column(4, 
-                                                                h4(strong("Parcellation Hot Spots in Goochland County")),
-                                                                p("There are new parcels split from their mother parcels every year in Goochland. The hot spot map shows the area where parcellation happens the most frequently with red polygons. 
+                                                         column(4,
+                                                                fluidRow(style = "margin: 6px;", align = "justify",
+                                                                         h4(strong("Parcellation Hot Spots in Goochland County")),
+                                                                         p("There are new parcels split from their mother parcels every year in Goochland. The hot spot map shows the area where parcellation happens the most frequently with red polygons. 
                                                                 After selecting the year range via the slider, the map will show the parcellation frequency during the period. The more solid the circle is, the more frequently parcellation has 
                                                                 happened in this area during the selected period."),
-                                                                p("There is a significant spatial pattern of the parcellation in Goochland. Parcellation happened more frequently in the southeastern area of the county, and it persisted every year. 
+                                                                         p("There is a significant spatial pattern of the parcellation in Goochland. Parcellation happened more frequently in the southeastern area of the county, and it persisted every year. 
                                                                 In the middle area, it became more often in 2021 and 2022. Parcellation in the northwestern area is relatively less frequent in 2019-2022. Besides, the area of high frequent 
                                                                 parcellation in the southeast has expanded along the VA 288 highway. From the hot spot map over time, we can see the impact of the metropolitan area on parcellation. The map 
                                                                 of Land Uses Over the Years shows that agricultural/undeveloped land use is denser in the northwest. It might suggest some negative correlation between agricultural land use and land parcellation.")
-                                                         ), 
+                                                                )), 
                                                          column(8, 
                                                                 h4(strong("Parcellation Hot Spot Map")),
                                                                 sliderInput(inputId = "g.hotspotInput", 
@@ -1333,17 +1279,7 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                             sep = ""),
                                                                 leafletOutput("g.hotspotMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
                                                                 p(tags$small("Data Source: Goochland County Administrative Data"))),
-                                                         column(12, 
-                                                                
-                                                                h4("References") , 
-                                                                p(tags$small("[1] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[2] U.S. Census Bureau, Weldon Cooper Center for Public Service")), 
-                                                                p(tags$small("[3] U.S Census Bureau")), 
-                                                                p(tags$small("[4]  2010 Census")), 
-                                                                p(tags$small("[5] U.S. Census Bureau, OnTheMap Application and LEHD Origin-Destination Employment Statistics, 2014")), 
-                                                                p(tags$small("[6] Virginia Employment Commission, Economic Information & Analytics, Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020.")), 
-                                                                p(tags$small("[7] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[8]  Virginia Employment Commission")) ) 
+                                                         
                                                 )
                                               ) 
                                      )), 
@@ -1355,12 +1291,13 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                 tabPanel("Parcels",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
-                                                                h4(strong("Land Parcels in Powhatan County")),
-                                                                p("Drag the slider on the right to select the year range of interest. 
+                                                                fluidRow(style = "margin: 6px;", align = "justify",
+                                                                         h4(strong("Land Parcels in Powhatan County")),
+                                                                         p("Drag the slider on the right to select the year range of interest. 
                                                                   Solid red represents new split parcels in the selected latest year. 
                                                                   Lighter red represents new split parcels of the years before the selected latest year."), 
-                                                                p("New parcels spread across Powhatan in 2012-2020. Some large-size parcels are generated along the James River. (I cannot find other patterns)")
-                                                         ), 
+                                                                         p("New parcels spread across Powhatan in 2012-2020. Some large-size parcels are generated along the James River. (I cannot find other patterns)")
+                                                                )), 
                                                          column(8, 
                                                                 h4(strong("Land Parcellation Map")),
                                                                 sliderInput(inputId = "p.parcellationRange",
@@ -1373,31 +1310,21 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                 leafletOutput("p.parcellationPlot") %>% withSpinner(type = 4, color = "#861F41", size = 1.5)
                                                                 
                                                          ),
-                                                         column(12, 
-                                                                
-                                                                h4("References") , 
-                                                                p(tags$small("[1] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[2] U.S. Census Bureau, Weldon Cooper Center for Public Service")), 
-                                                                p(tags$small("[3] U.S Census Bureau")), 
-                                                                p(tags$small("[4]  2010 Census")), 
-                                                                p(tags$small("[5] U.S. Census Bureau, OnTheMap Application and LEHD Origin-Destination Employment Statistics, 2014")), 
-                                                                p(tags$small("[6] Virginia Employment Commission, Economic Information & Analytics, Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020.")), 
-                                                                p(tags$small("[7] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[8]  Virginia Employment Commission")) )
                                                          
                                                 ), 
                                                 
                                                 tabPanel("Hot Spots",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4, 
-                                                                h4(strong("Parcellation Hot Spots in Powhatan County")),
-                                                                p("There are new parcels split from their mother parcels every year in Goochland. The hot spot map shows the area where parcellation happens 
+                                                                fluidRow(style = "margin: 6px;", align = "justify",
+                                                                         h4(strong("Parcellation Hot Spots in Powhatan County")),
+                                                                         p("There are new parcels split from their mother parcels every year in Goochland. The hot spot map shows the area where parcellation happens 
                                                                   the most frequently with red polygons. After selecting the year range via the slider, the map will show the parcellation frequency during the period. 
                                                                   The more solid the circle is, the more frequently parcellation has happened in this area during the selected period."),
-                                                                p("From the hot spot map of parcellation in Powhatan over years, a pattern can be observed. Parcellation happened more frequently in 
+                                                                         p("From the hot spot map of parcellation in Powhatan over years, a pattern can be observed. Parcellation happened more frequently in 
                                                                   the center part, east and west edges of Powhatan. The high frequency of parcellation in the center part persisted in 2015-2021. 
                                                                   In the middle area, it became more often in 2021 and 2022. Parcellation in the east area might be driven by the proximity to the metropolis.")
-                                                         ), 
+                                                                )), 
                                                          column(8, 
                                                                 h4(strong("Parcellation Hot Spot Map")),
                                                                 sliderInput(inputId = "p.hotspotInput", 
@@ -1412,17 +1339,7 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                                                 p(tags$small("Data Source: Powhatan County Administrative Data"))
                                                                 
                                                          ),
-                                                         column(12, 
-                                                                
-                                                                h4("References") , 
-                                                                p(tags$small("[1] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[2] U.S. Census Bureau, Weldon Cooper Center for Public Service")), 
-                                                                p(tags$small("[3] U.S Census Bureau")), 
-                                                                p(tags$small("[4]  2010 Census")), 
-                                                                p(tags$small("[5] U.S. Census Bureau, OnTheMap Application and LEHD Origin-Destination Employment Statistics, 2014")), 
-                                                                p(tags$small("[6] Virginia Employment Commission, Economic Information & Analytics, Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020.")), 
-                                                                p(tags$small("[7] American Community Survey 5-year Estimates 2014/2019")), 
-                                                                p(tags$small("[8]  Virginia Employment Commission")) ) 
+                                                         
                                                 )
                                               ) 
                                      ), 
@@ -1468,32 +1385,39 @@ Traffic data is another very good variable to look at when it comes to land-use,
                                    h1(strong("Data Sources"), align = "center"),
                                    p("", style = "padding-top:10px;"),
                                    column(4,
-                                          img(src = "data-acs.png", style = "display: inline; float: left;", width = "200px"),
-                                          p(strong("American Community Survey"), "The American Community Survey (ACS) is an ongoing yearly survey conducted by the U.S Census Bureau. ACS samples households to compile 1-year and 5-year datasets 
+                                          fluidRow(style = "margin: 6px;", align = "justify",
+                                                   img(src = "data-acs.png", style = "display: inline; float: left;", width = "200px"),
+                                                   p(strong("American Community Survey"), "The American Community Survey (ACS) is an ongoing yearly survey conducted by the U.S Census Bureau. ACS samples households to compile 1-year and 5-year datasets 
                                       providing information on population sociodemographic and ocioeconomic characteristics including employment, disability, and health insurance coverage. We used ACS 2014/18 5-year
                                       estimates to obtain census tract and census block group-level to explore Floyd County resident characteristics."),
-                                          br(""),
-                                          img(src = "usgs.jpg", style = "display: inline; float: left;", width = "150px"),
-                                          p(strong("USGS National Land Cover Database"), "The USGS National Land Cover Database provided us with land cover data which allowed us to look into crop layer data for both counties. This was important for 
-                                            us to gain a better understanding of how prevalent agriculture is in the counties and to visualize any changes in crops over the last several years.")
-                                   ),
+                                                   br(""),
+                                                   img(src = "nass.jpg", style = "display: inline; float: left;", width = "150px"),
+                                                   p(strong("USDA National Agricultural Statistics Service"), "The National Agricultural Statistics Service (NASS) under the United States Department of Agriculture (USDA) provides statistics on a wide variety 
+                                            of agricultural topics. This project specifically relies on crop layer data to create maps and to conduct a statistical analysis on the probablity of land use conversion.")
+                                          )),
                                    column(4,
-                                          img(src = "goochland.jpg", style = "display: inline; float: left;", width = "150px"),
-                                          p(strong("Goochland County Administrative Data"), "Goochland County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
+                                          fluidRow(style = "margin: 6px;", align = "justify",
+                                                   img(src = "goochland.jpg", style = "display: inline; float: left;", width = "150px"),
+                                                   p(strong("Goochland County Administrative Data"), "Goochland County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
                                             that has occured over a 5 year period (2018 - 2022). We used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
-                                          br(""),
-                                          img(src = "vdot.png", style = "display: inline; float: left;", width = "200px"),
-                                          p(strong("VDOT Traffic Data "), "The Virginia Department of Transportation (VDOT) is responsible for building, maintaining and operating the state's roads, bridges and tunnels. VDOT also conducts a program where traffic data are gathered from sensors in or along streets and highways and other sources.  This data includes estimates of the average number of vehicles that traveled each segment of road and daily vehicle miles traveled for specific groups of facilities and vehicle types are calculated."),
-                                          br(""),
-                                          
-                                   ),
+                                                   p(),
+                                                   br(),
+                                                   img(src = "ncss.jpg", style = "display: inline; float: left;", width = "150px"),
+                                                   p(strong("USDA National Cooperative Soil Survey"), "The National Cooperative Soil Survey (NCSS) under the USDA provides soil data which was used to generate soil quality maps for both counties. The data was also used for our statistical analysis to predict the occurrence of land use conversion."),
+                                                   
+                                          )),
                                    column(4,
-                                          img(src = "powhatan.jpg", style = "display: inline; float: left;", width = "150px"),
-                                          p(strong("Powhatan County Administrative Data"), "Powhatan County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
-                                            that has occured over a 8 year period (2014 - 2021). We used this data to create visualizations, specifically focusing on the distribution and change in land use in the county.") 
-                                          
-                                          
-                                   ),
+                                          fluidRow(style = "margin: 6px;", align = "justify",
+                                                   img(src = "powhatan.jpg", style = "display: inline; float: left;", width = "150px"),
+                                                   p(strong("Powhatan County Administrative Data"), "Powhatan County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
+                                            that has occured over a 8 year period (2014 - 2021). We used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
+                                                   br(""),
+                                                   img(src = "vdot.png", style = "display: inline; float: left;", width = "200px"),
+                                                   p(strong("VDOT Traffic Data"), "The Virginia Department of Transportation (VDOT) is responsible for building, maintaining and operating the state's roads, bridges and tunnels. VDOT also conducts 
+                                          a program where traffic data are gathered from sensors in or along streets and highways and other sources.  This data includes estimates of the average number of vehicles that traveled each segment of road and daily vehicle miles traveled for specific groups of facilities and vehicle types are calculated.")
+                                                   
+                                                   
+                                          )),
                                    
                           )
                  ),
@@ -1631,13 +1555,13 @@ server <- function(input, output){
       addPolygons(data = gl_cnty, fillColor = "transparent") %>% 
       setView(lng=-77.9, lat=37.73, zoom = 10)
     
-
+    
     
     if(input$g.cropYear == 2012){
-        for (i in 1:11){
-          my.crop.plt <- addPolygons(my.crop.plt,data=g.cropMap12 %>% filter(g.cropMap12$New_Label==gcrop_values[i]), 
-                                     smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i])
-        }
+      for (i in 1:11){
+        my.crop.plt <- addPolygons(my.crop.plt,data=g.cropMap12 %>% filter(g.cropMap12$New_Label==gcrop_values[i]), 
+                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i])
+      }
       my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = gcrop_legendpalette, values = gcrop_values,
                                                title = "Crop Layer Land Type",
                                                labFormat = labelFormat(),
@@ -1650,7 +1574,7 @@ server <- function(input, output){
       gcrop_colors <- gcrop_colors[-9]
       for (i in 1:10){
         my.crop.plt <- addPolygons(my.crop.plt, data = g.cropMap21%>% filter(g.cropMap21$New_Label==gcrop_values21[i]),
-                       smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i])
+                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i])
       }
       my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = gcrop_legendpalette21, values = gcrop_values21,
                                                title = "Crop Layer Land Type",
@@ -1660,7 +1584,7 @@ server <- function(input, output){
     }
     
     
-      })
+  })
   
   output$p.cropMap <- renderLeaflet({
     my.crop.plt<- leaflet()%>%
@@ -1691,7 +1615,7 @@ server <- function(input, output){
                                                labFormat = labelFormat(),
                                                opacity = 1,
                                                data=p.cropMap21)
-
+      
     }
   })
   
@@ -1730,13 +1654,13 @@ server <- function(input, output){
     for (i in 2:7){
       g.map <- addPolygons(g.map, data=g.soilData %>% filter(NirrCpCls==i), smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = soilColors[i])
     }
-      g.map <-g.map %>% addLegend("bottomright", pal = g.soilLegend, values = soilClass[-c(1,8)],
-                           title = "Soil Quality Class",
-                           labFormat = labelFormat(),
-                           opacity = 1,
-                           data=g.soilData) 
+    g.map <-g.map %>% addLegend("bottomright", pal = g.soilLegend, values = soilClass[-c(1,8)],
+                                title = "Soil Quality Class",
+                                labFormat = labelFormat(),
+                                opacity = 1,
+                                data=g.soilData) 
     
-      })
+  })
   
   output$p.soilMap <- renderLeaflet({
     p.map <- leaflet() %>% 
@@ -1748,14 +1672,14 @@ server <- function(input, output){
       p.map <- addPolygons(p.map, data=p.soilData %>% filter(NirrCpCls==i), smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = soilColors[i])
     }
     p.map <-p.map %>% addLegend("bottomright", pal = soilLegend, values = soilClass,
-                                     title = "Soil Quality Class",
-                                     labFormat = labelFormat(),
-                                     opacity = 1,
-                                     data=p.soilData) 
+                                title = "Soil Quality Class",
+                                labFormat = labelFormat(),
+                                opacity = 1,
+                                data=p.soilData) 
     
-    })
+  })
   
-    
+  
   
   output$gsoil <- renderPlotly({
     gsoil
@@ -1782,8 +1706,8 @@ server <- function(input, output){
       travelTime.func("Powhatan")
     }
   })
-
-    ### LAND USE ======================================
+  
+  ### LAND USE ======================================
   output$luPlot.g <- renderLeaflet({
     luPlotFunction(input$luYear.g, "Goochland")
   }) %>% bindCache(input$luYear.g) #will it be faster?
@@ -1795,12 +1719,14 @@ server <- function(input, output){
   
   output$gooch_sankey <- renderHighchart({ 
     hchart(data_to_sankey(g.sankey), "sankey", ) %>%
-      hc_add_theme(thm)
+      hc_add_theme(thm.g) %>%
+      hc_plotOptions(series = list(dataLabels = list(style = list(fontSize = "10px",color="black", textOutline = "none"))))
   })
   
   output$pow_sankey <- renderHighchart({ 
     hchart(data_to_sankey(p.sankey), "sankey") %>%
-      hc_add_theme(thm)
+      hc_add_theme(thm.p) %>%
+      hc_plotOptions(series = list(dataLabels = list(style = list(fontSize = "10px",color="black", textOutline = "none"))))
   })
   
   
@@ -1862,8 +1788,5 @@ server <- function(input, output){
   })
   
 }
-
-
-
 
 shinyApp(ui = ui, server = server)
