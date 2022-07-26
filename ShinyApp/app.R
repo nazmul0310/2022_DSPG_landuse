@@ -1447,6 +1447,19 @@ ui <- navbarPage(title = "DSPG 2022",
                                             a(href = 'https://www.linkedin.com/in/john-malla-4b03b0232/', 'John Malla', target = '_blank'), "(Virginia Tech, Undergraduate in Computational Modeling and Data Analytics);",
                                             br(), 
                                             a(href = 'https://www.linkedin.com/in/christophercvest', 'Christopher Vest', target = '_blank'), "(Jacksonville State University, Undergraduate in Finance)."),
+                                          p("", style = "padding-top:10px;"),
+
+                                          h4(strong("DSPG Graduate Student Fellows and Research Assistants")),
+                                          img(src = "Nazmul Huda.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "Samantha Rippley.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          br(), 
+                                          img(src = "yuanyuanWen.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px",height="100px"),
+                                          p(a(href = 'https://www.linkedin.com/in/nazmulpeyal/', 'Nazmul Huda', target = '_blank'), "(Virginia Tech, Graduate Student Fellow in Geography);",
+                                            br(), 
+                                            a(href = 'https://www.linkedin.com/in/samantha-rippley-58846119b/', 'Samantha Rippley', target = '_blank'), "(Virgina Tech, Graduate Student Fellow in Agricultural Economics);",
+                                            br(), 
+                                            a(href = 'https://www.linkedin.com/in/yuanyuan-wen-811227246', 'Yuanyuan Wen', target = '_blank'), "(Virginia Tech, Graduate Research Assistant in Agricultural & Applied Economics)."),
+                                          p("", style = "padding-top:10px;")
                                    ),
                                    column(6, align = "center",
                                           h4(strong("VT Faculty Member")),
@@ -1454,40 +1467,25 @@ ui <- navbarPage(title = "DSPG 2022",
                                           p(a(href = "https://www.linkedin.com/in/susanchenja/", 'Dr. Susan Chen', target = '_blank'), "(Associate Professor of Econometrics & Data Analytics);",
                                             ),
                                           p("", style = "padding-top:10px;"),
-                                          br(),
                                           h4(strong("VT Faculty Affiliates")),
                                           img(src = "weizhang.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "120px"),
                                           img(src = "patrick_kayser.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           p(a(href = "https://aaec.vt.edu/people/faculty/Zhang-Wei.html", 'Dr. Wei Zhang', target = '_blank'), "(Assistant Professor of Agriculture & Applied Economics);",
+  
                                             br(),
                                             a(href = 'https://www.linkedin.com/in/patrick-kayser-a0492545/', 'Patrick Kayser', target = '_blank'), "(Virgina Tech, Virginia Land Use Value Analyst).",
                                             p("", style = "padding-top:10px;"),
-                                            
-                                          ))
-                          ),
-                          fluidRow(style = "margin-left: 100px; margin-right: 100px;",
-                                   column(6, align = "center",
-                                          h4(strong("DSPG Graduate Student Fellows and Research Assistants")),
-                                          img(src = "Nazmul Huda.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          img(src = "Samantha Rippley.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          br(), 
-                                          img(src = "wren.png", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = 'https://www.linkedin.com/in/nazmulpeyal/', 'Nazmul Huda', target = '_blank'), "(Virginia Tech, Graduate Student Fellow in Geography);",
-                                            br(), 
-                                            a(href = 'https://www.linkedin.com/in/samantha-rippley-58846119b/', 'Samantha Rippley', target = '_blank'), "(Virgina Tech, Graduate Student Fellow in Agricultural Economics);",
-                                            br(), 
-                                            a(href = 'https://www.linkedin.com/in/yuanyuan-wen-811227246', 'Yuanyuan Wen', target = '_blank'), "(Virginia Tech, Graduate Research Assistant in Agricultural & Applied Economics)."),
-                                          p("", style = "padding-top:10px;") 
-                                   ),
-                                   column(6, align = "center",
                                           h4(strong("Project Stakeholders")),
                                           img(src = ".jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
                                           img(src = ".jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           p(a(href = "https://www.linkedin.com/in/rachel-henley-335a0345/", 'Rachel Henley', target = '_blank'), "(Virginia Cooperative Extension, Powhatan County);",
                                             br(), 
                                             a(href = 'https://goochland.ext.vt.edu/staff/Maxwell-Charlotte.html', 'Nichole Shuman', target = '_blank'), "(Virginia Cooperative Extension, Goochland County)."),
-                                          p("", style = "padding-top:10px;")
-                                   )
+                                          p("", style = "padding-top:10px;"),
+                          
+                                          )
+                          )
+                      
                           )) ,
                  inverse = T)
 
