@@ -1375,36 +1375,32 @@ ui <- navbarPage(title = "DSPG 2022",
                           fluidRow(style = "margin: 6px;",
                                    h1(strong("Project Findings and Predictions"), align = "center"),
                                    p("", style = "padding-top:10px;"),
-                                   p("As counties with rich agricultural histories, Powhatan and Goochland have the phenomenon 
-                                     that large size of agricultural land has been parcellated and converted to other uses. 
-                                     This research uses quantitative tools to understand how some key natural and social factors 
-                                     affect the parcellation and conversion with administrative data and county-level geospatial 
-                                     data. "),
-                                   h4(strong("Powhatan")),
+                                   p("As growing counties with rich agricultural histories, both Goochland and Powhatan have experienced the parcellation of agricultural lands 
+                                     as well as the conversion of land use towards residential development. This research uses quantitative tools to understand how some key natural 
+                                     and social factors affect the parcellation and conversion with administrative data and county-level geospatial data."),
+                                   h4(strong("Goochland")),
                                    fluidRow(style = "margin: 6px;", align = "justify",
-                                            p("Approximately 84,500 acres of land, about half of the area of Powhatan, were converted to 
-                                              residential-suburban uses during the decade in Powhatan. Parcellation among the agricultural land 
-                                              is also noticeable, as 28 parcels (about 5750 acres) of large agricultural lands have been parcellated
-                                              into smaller agricultural plots."),
-                                            p("Parcellation is occurring predominantly in the heart of Powhatan County, around the U.S. Routes 60 and 522. 
-                                              On the east end near Richmond, high parcellation rates are seen along the U.S. Routes 60 and 288 within 
-                                              the county and this might reflect the urban influence on the county. This pattern that high parcellation around 
-                                              those Routes might imply some correlation between parcellation and transportation. On the map of crop and land type, 
-                                              those Routes are labeled as “Developed”. High traffic volumes can also be seen along U.S. Routes 60 and 288. Hence the 
-                                              correlation between parcellation and those Routes is also a correlation between parcellation and developed areas (traffic volumes)."),
-                                            p("There is no obvious sign that poor soil quality can be a driver of land conversion out of agriculture from the visualization map. 
-                                              (the conclusion related with soil quality should be determined by the regression model.)"),
-                                            br(),
-                                            h4(strong("Goochland")),
-                                            p("Approximately 28870 acres of land, about 16% of the area of Goochland, were converted to residential uses including single-family 
+                                            p("Approximately 28,870 acres of land, about 16% of the area of Goochland, were converted to residential uses including single-family 
                                               residential urban and suburban during 2018-2022 in Goochland. There are 5 parcels (about 671 acres) of large agricultural lands that 
                                               have been parcellated into smaller agricultural plots."),
                                             p("Parcellation is occurring predominantly in the southeast of Goochland County near Richmond, around the U.S. Routes I64, 250, and 288. 
-                                              This pattern might reflect the urban influence on the county. This pattern might also imply some correlation between parcellation and 
+                                              This pattern might reflect the urban influence on the county. This pattern may also imply some correlation between parcellation and 
                                               transportation. On the map of crop and land type, those Routes are labeled as “Developed”. High traffic volumes can also be seen along 
-                                              those Routes. Hence the correlation between parcellation and those Routes is also a correlation between parcellation and developed areas (traffic volumes). "),
-                                            p("In the southeast, a pattern of denser land with soil quality Capability Class II (a good quality) can be seen. 
-                                            (But the conclusion should also wait for the regression model!)
+                                              those Routes. Hence the correlation between parcellation and those Routes is also a correlation between parcellation and developed areas 
+                                              (traffic volumes)."),
+                                            p("In the southeast, a pattern of denser land with soil quality of Capability Class II (good quality) can be seen. (But the conclusion should 
+                                              also wait for the regression model!)"),
+                                            br(),
+                                            h4(strong("Powhatan")),
+                                            p("Approximately 84,500 acres of land, about half of the area of Powhatan, were converted to residential-suburban uses during the decade of 2012-2020 
+                                              in Powhatan. Parcellation among the agricultural land is also noticeable, as 28 parcels (about 5,750 acres) of large agricultural lands have been 
+                                              parcellated into smaller agricultural plots."),
+                                            p("Parcellation is occurring predominantly in the heart of Powhatan County, around the U.S. Routes 60 and 522. On the east end near Richmond, high 
+                                              parcellation rates are seen along the U.S. Routes 60 and 288 within the county; this might reflect the urban influence on the county. This pattern 
+                                              of high parcellation around those Routes may imply some correlation between parcellation and transportation. On the map of crop and land type, those 
+                                              Routes are labeled as “Developed”. High traffic volumes can also be seen along U.S. Routes 60 and 288. Hence the correlation between parcellation and 
+                                              those Routes is also a correlation between parcellation and developed areas (traffic volumes)."),
+                                            p("There is no obvious sign that poor soil quality can be a driver of land conversion out of agriculture from the visualization map. (the conclusion related to soil quality should be determined by the regression model.)
 "),
                                    ), 
                                    
@@ -1521,36 +1517,42 @@ ui <- navbarPage(title = "DSPG 2022",
                                             a(href = 'https://www.linkedin.com/in/john-malla-4b03b0232/', 'John Malla', target = '_blank'), "(Virginia Tech, Undergraduate in Computational Modeling and Data Analytics);",
                                             br(), 
                                             a(href = 'https://www.linkedin.com/in/christophercvest', 'Christopher Vest', target = '_blank'), "(Jacksonville State University, Undergraduate in Finance)."),
-                                          p("", style = "padding-top:10px;") 
                                    ),
                                    column(6, align = "center",
-                                          h4(strong("VT Faculty Members")),
+                                          h4(strong("VT Faculty Member")),
                                           img(src = "SusanChen.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
-                                          img(src = "weizhang.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           p(a(href = "https://www.linkedin.com/in/susanchenja/", 'Dr. Susan Chen', target = '_blank'), "(Associate Professor of Econometrics & Data Analytics);",
-                                            br(), 
-                                            a(href = 'https://aaec.vt.edu/people/faculty/Zhang-Wei.html', 'Dr. Wei Zhang', target = '_blank'), "(Assistant Professor of Agricultural & Applied Economics)."),
-                                          p("", style = "padding-top:10px;")
-                                   )
+                                            ),
+                                          p("", style = "padding-top:10px;"),
+                                          br(),
+                                          h4(strong("VT Faculty Affiliates")),
+                                          img(src = "weizhang.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "120px"),
+                                          img(src = "patrick_kayser.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          p(a(href = "https://aaec.vt.edu/people/faculty/Zhang-Wei.html", 'Dr. Wei Zhang', target = '_blank'), "(Assistant Professor of Agriculture & Applied Economics);",
+                                            br(),
+                                            a(href = 'https://www.linkedin.com/in/patrick-kayser-a0492545/', 'Patrick Kayser', target = '_blank'), "(Virgina Tech, Virginia Land Use Value Analyst).",
+                                            p("", style = "padding-top:10px;"),
+                                            
+                                          ))
                           ),
                           fluidRow(style = "margin-left: 100px; margin-right: 100px;",
                                    column(6, align = "center",
-                                          h4(strong("DSPG Graduate Fellows and Research Assistants")),
+                                          h4(strong("DSPG Graduate Student Fellows and Research Assistants")),
                                           img(src = "Nazmul Huda.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           img(src = "Samantha Rippley.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           br(), 
-                                          img(src = "Yuanyuan Wen.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = 'https://www.linkedin.com/in/nazmulpeyal/', 'Nazmul Huda', target = '_blank'), "(Virginia Tech, Graduate in Geography);",
+                                          img(src = "wren.png", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          p(a(href = 'https://www.linkedin.com/in/nazmulpeyal/', 'Nazmul Huda', target = '_blank'), "(Virginia Tech, Graduate Student Fellow in Geography);",
                                             br(), 
-                                            a(href = 'https://www.linkedin.com/in/samantha-rippley-58846119b/', 'Samantha Rippley', target = '_blank'), "(Virgina Tech, Graduate in Agricultural Economics);",
+                                            a(href = 'https://www.linkedin.com/in/samantha-rippley-58846119b/', 'Samantha Rippley', target = '_blank'), "(Virgina Tech, Graduate Student Fellow in Agricultural Economics);",
                                             br(), 
-                                            a(href = 'https://www.linkedin.com/in/yuanyuan-wen-811227246', 'Yuanyuan Wen', target = '_blank'), "(Virginia Tech, Graduate in Agricultural & Applied Economics)."),
+                                            a(href = 'https://www.linkedin.com/in/yuanyuan-wen-811227246', 'Yuanyuan Wen', target = '_blank'), "(Virginia Tech, Graduate Research Assistant in Agricultural & Applied Economics)."),
                                           p("", style = "padding-top:10px;") 
                                    ),
                                    column(6, align = "center",
                                           h4(strong("Project Stakeholders")),
-                                          img(src = "team-posadas.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
-                                          img(src = "team-sarah.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = ".jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = ".jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           p(a(href = "https://www.linkedin.com/in/rachel-henley-335a0345/", 'Rachel Henley', target = '_blank'), "(Virginia Cooperative Extension, Powhatan County);",
                                             br(), 
                                             a(href = 'https://goochland.ext.vt.edu/staff/Maxwell-Charlotte.html', 'Nichole Shuman', target = '_blank'), "(Virginia Cooperative Extension, Goochland County)."),
