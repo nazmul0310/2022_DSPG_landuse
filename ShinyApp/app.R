@@ -126,21 +126,10 @@ pcon <- st_read("data/Conservation/Powhatan_Natural_Conservation.shp") %>% st_tr
 
 goochland_con <- leaflet()%>%
   addTiles() %>%
-  addProviderTiles(providers$CartoDB.Positron)%>%
-<<<<<<< HEAD
+  addProviderTiles(providers$CartoDB.Positron) %>%
   setView(lng=-77.885376, lat=37.684143, zoom=10.48) %>% 
   addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="purple")%>%
   addPolygons(data=gl_cnty, weight=2, color="black", fillOpacity=0, opacity = 1)
-=======
-  setView(lng=-78, lat=37.75, zoom=10.48) %>% 
-  addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="#481c6e")%>%
-  addPolygons(data=gl_cnty, weight=1, color="black", fillOpacity=0)
-
-    # Powhatan
-
-pcon <- st_read("data/Conservation/Powhatan_Natural_Conservation.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-pcon$col=sample(c('red','yellow','green'),nrow(pcon),1)
->>>>>>> 084570df1b8dea303a207cd5c572566ca9ea461d
 
 powhatan_con <- leaflet()%>%
   addTiles() %>%
@@ -250,9 +239,6 @@ thm.p <- hc_theme(colors = c("#fde725", "#fde725", "#1fa187", "#addc30", "#3b528
                 labels=list(color="#333333", position="absolute"),
                 legend = list(itemStyle = list(fontFamily ='Lumen',color ='#000000')
                               ,y=50,align='right',itemHoverStyle = list(color ="#FFFf43")))
-# hchart(data_to_sankey(p.sankey), "sankey", ) %>%
-#   hc_add_theme(thm.p) %>%
-#   hc_plotOptions(series = list(dataLabels = list(style = list(fontSize = "10px",color="black", textOutline = "none"))))
 
 thm.g <- hc_theme(colors = c("#fde725", "#fde725", "#1fa187", "#90d743", "#35b779", "#440154", "#31688e", "#443983", "#1fa187"),
                   chart = list(backgroundColor = "#ffffff"),
@@ -263,11 +249,6 @@ thm.g <- hc_theme(colors = c("#fde725", "#fde725", "#1fa187", "#90d743", "#35b77
                   labels=list(color="#333333", position="absolute"),
                   legend = list(itemStyle = list(fontFamily ='Lumen',color ='#000000')
                                 ,y=50,align='right',itemHoverStyle = list(color ="#FFFf43")))
-
-# hchart(data_to_sankey(g.sankey), "sankey", ) %>%
-#   hc_add_theme(thm.g) %>%
-#   hc_plotOptions(series = list(dataLabels = list(style = list(fontSize = "10px",color="black", textOutline = "none"))))
-
 
 ### CROP LAYER =================================================
 
@@ -845,13 +826,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        education and outreach, and other measures to reduce and prevent NPS pollution from affecting the Commonwealth’s waters" [5].'),
                                                      p(),
                                                      p(),
-<<<<<<< HEAD
-                                                     
-                                              ) , 
-=======
-                                                   
                                               )) , 
->>>>>>> 084570df1b8dea303a207cd5c572566ca9ea461d
                                               column(6, 
                                                      fluidRow(style = "margin: 6px;", align = "justify",
                                                      p("", style = "padding-top:10px;"),
@@ -1375,33 +1350,36 @@ ui <- navbarPage(title = "DSPG 2022",
                           fluidRow(style = "margin: 6px;",
                                    h1(strong("Project Findings and Predictions"), align = "center"),
                                    p("", style = "padding-top:10px;"),
-                                   p("As growing counties with rich agricultural histories, both Goochland and Powhatan have experienced the parcellation of agricultural lands 
-                                     as well as the conversion of land use towards residential development. This research uses quantitative tools to understand how some key natural 
-                                     and social factors affect the parcellation and conversion with administrative data and county-level geospatial data."),
-                                   h4(strong("Goochland")),
+                                   p("As counties with rich agricultural histories, Powhatan and Goochland have the phenomenon 
+                                     that large size of agricultural land has been parcellated and converted to other uses. 
+                                     This research uses quantitative tools to understand how some key natural and social factors 
+                                     affect the parcellation and conversion with administrative data and county-level geospatial 
+                                     data. "),
+                                   h4(strong("Powhatan")),
                                    fluidRow(style = "margin: 6px;", align = "justify",
-                                            p("Approximately 28,870 acres of land, about 16% of the area of Goochland, were converted to residential uses including single-family 
+                                            p("Approximately 84,500 acres of land, about half of the area of Powhatan, were converted to 
+                                              residential-suburban uses during the decade in Powhatan. Parcellation among the agricultural land 
+                                              is also noticeable, as 28 parcels (about 5750 acres) of large agricultural lands have been parcellated
+                                              into smaller agricultural plots."),
+                                            p("Parcellation is occurring predominantly in the heart of Powhatan County, around the U.S. Routes 60 and 522. 
+                                              On the east end near Richmond, high parcellation rates are seen along the U.S. Routes 60 and 288 within 
+                                              the county and this might reflect the urban influence on the county. This pattern that high parcellation around 
+                                              those Routes might imply some correlation between parcellation and transportation. On the map of crop and land type, 
+                                              those Routes are labeled as “Developed”. High traffic volumes can also be seen along U.S. Routes 60 and 288. Hence the 
+                                              correlation between parcellation and those Routes is also a correlation between parcellation and developed areas (traffic volumes)."),
+                                            p("There is no obvious sign that poor soil quality can be a driver of land conversion out of agriculture from the visualization map. 
+                                              (the conclusion related with soil quality should be determined by the regression model.)"),
+                                            br(),
+                                            h4(strong("Goochland")),
+                                            p("Approximately 28870 acres of land, about 16% of the area of Goochland, were converted to residential uses including single-family 
                                               residential urban and suburban during 2018-2022 in Goochland. There are 5 parcels (about 671 acres) of large agricultural lands that 
                                               have been parcellated into smaller agricultural plots."),
                                             p("Parcellation is occurring predominantly in the southeast of Goochland County near Richmond, around the U.S. Routes I64, 250, and 288. 
-                                              This pattern might reflect the urban influence on the county. This pattern may also imply some correlation between parcellation and 
+                                              This pattern might reflect the urban influence on the county. This pattern might also imply some correlation between parcellation and 
                                               transportation. On the map of crop and land type, those Routes are labeled as “Developed”. High traffic volumes can also be seen along 
-                                              those Routes. Hence the correlation between parcellation and those Routes is also a correlation between parcellation and developed areas 
-                                              (traffic volumes)."),
-                                            p("In the southeast, a pattern of denser land with soil quality of Capability Class II (good quality) can be seen. (But the conclusion should 
-                                              also wait for the regression model!)"),
-                                            br(),
-                                            h4(strong("Powhatan")),
-                                            p("Approximately 84,500 acres of land, about half of the area of Powhatan, were converted to residential-suburban uses during the decade of 2012-2020 
-                                              in Powhatan. Parcellation among the agricultural land is also noticeable, as 28 parcels (about 5,750 acres) of large agricultural lands have been 
-                                              parcellated into smaller agricultural plots."),
-                                            p("Parcellation is occurring predominantly in the heart of Powhatan County, around the U.S. Routes 60 and 522. On the east end near Richmond, high 
-                                              parcellation rates are seen along the U.S. Routes 60 and 288 within the county; this might reflect the urban influence on the county. This pattern 
-                                              of high parcellation around those Routes may imply some correlation between parcellation and transportation. On the map of crop and land type, those 
-                                              Routes are labeled as “Developed”. High traffic volumes can also be seen along U.S. Routes 60 and 288. Hence the correlation between parcellation and 
-                                              those Routes is also a correlation between parcellation and developed areas (traffic volumes)."),
-                                            p("There is no obvious sign that poor soil quality can be a driver of land conversion out of agriculture from the visualization map. (the conclusion related to soil quality should be determined by the regression model.)
-"),
+                                              those Routes. Hence the correlation between parcellation and those Routes is also a correlation between parcellation and developed areas (traffic volumes). "),
+                                            p("In the southeast, a pattern of denser land with soil quality Capability Class II (a good quality) can be seen. 
+                                            (But the conclusion should also wait for the regression model!)"),
                                    ), 
                                    
                                    
@@ -1415,50 +1393,17 @@ ui <- navbarPage(title = "DSPG 2022",
                                    p("", style = "padding-top:10px;"),
                                    column(4,
                                           fluidRow(style = "margin: 6px;", align = "justify",
-<<<<<<< HEAD
-                                                   img(src = "data-acs.png", style = "display: inline; float: left;", width = "200px"),
-                                                   p(strong("American Community Survey"), "The American Community Survey (ACS) is an ongoing yearly survey conducted by the U.S Census Bureau. ACS samples households to compile 1-year and 5-year datasets 
-                                      providing information on population sociodemographic and ocioeconomic characteristics including employment, disability, and health insurance coverage. We used ACS 2014/18 5-year
-                                      estimates to obtain census tract and census block group-level to explore Floyd County resident characteristics."),
-                                                   br(""),
-                                                   img(src = "nass.jpg", style = "display: inline; float: left;", width = "150px"),
-                                                   p(strong("USDA National Agricultural Statistics Service"), "The National Agricultural Statistics Service (NASS) under the United States Department of Agriculture (USDA) provides statistics on a wide variety 
-=======
                                           img(src = "data-acs.png", style = "display: inline; float: left;", width = "180px"),
                                           p(strong("American Community Survey"), "The American Community Survey (ACS) is an demographics survey conducted by the U.S Census Bureau. The ACS samples households to compile 1-year and 5-year datasets 
                                       providing information on social and economic characteristics including employment, education, and income. This project utilizes ACS 2016/2020 5-year
                                       estimates to obtain county- and census tract-level data to explore Goochland and Powhatan Counties' resident characteristics."),
                                           br(""),
                                           img(src = "nass.jpg", style = "display: inline; float: left;", width = "130px"),
-                                          p(strong("USDA National Agricultural Statistics Service"), "The National Agricultural Statistics Service (NASS) under the United States Department of Agriculture (USDA) provides statistics on a wide variety 
->>>>>>> 084570df1b8dea303a207cd5c572566ca9ea461d
+                                          p(strong("USDA National Agricultural Statistics Service"), "The National Agricultural Statistics Service (NASS) under the United States Department of Agriculture (USDA) provides statistics on a wide variety
                                             of agricultural topics. This project specifically relies on crop layer data to create maps and to conduct a statistical analysis on the probablity of land use conversion.")
                                           )),
                                    column(4,
                                           fluidRow(style = "margin: 6px;", align = "justify",
-<<<<<<< HEAD
-                                                   img(src = "goochland.jpg", style = "display: inline; float: left;", width = "150px"),
-                                                   p(strong("Goochland County Administrative Data"), "Goochland County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
-                                            that has occured over a 5 year period (2018 - 2022). We used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
-                                                   p(),
-                                                   br(),
-                                                   img(src = "ncss.jpg", style = "display: inline; float: left;", width = "150px"),
-                                                   p(strong("USDA National Cooperative Soil Survey"), "The National Cooperative Soil Survey (NCSS) under the USDA provides soil data which was used to generate soil quality maps for both counties. The data was also used for our statistical analysis to predict the occurrence of land use conversion."),
-                                                   
-                                          )),
-                                   column(4,
-                                          fluidRow(style = "margin: 6px;", align = "justify",
-                                                   img(src = "powhatan.jpg", style = "display: inline; float: left;", width = "150px"),
-                                                   p(strong("Powhatan County Administrative Data"), "Powhatan County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
-                                            that has occured over a 8 year period (2014 - 2021). We used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
-                                                   br(""),
-                                                   img(src = "vdot.png", style = "display: inline; float: left;", width = "200px"),
-                                                   p(strong("VDOT Traffic Data"), "The Virginia Department of Transportation (VDOT) is responsible for building, maintaining and operating the state's roads, bridges and tunnels. VDOT also conducts 
-                                          a program where traffic data are gathered from sensors in or along streets and highways and other sources.  This data includes estimates of the average number of vehicles that traveled each segment of road and daily vehicle miles traveled for specific groups of facilities and vehicle types are calculated.")
-                                                   
-                                                   
-                                          )),
-=======
                                           img(src = "goochland.jpg", style = "display: inline; float: left;", width = "150px"),
                                           p(strong("Goochland County Administrative Data"), "Goochland County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
                                             that has occured over a 5 year period (2018 - 2022). The team used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
@@ -1480,11 +1425,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                           p(strong("VDOT Traffic Data"), "The Virginia Department of Transportation (VDOT) is responsible for building, maintaining and operating the state's roads, bridges and tunnels. VDOT also conducts 
                                           a program where traffic data are gathered from sensors in or along streets and highways and other sources.  This data includes estimates of the average number of vehicles that traveled each segment
                                           of road and daily vehicle miles traveled for specific groups of facilities and vehicle types are calculated.")
-                                          
-                                          
                                    )),
->>>>>>> 084570df1b8dea303a207cd5c572566ca9ea461d
-                                   
                           )
                  ),
                  
@@ -1517,42 +1458,36 @@ ui <- navbarPage(title = "DSPG 2022",
                                             a(href = 'https://www.linkedin.com/in/john-malla-4b03b0232/', 'John Malla', target = '_blank'), "(Virginia Tech, Undergraduate in Computational Modeling and Data Analytics);",
                                             br(), 
                                             a(href = 'https://www.linkedin.com/in/christophercvest', 'Christopher Vest', target = '_blank'), "(Jacksonville State University, Undergraduate in Finance)."),
+                                          p("", style = "padding-top:10px;") 
                                    ),
                                    column(6, align = "center",
-                                          h4(strong("VT Faculty Member")),
+                                          h4(strong("VT Faculty Members")),
                                           img(src = "SusanChen.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "weizhang.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           p(a(href = "https://www.linkedin.com/in/susanchenja/", 'Dr. Susan Chen', target = '_blank'), "(Associate Professor of Econometrics & Data Analytics);",
-                                            ),
-                                          p("", style = "padding-top:10px;"),
-                                          br(),
-                                          h4(strong("VT Faculty Affiliates")),
-                                          img(src = "weizhang.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "120px"),
-                                          img(src = "patrick_kayser.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = "https://aaec.vt.edu/people/faculty/Zhang-Wei.html", 'Dr. Wei Zhang', target = '_blank'), "(Assistant Professor of Agriculture & Applied Economics);",
-                                            br(),
-                                            a(href = 'https://www.linkedin.com/in/patrick-kayser-a0492545/', 'Patrick Kayser', target = '_blank'), "(Virgina Tech, Virginia Land Use Value Analyst).",
-                                            p("", style = "padding-top:10px;"),
-                                            
-                                          ))
+                                            br(), 
+                                            a(href = 'https://aaec.vt.edu/people/faculty/Zhang-Wei.html', 'Dr. Wei Zhang', target = '_blank'), "(Assistant Professor of Agricultural & Applied Economics)."),
+                                          p("", style = "padding-top:10px;")
+                                   )
                           ),
                           fluidRow(style = "margin-left: 100px; margin-right: 100px;",
                                    column(6, align = "center",
-                                          h4(strong("DSPG Graduate Student Fellows and Research Assistants")),
+                                          h4(strong("DSPG Graduate Fellows and Research Assistants")),
                                           img(src = "Nazmul Huda.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           img(src = "Samantha Rippley.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           br(), 
-                                          img(src = "wren.png", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = 'https://www.linkedin.com/in/nazmulpeyal/', 'Nazmul Huda', target = '_blank'), "(Virginia Tech, Graduate Student Fellow in Geography);",
+                                          img(src = "Yuanyuan Wen.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          p(a(href = 'https://www.linkedin.com/in/nazmulpeyal/', 'Nazmul Huda', target = '_blank'), "(Virginia Tech, Graduate in Geography);",
                                             br(), 
-                                            a(href = 'https://www.linkedin.com/in/samantha-rippley-58846119b/', 'Samantha Rippley', target = '_blank'), "(Virgina Tech, Graduate Student Fellow in Agricultural Economics);",
+                                            a(href = 'https://www.linkedin.com/in/samantha-rippley-58846119b/', 'Samantha Rippley', target = '_blank'), "(Virgina Tech, Graduate in Agricultural Economics);",
                                             br(), 
-                                            a(href = 'https://www.linkedin.com/in/yuanyuan-wen-811227246', 'Yuanyuan Wen', target = '_blank'), "(Virginia Tech, Graduate Research Assistant in Agricultural & Applied Economics)."),
+                                            a(href = 'https://www.linkedin.com/in/yuanyuan-wen-811227246', 'Yuanyuan Wen', target = '_blank'), "(Virginia Tech, Graduate in Agricultural & Applied Economics)."),
                                           p("", style = "padding-top:10px;") 
                                    ),
                                    column(6, align = "center",
                                           h4(strong("Project Stakeholders")),
-                                          img(src = ".jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
-                                          img(src = ".jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "team-posadas.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
+                                          img(src = "team-sarah.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                           p(a(href = "https://www.linkedin.com/in/rachel-henley-335a0345/", 'Rachel Henley', target = '_blank'), "(Virginia Cooperative Extension, Powhatan County);",
                                             br(), 
                                             a(href = 'https://goochland.ext.vt.edu/staff/Maxwell-Charlotte.html', 'Nichole Shuman', target = '_blank'), "(Virginia Cooperative Extension, Goochland County)."),
