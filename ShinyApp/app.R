@@ -126,7 +126,7 @@ goochland_con <- leaflet()%>%
   addTiles() %>%
   addProviderTiles(providers$CartoDB.Positron)%>%
   setView(lng=-78, lat=37.75, zoom=10.48) %>% 
-  addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="purple")%>%
+  addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="#481c6e")%>%
   addPolygons(data=gl_cnty, weight=1, color="black", fillOpacity=0)
 
     # Powhatan
@@ -406,7 +406,7 @@ parc.func <- function(data, range, county, cnty){
     my.parc.plt <- my.parc.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
   }
   else{
-    my.parc.plt <- my.parc.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
+    my.parc.plt <- my.parc.plt %>% setView(lng=-77.885376, lat=37.73143, zoom = 10)
   }
   
   # for loop to add polygons based on what the max year is vs. subsequent years prior
@@ -440,7 +440,7 @@ hotspot.func <- function(county, range){
     hotspot.plt <- hotspot.plt %>% addPolygons(data = po_cnty, fillOpacity = 0)
   }
   else{
-    hotspot.plt <- hotspot.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
+    hotspot.plt <- hotspot.plt %>% setView(lng=-77.885376, lat=37.73143, zoom = 10)
     file_list <- paste("data/Parcel_Hotspot/goochland/gooch_hotspot_",range,".shp",sep = "")
     hotspot.plt <- hotspot.plt %>% addPolygons(data = gl_cnty, fillOpacity = 0)
   }
@@ -723,6 +723,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                    tabsetPanel(
                                      tabPanel("Federal",
                                               column(6, 
+                                                     fluidRow(style = "margin: 6px;", align = "justify",
                                                      p("", style = "padding-top:10px;"),
                                                      p(strong("The Conservation Reserve Program (CRP):")), 
                                                      p("The CRP is a federal land conversion program administered by the Farm Service Agency (FSA). 
@@ -749,8 +750,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p(),
                                                      p(),
                                                      
-                                              ) , 
+                                              )) , 
                                               column(6, 
+                                                     fluidRow(style = "margin: 6px;", align = "justify",
                                                      p("", style = "padding-top:10px;"),
                                                      p(strong("Emergency Conservation Program (ECP):")), 
                                                      p('This program “provides funding and technical assistance for farmers and ranchers to restore farmland damaged by natural disasters and for emergency water 
@@ -771,7 +773,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p(strong("Agriculture Risk Coverage (ARC) and Price Loss Coverage (PLC):")),
                                                      p('ARC program is an “income support program that provides payments when actual crop revenue declines below a specified guaranteed level [6]." PLC program “provides 
                                                      income support payments when the effective price for a covered commodity falls below its effective reference price [6]." Both programs provide financial protection 
-                                                     to farmers. They serve as a safety net from drops in crop revenues and prices.')),
+                                                     to farmers. They serve as a safety net from drops in crop revenues and prices.'))),
                                               column(12,
                                                      h4("References:"),
                                                      p(tags$small("[1] Lubowski, R. N., Bucholtz, S., Claassen, R., Roberts, M. J., Cooper, J. C., Gueorguieva, A., & Johansson, R. (n.d.). Environmental Effects of Agricultural Land-Use Change United States Department of Agriculture The Role of Economics and Policy. Retrieved July 25, 2022, from www.ers.usda.gov", tags$br(), 
@@ -786,9 +788,10 @@ ui <- navbarPage(title = "DSPG 2022",
                                               p(),
                                               p('State level officials work within the confines of both federal and local policy. They aim to simultaneously enhance federal policy, while enabling local officials to make comprehensive 
                                               land-use plans. The state of Virginia is under the Dillon Rule which states that local ordinances must be consistent with state law [1]. Local officials are the ones approving parcel-specific 
-                                              land use plans, but state and federal officials play a key role [1]. “The state courts are the "referees" to determine if land use decisions violated some aspect of various state laws, or if 
+                                              land use plans, but state and federal officials play a key role [1]. The state courts are the "referees" to determine if land use decisions violated some aspect of various state laws, or if 
                                                 the land use rules violated the state constitution in some way [1].'),
-                                              column(6, 
+                                              column(6,
+                                                     fluidRow(style = "margin: 6px;", align = "justify",
                                                      p("", style = "padding-top:10px;"),
                                                      p(strong("Conservation Reserve Enhancement program (CREP):")), 
                                                      p("This is a state sponsored enhancement to the federal CRP. It is a cost-share program where federal reimbursement are made through the FSA for up to 
@@ -810,8 +813,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p(),
                                                      p(),
                                                    
-                                              ) , 
+                                              )) , 
                                               column(6, 
+                                                     fluidRow(style = "margin: 6px;", align = "justify",
                                                      p("", style = "padding-top:10px;"),
                                                      p(strong("Chesapeake Bay Preservation Act:")),
                                                      p("This program was developed in 1988 as an element of Virginia's NPS management program. The goal is to protect and improve water quality in the Chesapeake 
@@ -825,7 +829,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      have not been met. In December of 2010, the EPA issued a TMDL, a “pollution diet” to protect the Bay [7]. This TMDL is divided among all the Bay states. However,
                                                        “regional or statewide consistency is rare in Virginia's land use planning process - even statewide requirements such as the Chesapeake Bay Regulations are interpreted 
                                                        differently by different jurisdictions” [1]."),
-                                              ),
+                                              )),
                                               column(12,
                                                      h4("References:"),
                                                      p(tags$small("[1] Land use planning in Virginia. Virginia Places. (n.d.). Retrieved July 25, 2022, from http://www.virginiaplaces.org/landuseplan/", tags$br(), 
@@ -1027,7 +1031,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          )), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
-                                                                leafletOutput("g.soilMap",height = 500) %>% withSpinner(type = 4, color = "#861F41", size = 1.5), 
+                                                                leafletOutput("g.soilMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5), 
                                                                 h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("gsoil", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
@@ -1038,12 +1042,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                  )) ,
                                                 tabPanel("Traffic Data",
                                                          p("", style = "padding-top:10px;"),
-                                                         column(4, 
+                                                         column(4,
+                                                                fluidRow(style = "margin: 6px;", align = "justify",
                                                                 h4(strong("Traffic in Goochland County")),
                                                                 p("Traffic information is a very good indicator as to who lives in an area and how it is used, more 
                                                                 Traffic data is another very good variable to look at when it comes to land-use, we wanted to look into these metrics to see if there were correlations to where more residential housing was to how accessible the area was from big roads. We also wanted to track the distance away from the City of Richmond to see if more residential housing was built closer, or further away from a larger metropolitan area. "),
                                                                 p("Goochland has one interstate, and two state highway routes, that we can see affect travel times and volume throughout the county. Interstate 64 leads to an increase in traffic volume on the north end of the county and also influences how far someone can drive from the city of Richmond outward through Goochland. We can also see that both of the state routes, 288 and 525, see a good majority of the traffic going veritcally through the county.")
-                                                         ), 
+                                                         )), 
                                                          column(8, 
                                                                 h4(strong("Traffic Visualizations")),
                                                                 selectInput("gooch_traffic", "Select Variable:", width = "100%", choices = c(
@@ -1163,7 +1168,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 h4(strong("Soil Quality Map")),
                                                                 leafletOutput("p.soilMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
                                                                 h4(strong("Soil Quality Graph")),
-                                                                plotlyOutput("psoil", heigh = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
+                                                                plotlyOutput("psoil", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
                                                          column(12, 
                                                                 
@@ -1366,12 +1371,12 @@ ui <- navbarPage(title = "DSPG 2022",
                                    p("", style = "padding-top:10px;"),
                                    column(4,
                                           fluidRow(style = "margin: 6px;", align = "justify",
-                                          img(src = "data-acs.png", style = "display: inline; float: left;", width = "200px"),
-                                          p(strong("American Community Survey"), "The American Community Survey (ACS) is an ongoing yearly survey conducted by the U.S Census Bureau. ACS samples households to compile 1-year and 5-year datasets 
-                                      providing information on population sociodemographic and ocioeconomic characteristics including employment, disability, and health insurance coverage. We used ACS 2014/18 5-year
-                                      estimates to obtain census tract and census block group-level to explore Floyd County resident characteristics."),
+                                          img(src = "data-acs.png", style = "display: inline; float: left;", width = "180px"),
+                                          p(strong("American Community Survey"), "The American Community Survey (ACS) is an demographics survey conducted by the U.S Census Bureau. The ACS samples households to compile 1-year and 5-year datasets 
+                                      providing information on social and economic characteristics including employment, education, and income. This project utilizes ACS 2016/2020 5-year
+                                      estimates to obtain county- and census tract-level data to explore Goochland and Powhatan Counties' resident characteristics."),
                                           br(""),
-                                          img(src = "nass.jpg", style = "display: inline; float: left;", width = "150px"),
+                                          img(src = "nass.jpg", style = "display: inline; float: left;", width = "130px"),
                                           p(strong("USDA National Agricultural Statistics Service"), "The National Agricultural Statistics Service (NASS) under the United States Department of Agriculture (USDA) provides statistics on a wide variety 
                                             of agricultural topics. This project specifically relies on crop layer data to create maps and to conduct a statistical analysis on the probablity of land use conversion.")
                                    )),
@@ -1379,22 +1384,25 @@ ui <- navbarPage(title = "DSPG 2022",
                                           fluidRow(style = "margin: 6px;", align = "justify",
                                           img(src = "goochland.jpg", style = "display: inline; float: left;", width = "150px"),
                                           p(strong("Goochland County Administrative Data"), "Goochland County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
-                                            that has occured over a 5 year period (2018 - 2022). We used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
+                                            that has occured over a 5 year period (2018 - 2022). The team used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
+                                          br(),
                                           p(),
                                           br(),
                                           img(src = "ncss.jpg", style = "display: inline; float: left;", width = "150px"),
-                                          p(strong("USDA National Cooperative Soil Survey"), "The National Cooperative Soil Survey (NCSS) under the USDA provides soil data which was used to generate soil quality maps for both counties. The data was also used for our statistical analysis to predict the occurrence of land use conversion."),
+                                          p(strong("USDA National Cooperative Soil Survey"), "The National Cooperative Soil Survey (NCSS) under the USDA provides soil data which was used to generate soil quality maps for both counties. 
+                                            The data was also used for our statistical analysis to predict the occurrence of land use conversion."),
 
                                    )),
                                    column(4,
                                           fluidRow(style = "margin: 6px;", align = "justify",
                                           img(src = "powhatan.jpg", style = "display: inline; float: left;", width = "150px"),
                                           p(strong("Powhatan County Administrative Data"), "Powhatan County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
-                                            that has occured over a 8 year period (2014 - 2021). We used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
+                                            that has occured over a 8 year period (2014 - 2021). The team used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
                                           br(""),
                                           img(src = "vdot.png", style = "display: inline; float: left;", width = "200px"),
                                           p(strong("VDOT Traffic Data"), "The Virginia Department of Transportation (VDOT) is responsible for building, maintaining and operating the state's roads, bridges and tunnels. VDOT also conducts 
-                                          a program where traffic data are gathered from sensors in or along streets and highways and other sources.  This data includes estimates of the average number of vehicles that traveled each segment of road and daily vehicle miles traveled for specific groups of facilities and vehicle types are calculated.")
+                                          a program where traffic data are gathered from sensors in or along streets and highways and other sources.  This data includes estimates of the average number of vehicles that traveled each segment
+                                          of road and daily vehicle miles traveled for specific groups of facilities and vehicle types are calculated.")
                                           
                                           
                                    )),
@@ -1629,7 +1637,7 @@ server <- function(input, output){
     g.map <- leaflet() %>% 
       addTiles() %>% 
       addProviderTiles(providers$CartoDB.Positron) %>%
-      setView(lng=-78, lat=37.7, zoom=10.48) 
+      setView(lng=-77.9, lat=37.73, zoom=10.48) 
     
     for (i in 2:7){
       g.map <- addPolygons(g.map, data=g.soilData %>% filter(NirrCpCls==i), smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = soilColors[i])
