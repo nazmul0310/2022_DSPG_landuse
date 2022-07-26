@@ -493,6 +493,49 @@ thm <- hc_theme(colors = c("#440154", "#443A83", "#31688E", "#21908D", "#35B779"
                 legend = list(itemStyle = list(fontFamily ='Lumen',color ='black')
                               ,itemHoverStyle = list(color ='black')))
 
+
+# CODE TO DETECT ORIGIN OF LINK AND CHANGE LOGO ACCORDINGLY
+jscode <- "function getUrlVars() {
+                var vars = {};
+                var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+                    vars[key] = value;
+                });
+                return vars;
+            }
+
+           function getUrlParam(parameter, defaultvalue){
+                var urlparameter = defaultvalue;
+                if(window.location.href.indexOf(parameter) > -1){
+                    urlparameter = getUrlVars()[parameter];
+                    }
+                return urlparameter;
+            }
+
+            var mytype = getUrlParam('type','Empty');
+
+            function changeLinks(parameter) {
+                links = document.getElementsByTagName(\"a\");
+
+                for(var i = 0; i < links.length; i++) {
+                   var link = links[i];
+                   var newurl = link.href + '?type=' + parameter;
+                   link.setAttribute('href', newurl);
+                 }
+            }
+
+           var x = document.getElementsByClassName('navbar-brand');
+
+           if (mytype = 'economic') {
+             x[0].innerHTML = '<div style=\"margin-top:-14px\"><a href=\"https://datascienceforthepublicgood.org/events/data%20science%20for%20the%20public%20good%202021/%20symposium%202021%20poster%20sessions\">' +
+                              '<img src=\"DSPG_black-01.png\", alt=\"DSPG 2022 Symposium Proceedings\", style=\"height:42px;\">' +
+                              '</a></div>';
+
+             //changeLinks('dspg');
+           } 
+           "
+
+
+
 # ui --------------------------------------------------------------------------------------------------------------------
 
 ui <- navbarPage(title = "DSPG 2022",
@@ -1495,6 +1538,8 @@ ui <- navbarPage(title = "DSPG 2022",
 # server --------------------------------------------------------------------------------------------------------------------
 
 server <- function(input, output){
+  
+  runjs(jscode)
   
   ### SOCIODEMOGRAPHICS  =================================================
   
