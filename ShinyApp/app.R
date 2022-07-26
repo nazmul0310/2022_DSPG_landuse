@@ -127,9 +127,20 @@ pcon <- st_read("data/Conservation/Powhatan_Natural_Conservation.shp") %>% st_tr
 goochland_con <- leaflet()%>%
   addTiles() %>%
   addProviderTiles(providers$CartoDB.Positron)%>%
+<<<<<<< HEAD
   setView(lng=-77.885376, lat=37.684143, zoom=10.48) %>% 
   addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="purple")%>%
   addPolygons(data=gl_cnty, weight=2, color="black", fillOpacity=0, opacity = 1)
+=======
+  setView(lng=-78, lat=37.75, zoom=10.48) %>% 
+  addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="#481c6e")%>%
+  addPolygons(data=gl_cnty, weight=1, color="black", fillOpacity=0)
+
+    # Powhatan
+
+pcon <- st_read("data/Conservation/Powhatan_Natural_Conservation.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+pcon$col=sample(c('red','yellow','green'),nrow(pcon),1)
+>>>>>>> 084570df1b8dea303a207cd5c572566ca9ea461d
 
 powhatan_con <- leaflet()%>%
   addTiles() %>%
@@ -461,7 +472,7 @@ parc.func <- function(data, range, county, cnty){
     my.parc.plt <- my.parc.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
   }
   else{
-    my.parc.plt <- my.parc.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
+    my.parc.plt <- my.parc.plt %>% setView(lng=-77.885376, lat=37.73143, zoom = 10)
   }
   
   # for loop to add polygons based on what the max year is vs. subsequent years prior
@@ -496,7 +507,7 @@ hotspot.func <- function(county, range){
     hotspot.plt <- hotspot.plt %>% addPolygons(data = po_cnty, fillOpacity = 0)
   }
   else{
-    hotspot.plt <- hotspot.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
+    hotspot.plt <- hotspot.plt %>% setView(lng=-77.885376, lat=37.73143, zoom = 10)
     file_list <- paste("data/Parcel_Hotspot/goochland/gooch_hotspot_",range,".shp",sep = "")
     hotspot.plt <- hotspot.plt %>% addPolygons(data = gl_cnty, fillOpacity = 0)
   }
@@ -739,46 +750,48 @@ ui <- navbarPage(title = "DSPG 2022",
                           fluidRow(style = "margin: 6px;",
                                    h1(strong("Land Use & Environmental Policies"), align = "center"),
                                    p("", style = "padding-top:10px;"),
-                                   p("Policy plays a key role in land-use. At every level- federal, state, and local- officials develop land use plans, with a wide 
-                                     variety of different objectives and long-term visions. These plans drive changes in land-use, and it is important to investigate 
+                                   p("Policy plays a key role in land use. At every level - federal, state, and local - officials develop land-use plans, with a wide 
+                                     variety of different objectives and long-term visions. These plans drive changes in land use, and it is important to investigate 
                                      policies at every level to get a full picture of land-use conversion."),
                                    tabsetPanel(
                                      tabPanel("Federal",
                                               column(6, 
+                                                     fluidRow(style = "margin: 6px;", align = "justify",
                                                      p("", style = "padding-top:10px;"),
                                                      p(strong("The Conservation Reserve Program (CRP):")), 
                                                      p("The CRP is a federal land conversion program administered by the Farm Service Agency (FSA). 
-                                                       The goal of this program is to reduce cropland acreage- a land retirement program that pays farmers to retire some of their crop land. 
+                                                       The goal of this program is to reduce cropland acreage - a land retirement program that pays farmers to retire some of their crop land. 
                                                        This program has been a major driver of land retirement since it was implemented in 1985. The program is motivated by environmental 
                                                        protection goals. To get approved for the land retirement program, your land must hit specific criteria based on targeted environmental 
                                                        factors. There is then a bidding process. To farmers, this is an incentive to retire land. Studies show that this policy has led to farmers 
-                                                       retire their less productive land. In 2005, “CRP paid $1.7 billion to keep a land area almost the size of Iowa out of production” [1]. 
-                                                       This federal land conversion program incentivizes farmers to retire their land- and lower production. The goal is to protect the environment."),
+                                                       retiring their less productive land. In 2005, “CRP paid $1.7 billion to keep a land area almost the size of Iowa out of production” [1]. 
+                                                       This federal land conversion program incentivizes farmers to retire their land and lower production. The goal is to protect the environment."),
                                                      br(),
                                                      p(strong("Federal Crop Insurance Program:")),
-                                                     p("This program is a partnership between the federal government and insurers- connecting the public and private sectors. 
+                                                     p("This program is a partnership between the federal government and insurers - connecting the public and private sectors. 
                                                        This program does the opposite of the CRP and raises incentives to grow crops. The goal of the Federal Crop Insurance Program is not directly to affect 
-                                                       land-use, but it does influence conversion rates. In 1993, after some catastrophic flooding, congress passed the Federal Crop Insurance Reform Act. This 
+                                                       land use, but it does influence conversion rates. In 1993, after some catastrophic flooding, congress passed the Federal Crop Insurance Reform Act. This 
                                                        act increased the premium subsidies for all crop insurance products- now the program includes a revenue insurance option and catastrophic coverage. About 
-                                                       60% of cultivated cropland in the Unites States is covered by the Federal Crop Insurance Program. This program raises incentives to grow crops, and could 
+                                                       60% of cultivated cropland in the Unites States is covered by the Federal Crop Insurance Program. This program raises incentives to grow crops and could 
                                                        influence farmers to cultivate riskier, less productive land [1]."),
                                                      br(),
                                                      p(strong("Emergency Relief Program (ERP):")), 
-                                                     p("The purpose of this program is to help agriculture producers offset damage caused by natural disasters such as drought or 
+                                                     p("The purpose of this program is to help agriculture producers offset the damage caused by natural disasters such as drought or 
                                                      flooding [2]. Funds are distributed in two phases, to aid livestock producers impacted by natural disasters. The USDA announced in May of 2022 that 
                                                        “commodity and specialty crop producers impacted by natural disaster events in 2020 and 2021 will soon begin receiving emergency relief payments totaling 
                                                        approximately $6 billion through the Farm Service Agency’s (FSA) new Emergency Relief Program (ERP) to offset crop yield and value losses” [3]."),
                                                      p(),
                                                      p(),
                                                      
-                                              ) , 
+                                              )) , 
                                               column(6, 
+                                                     fluidRow(style = "margin: 6px;", align = "justify",
                                                      p("", style = "padding-top:10px;"),
                                                      p(strong("Emergency Conservation Program (ECP):")), 
                                                      p('This program “provides funding and technical assistance for farmers and ranchers to restore farmland damaged by natural disasters and for emergency water 
                                                        conservation measures in severe droughts" [4]. This program does so by giving landowners funding to install water conservation systems or to repair 
                                                        damaged farmland. This is another example of a conservation program that gives farmers insurance, which could incentive farmers to continue to cultivate their 
-                                                       land- regardless of the potential risks associated with damage from storms and droughts. Farms are eligible for this assistance if the damage is affecting 
+                                                       land - regardless of the potential risks associated with damage from storms and droughts. Farms are eligible for this assistance if the damage is affecting 
                                                        productivity, there is evidence that conditions will worsen without intervention, and the repairs will be too costly without federal assistance [4]. 
                                                        Up to 75% of the costs can be provided. The FSA County Committee can “approve applications up to $125,000 while $125,001 to $250,000 requires state committee 
                                                        approval" [4].'),
@@ -791,9 +804,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        it is the local community to create and invest in a water protection plan."),
                                                      br(),
                                                      p(strong("Agriculture Risk Coverage (ARC) and Price Loss Coverage (PLC):")),
-                                                     p('ARC program is an “income support program that provides payments when actual crop revenue declines below a specified guaranteed level [6]." PLC program “provides 
+                                                     p('The ARC program is an “income support program that provides payments when actual crop revenue declines below a specified guaranteed level [6]." PLC program “provides 
                                                      income support payments when the effective price for a covered commodity falls below its effective reference price [6]." Both programs provide financial protection 
-                                                     to farmers. They serve as a safety net from drops in crop revenues and prices.')),
+                                                     to farmers. They serve as a safety net from drops in crop revenues and prices.'))),
                                               column(12,
                                                      h4("References:"),
                                                      p(tags$small("[1] Lubowski, R. N., Bucholtz, S., Claassen, R., Roberts, M. J., Cooper, J. C., Gueorguieva, A., & Johansson, R. (n.d.). Environmental Effects of Agricultural Land-Use Change United States Department of Agriculture The Role of Economics and Policy. Retrieved July 25, 2022, from www.ers.usda.gov", tags$br(), 
@@ -806,34 +819,41 @@ ui <- navbarPage(title = "DSPG 2022",
                                               )), 
                                      tabPanel("State",
                                               p(),
-                                              p('State level officials work within the confines of both federal and local policy. They aim to simultaneously enhance federal policy, while enabling local officials to make comprehensive 
+                                              p('State-level officials work within the confines of both federal and local policy. They aim to simultaneously enhance federal policy while enabling local officials to make comprehensive 
                                               land-use plans. The state of Virginia is under the Dillon Rule which states that local ordinances must be consistent with state law [1]. Local officials are the ones approving parcel-specific 
-                                              land use plans, but state and federal officials play a key role [1]. “The state courts are the "referees" to determine if land use decisions violated some aspect of various state laws, or if 
+                                              land use plans, but state and federal officials play a key role [1]. The state courts are the "referees" to determine if land use decisions violated some aspect of various state laws, or if 
                                                 the land use rules violated the state constitution in some way [1].'),
-                                              column(6, 
+                                              column(6,
+                                                     fluidRow(style = "margin: 6px;", align = "justify",
                                                      p("", style = "padding-top:10px;"),
                                                      p(strong("Conservation Reserve Enhancement program (CREP):")), 
-                                                     p("This is a state sponsored enhancement to the federal CRP. It is a cost-share program where federal reimbursement are made through the FSA for up to 
+                                                     p("This is a state-sponsored enhancement to the federal CRP. It is a cost-share program where federal reimbursement is made through the FSA for up to 
                                                        “50% of a participant's eligible expenses for implementing best management practices (BMP)”. BMP examples include adding fencing, alternative watering 
                                                        systems, and restoring wetlands. Participation in this program is voluntary, and the contract period is around 10-15 years [2]."),
                                                      br(),
                                                      p(strong("Agriculture and Forestal Districts (AFD):")),
                                                      p("The AFD program in Virginia was designed to “preserve and protect open spaces, forested areas, and agricultural lands” [3] This program makes 
                                                        it so land taxes are based on use rather than taxing solely on the market value. Land used for growing crops, for example, is taxed differently than 
-                                                       developed property. This state level policy encourages localities to be purposeful with their property taxes. The hope is that this policy will be used 
+                                                       developed property. This state-level policy encourages localities to be purposeful with their property taxes. The hope is that this policy will be used 
                                                        to conserve and protect agricultural and forest land. These lands can be valued as “natural and ecological resources which provide essential open spaces 
                                                        for clean air sheds, watershed protection, wildlife habitat, aesthetic quality and other environmental purposes” [3]. This program was formed in 1977 
-                                                       [4]. The potential benefits are to lower property taxes, safeguard the rural character of the community, and offer protection from eminent domain [4]."),
+                                                       [4]. The potential benefits are to lower property taxes, safeguard the rural character of the community, and offer protection from the eminent domain [4]."),
                                                      br(),
                                                      p(strong("Nonpoint Source (NPS) Pollution Management Program:")), 
                                                      p('This is a diverse network of state and local government programs that “help to prevent water quality degradation and to restore 
-                                                       the health of lakes, rivers, streams and estuaries by promoting and funding state and local watershed planning efforts, stream and wetland restoration and protection, 
+                                                       the health of lakes, rivers, streams, and estuaries by promoting and funding state and local watershed planning efforts, stream and wetland restoration and protection, 
                                                        education and outreach, and other measures to reduce and prevent NPS pollution from affecting the Commonwealth’s waters" [5].'),
                                                      p(),
                                                      p(),
+<<<<<<< HEAD
                                                      
                                               ) , 
+=======
+                                                   
+                                              )) , 
+>>>>>>> 084570df1b8dea303a207cd5c572566ca9ea461d
                                               column(6, 
+                                                     fluidRow(style = "margin: 6px;", align = "justify",
                                                      p("", style = "padding-top:10px;"),
                                                      p(strong("Chesapeake Bay Preservation Act:")),
                                                      p("This program was developed in 1988 as an element of Virginia's NPS management program. The goal is to protect and improve water quality in the Chesapeake 
@@ -847,7 +867,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      have not been met. In December of 2010, the EPA issued a TMDL, a “pollution diet” to protect the Bay [7]. This TMDL is divided among all the Bay states. However,
                                                        “regional or statewide consistency is rare in Virginia's land use planning process - even statewide requirements such as the Chesapeake Bay Regulations are interpreted 
                                                        differently by different jurisdictions” [1]."),
-                                              ),
+                                              )),
                                               column(12,
                                                      h4("References:"),
                                                      p(tags$small("[1] Land use planning in Virginia. Virginia Places. (n.d.). Retrieved July 25, 2022, from http://www.virginiaplaces.org/landuseplan/", tags$br(), 
@@ -862,7 +882,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                      tabPanel("County",
                                               p(),
                                               p('"In urbanizing areas such as the suburbs near Richmond, Hampton Roads, and Northern Virginia, control over how private property 
-                                                is developed may be a contentious process involving landowners and their lawyers, neighbors or local residents upset over additional 
+                                                is developed may be a contentious process involving landowners and their lawyers, neighbors, or local residents upset over additional 
                                                 development, and local officials. In Fairfax, Loudoun, and Prince William counties over the last 30 years, the Board of County Supervisor 
                                                 election campaigns have been based on growth management issues. Local officials have reacted to citizen complaints, and incumbents have 
                                                 been voted out of office because they were either too supportive of growth or too restrictive” [1].'),
@@ -1047,7 +1067,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 )), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
-                                                                leafletOutput("g.soilMap",height = 500) %>% withSpinner(type = 4, color = "#861F41", size = 1.5), 
+                                                                leafletOutput("g.soilMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5), 
                                                                 h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("gsoil", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
@@ -1058,12 +1078,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          )) ,
                                                 tabPanel("Traffic Data",
                                                          p("", style = "padding-top:10px;"),
-                                                         column(4, 
+                                                         column(4,
+                                                                fluidRow(style = "margin: 6px;", align = "justify",
                                                                 h4(strong("Traffic in Goochland County")),
                                                                 p("Traffic information is a very good indicator as to who lives in an area and how it is used, more 
                                                                 Traffic data is another very good variable to look at when it comes to land-use, we wanted to look into these metrics to see if there were correlations to where more residential housing was to how accessible the area was from big roads. We also wanted to track the distance away from the City of Richmond to see if more residential housing was built closer, or further away from a larger metropolitan area. "),
                                                                 p("Goochland has one interstate, and two state highway routes, that we can see affect travel times and volume throughout the county. Interstate 64 leads to an increase in traffic volume on the north end of the county and also influences how far someone can drive from the city of Richmond outward through Goochland. We can also see that both of the state routes, 288 and 525, see a good majority of the traffic going veritcally through the county.")
-                                                         ), 
+                                                         )), 
                                                          column(8, 
                                                                 h4(strong("Traffic Visualizations")),
                                                                 selectInput("gooch_traffic", "Select Variable:", width = "100%", choices = c(
@@ -1183,7 +1204,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 h4(strong("Soil Quality Map")),
                                                                 leafletOutput("p.soilMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
                                                                 h4(strong("Soil Quality Graph")),
-                                                                plotlyOutput("psoil", heigh = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
+                                                                plotlyOutput("psoil", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
                                                          column(12, 
                                                                 
@@ -1354,25 +1375,37 @@ ui <- navbarPage(title = "DSPG 2022",
                           fluidRow(style = "margin: 6px;",
                                    h1(strong("Project Findings and Predictions"), align = "center"),
                                    p("", style = "padding-top:10px;"),
-                                   p(),
-                                   h4(strong("Title")),
+                                   p("As counties with rich agricultural histories, Powhatan and Goochland have the phenomenon 
+                                     that large size of agricultural land has been parcellated and converted to other uses. 
+                                     This research uses quantitative tools to understand how some key natural and social factors 
+                                     affect the parcellation and conversion with administrative data and county-level geospatial 
+                                     data. "),
+                                   h4(strong("Powhatan")),
                                    fluidRow(style = "margin: 6px;", align = "justify",
-                                            p("The CRP is a federal land conversion program administered by the Farm Service Agency (FSA). 
-                                                       The goal of this program is to reduce cropland acreage- a land retirement program that pays farmers to retire some of their crop land. 
-                                                       This program has been a major driver of land retirement since it was implemented in 1985. The program is motivated by environmental 
-                                                       protection goals. To get approved for the land retirement program, your land must hit specific criteria based on targeted environmental 
-                                                       factors. There is then a bidding process. To farmers, this is an incentive to retire land. Studies show that this policy has led to farmers 
-                                                       retire their less productive land. In 2005, “CRP paid $1.7 billion to keep a land area almost the size of Iowa out of production” (source). 
-                                                       This federal land conversion program incentivizes farmers to retire their land- and lower production. The goal is to protect the environment."),
+                                            p("Approximately 84,500 acres of land, about half of the area of Powhatan, were converted to 
+                                              residential-suburban uses during the decade in Powhatan. Parcellation among the agricultural land 
+                                              is also noticeable, as 28 parcels (about 5750 acres) of large agricultural lands have been parcellated
+                                              into smaller agricultural plots."),
+                                            p("Parcellation is occurring predominantly in the heart of Powhatan County, around the U.S. Routes 60 and 522. 
+                                              On the east end near Richmond, high parcellation rates are seen along the U.S. Routes 60 and 288 within 
+                                              the county and this might reflect the urban influence on the county. This pattern that high parcellation around 
+                                              those Routes might imply some correlation between parcellation and transportation. On the map of crop and land type, 
+                                              those Routes are labeled as “Developed”. High traffic volumes can also be seen along U.S. Routes 60 and 288. Hence the 
+                                              correlation between parcellation and those Routes is also a correlation between parcellation and developed areas (traffic volumes)."),
+                                            p("There is no obvious sign that poor soil quality can be a driver of land conversion out of agriculture from the visualization map. 
+                                              (the conclusion related with soil quality should be determined by the regression model.)"),
                                             br(),
-                                            h4(strong("Title 2")),
-                                            p("The CRP is a federal land conversion program administered by the Farm Service Agency (FSA). 
-                                                       The goal of this program is to reduce cropland acreage- a land retirement program that pays farmers to retire some of their crop land. 
-                                                       This program has been a major driver of land retirement since it was implemented in 1985. The program is motivated by environmental 
-                                                       protection goals. To get approved for the land retirement program, your land must hit specific criteria based on targeted environmental 
-                                                       factors. There is then a bidding process. To farmers, this is an incentive to retire land. Studies show that this policy has led to farmers 
-                                                       retire their less productive land. In 2005, “CRP paid $1.7 billion to keep a land area almost the size of Iowa out of production” (source). 
-                                                       This federal land conversion program incentivizes farmers to retire their land- and lower production. The goal is to protect the environment."),
+                                            h4(strong("Goochland")),
+                                            p("Approximately 28870 acres of land, about 16% of the area of Goochland, were converted to residential uses including single-family 
+                                              residential urban and suburban during 2018-2022 in Goochland. There are 5 parcels (about 671 acres) of large agricultural lands that 
+                                              have been parcellated into smaller agricultural plots."),
+                                            p("Parcellation is occurring predominantly in the southeast of Goochland County near Richmond, around the U.S. Routes I64, 250, and 288. 
+                                              This pattern might reflect the urban influence on the county. This pattern might also imply some correlation between parcellation and 
+                                              transportation. On the map of crop and land type, those Routes are labeled as “Developed”. High traffic volumes can also be seen along 
+                                              those Routes. Hence the correlation between parcellation and those Routes is also a correlation between parcellation and developed areas (traffic volumes). "),
+                                            p("In the southeast, a pattern of denser land with soil quality Capability Class II (a good quality) can be seen. 
+                                            (But the conclusion should also wait for the regression model!)
+"),
                                    ), 
                                    
                                    
@@ -1386,6 +1419,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                    p("", style = "padding-top:10px;"),
                                    column(4,
                                           fluidRow(style = "margin: 6px;", align = "justify",
+<<<<<<< HEAD
                                                    img(src = "data-acs.png", style = "display: inline; float: left;", width = "200px"),
                                                    p(strong("American Community Survey"), "The American Community Survey (ACS) is an ongoing yearly survey conducted by the U.S Census Bureau. ACS samples households to compile 1-year and 5-year datasets 
                                       providing information on population sociodemographic and ocioeconomic characteristics including employment, disability, and health insurance coverage. We used ACS 2014/18 5-year
@@ -1393,10 +1427,20 @@ ui <- navbarPage(title = "DSPG 2022",
                                                    br(""),
                                                    img(src = "nass.jpg", style = "display: inline; float: left;", width = "150px"),
                                                    p(strong("USDA National Agricultural Statistics Service"), "The National Agricultural Statistics Service (NASS) under the United States Department of Agriculture (USDA) provides statistics on a wide variety 
+=======
+                                          img(src = "data-acs.png", style = "display: inline; float: left;", width = "180px"),
+                                          p(strong("American Community Survey"), "The American Community Survey (ACS) is an demographics survey conducted by the U.S Census Bureau. The ACS samples households to compile 1-year and 5-year datasets 
+                                      providing information on social and economic characteristics including employment, education, and income. This project utilizes ACS 2016/2020 5-year
+                                      estimates to obtain county- and census tract-level data to explore Goochland and Powhatan Counties' resident characteristics."),
+                                          br(""),
+                                          img(src = "nass.jpg", style = "display: inline; float: left;", width = "130px"),
+                                          p(strong("USDA National Agricultural Statistics Service"), "The National Agricultural Statistics Service (NASS) under the United States Department of Agriculture (USDA) provides statistics on a wide variety 
+>>>>>>> 084570df1b8dea303a207cd5c572566ca9ea461d
                                             of agricultural topics. This project specifically relies on crop layer data to create maps and to conduct a statistical analysis on the probablity of land use conversion.")
                                           )),
                                    column(4,
                                           fluidRow(style = "margin: 6px;", align = "justify",
+<<<<<<< HEAD
                                                    img(src = "goochland.jpg", style = "display: inline; float: left;", width = "150px"),
                                                    p(strong("Goochland County Administrative Data"), "Goochland County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
                                             that has occured over a 5 year period (2018 - 2022). We used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
@@ -1418,6 +1462,32 @@ ui <- navbarPage(title = "DSPG 2022",
                                                    
                                                    
                                           )),
+=======
+                                          img(src = "goochland.jpg", style = "display: inline; float: left;", width = "150px"),
+                                          p(strong("Goochland County Administrative Data"), "Goochland County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
+                                            that has occured over a 5 year period (2018 - 2022). The team used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
+                                          br(),
+                                          p(),
+                                          br(),
+                                          img(src = "ncss.jpg", style = "display: inline; float: left;", width = "150px"),
+                                          p(strong("USDA National Cooperative Soil Survey"), "The National Cooperative Soil Survey (NCSS) under the USDA provides soil data which was used to generate soil quality maps for both counties. 
+                                            The data was also used for our statistical analysis to predict the occurrence of land use conversion."),
+
+                                   )),
+                                   column(4,
+                                          fluidRow(style = "margin: 6px;", align = "justify",
+                                          img(src = "powhatan.jpg", style = "display: inline; float: left;", width = "150px"),
+                                          p(strong("Powhatan County Administrative Data"), "Powhatan County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
+                                            that has occured over a 8 year period (2014 - 2021). The team used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
+                                          br(""),
+                                          img(src = "vdot.png", style = "display: inline; float: left;", width = "200px"),
+                                          p(strong("VDOT Traffic Data"), "The Virginia Department of Transportation (VDOT) is responsible for building, maintaining and operating the state's roads, bridges and tunnels. VDOT also conducts 
+                                          a program where traffic data are gathered from sensors in or along streets and highways and other sources.  This data includes estimates of the average number of vehicles that traveled each segment
+                                          of road and daily vehicle miles traveled for specific groups of facilities and vehicle types are calculated.")
+                                          
+                                          
+                                   )),
+>>>>>>> 084570df1b8dea303a207cd5c572566ca9ea461d
                                    
                           )
                  ),
@@ -1649,7 +1719,7 @@ server <- function(input, output){
     g.map <- leaflet() %>% 
       addTiles() %>% 
       addProviderTiles(providers$CartoDB.Positron) %>%
-      setView(lng=-78, lat=37.7, zoom=10.48) 
+      setView(lng=-77.9, lat=37.73, zoom=10.48) 
     
     for (i in 2:7){
       g.map <- addPolygons(g.map, data=g.soilData %>% filter(NirrCpCls==i), smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = soilColors[i])
