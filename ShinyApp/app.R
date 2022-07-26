@@ -717,7 +717,7 @@ ui <- navbarPage(title = "DSPG 2022",
                           fluidRow(style = "margin: 6px;",
                                    h1(strong("Land Use & Environmental Policies"), align = "center"),
                                    p("", style = "padding-top:10px;"),
-                                   p("Policy plays a key role in land use. At every level - federal, state, and local - officials develop land-use plans, with a wide 
+                                   p("Policy plays a key role in land use. At every level- federal, state, and local- officials develop land use plans, with a wide 
                                      variety of different objectives and long-term visions. These plans drive changes in land use, and it is important to investigate 
                                      policies at every level to get a full picture of land-use conversion."),
                                    tabsetPanel(
@@ -726,24 +726,24 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p("", style = "padding-top:10px;"),
                                                      p(strong("The Conservation Reserve Program (CRP):")), 
                                                      p("The CRP is a federal land conversion program administered by the Farm Service Agency (FSA). 
-                                                       The goal of this program is to reduce cropland acreage - a land retirement program that pays farmers to retire some of their cropland. 
+                                                       The goal of this program is to reduce cropland acreage- a land retirement program that pays farmers to retire some of their crop land. 
                                                        This program has been a major driver of land retirement since it was implemented in 1985. The program is motivated by environmental 
                                                        protection goals. To get approved for the land retirement program, your land must hit specific criteria based on targeted environmental 
                                                        factors. There is then a bidding process. To farmers, this is an incentive to retire land. Studies show that this policy has led to farmers 
-                                                       retiring their less productive land. In 2005, “CRP paid $1.7 billion to keep a land area almost the size of Iowa out of production” [1]. 
+                                                       retire their less productive land. In 2005, “CRP paid $1.7 billion to keep a land area almost the size of Iowa out of production” [1]. 
                                                        This federal land conversion program incentivizes farmers to retire their land- and lower production. The goal is to protect the environment."),
                                                      br(),
                                                      p(strong("Federal Crop Insurance Program:")),
-                                                     p("This program is a partnership between the federal government and insurers - connecting the public and private sectors. 
+                                                     p("This program is a partnership between the federal government and insurers- connecting the public and private sectors. 
                                                        This program does the opposite of the CRP and raises incentives to grow crops. The goal of the Federal Crop Insurance Program is not directly to affect 
-                                                       land use, but it does influence conversion rates. In 1993, after some catastrophic flooding, congress passed the Federal Crop Insurance Reform Act. This 
-                                                       act increased the premium subsidies for all crop insurance products - now the program includes a revenue insurance option and catastrophic coverage. About 
-                                                       60% of cultivated cropland in the Unites States is covered by the Federal Crop Insurance Program. This program raises incentives to grow crops and could 
+                                                       land-use, but it does influence conversion rates. In 1993, after some catastrophic flooding, congress passed the Federal Crop Insurance Reform Act. This 
+                                                       act increased the premium subsidies for all crop insurance products- now the program includes a revenue insurance option and catastrophic coverage. About 
+                                                       60% of cultivated cropland in the Unites States is covered by the Federal Crop Insurance Program. This program raises incentives to grow crops, and could 
                                                        influence farmers to cultivate riskier, less productive land [1]."),
                                                      br(),
                                                      p(strong("Emergency Relief Program (ERP):")), 
-                                                     p("The purpose of this program is to help agriculture producers offset the damage caused by natural disasters such as drought or 
-                                                     flooding [2]. Funds are distributed in two phases to aid livestock producers impacted by natural disasters. The USDA announced in May of 2022 that 
+                                                     p("The purpose of this program is to help agriculture producers offset damage caused by natural disasters such as drought or 
+                                                     flooding [2]. Funds are distributed in two phases, to aid livestock producers impacted by natural disasters. The USDA announced in May of 2022 that 
                                                        “commodity and specialty crop producers impacted by natural disaster events in 2020 and 2021 will soon begin receiving emergency relief payments totaling 
                                                        approximately $6 billion through the Farm Service Agency’s (FSA) new Emergency Relief Program (ERP) to offset crop yield and value losses” [3]."),
                                                      p(),
@@ -769,7 +769,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        it is the local community to create and invest in a water protection plan."),
                                                      br(),
                                                      p(strong("Agriculture Risk Coverage (ARC) and Price Loss Coverage (PLC):")),
-                                                     p('The ARC program is an “income support program that provides payments when actual crop revenue declines below a specified guaranteed level [6]." PLC program “provides 
+                                                     p('ARC program is an “income support program that provides payments when actual crop revenue declines below a specified guaranteed level [6]." PLC program “provides 
                                                      income support payments when the effective price for a covered commodity falls below its effective reference price [6]." Both programs provide financial protection 
                                                      to farmers. They serve as a safety net from drops in crop revenues and prices.')),
                                               column(12,
@@ -784,28 +784,28 @@ ui <- navbarPage(title = "DSPG 2022",
                                               )), 
                                      tabPanel("State",
                                               p(),
-                                              p('State-level officials work within the confines of both federal and local policy. They aim to simultaneously enhance federal policy while enabling local officials to make comprehensive 
+                                              p('State level officials work within the confines of both federal and local policy. They aim to simultaneously enhance federal policy, while enabling local officials to make comprehensive 
                                               land-use plans. The state of Virginia is under the Dillon Rule which states that local ordinances must be consistent with state law [1]. Local officials are the ones approving parcel-specific 
-                                              land use plans, but state and federal officials play a key role [1]. The state courts are the "referees" to determine if land use decisions violated some aspect of various state laws, or if 
+                                              land use plans, but state and federal officials play a key role [1]. “The state courts are the "referees" to determine if land use decisions violated some aspect of various state laws, or if 
                                                 the land use rules violated the state constitution in some way [1].'),
                                               column(6, 
                                                      p("", style = "padding-top:10px;"),
                                                      p(strong("Conservation Reserve Enhancement program (CREP):")), 
-                                                     p("This is a state-sponsored enhancement to the federal CRP. It is a cost-share program where federal reimbursement is made through the FSA for up to 
+                                                     p("This is a state sponsored enhancement to the federal CRP. It is a cost-share program where federal reimbursement are made through the FSA for up to 
                                                        “50% of a participant's eligible expenses for implementing best management practices (BMP)”. BMP examples include adding fencing, alternative watering 
                                                        systems, and restoring wetlands. Participation in this program is voluntary, and the contract period is around 10-15 years [2]."),
                                                      br(),
                                                      p(strong("Agriculture and Forestal Districts (AFD):")),
-                                                     p("The AFD program in Virginia was designed to “preserve and protect open spaces, forested areas, and agricultural lands [3]. This program makes 
+                                                     p("The AFD program in Virginia was designed to “preserve and protect open spaces, forested areas, and agricultural lands” [3] This program makes 
                                                        it so land taxes are based on use rather than taxing solely on the market value. Land used for growing crops, for example, is taxed differently than 
-                                                       developed property. This state-level policy encourages localities to be purposeful with their property taxes. The hope is that this policy will be used 
+                                                       developed property. This state level policy encourages localities to be purposeful with their property taxes. The hope is that this policy will be used 
                                                        to conserve and protect agricultural and forest land. These lands can be valued as “natural and ecological resources which provide essential open spaces 
-                                                       for clean air sheds, watershed protection, wildlife habitat, aesthetic quality and other environmental purposes [3]. This program was formed in 1977 
-                                                       [4]. The potential benefits are to lower property taxes, safeguard the rural character of the community, and offer protection from the eminent domain [4]."),
+                                                       for clean air sheds, watershed protection, wildlife habitat, aesthetic quality and other environmental purposes” [3]. This program was formed in 1977 
+                                                       [4]. The potential benefits are to lower property taxes, safeguard the rural character of the community, and offer protection from eminent domain [4]."),
                                                      br(),
                                                      p(strong("Nonpoint Source (NPS) Pollution Management Program:")), 
                                                      p('This is a diverse network of state and local government programs that “help to prevent water quality degradation and to restore 
-                                                       the health of lakes, rivers, streams, and estuaries by promoting and funding state and local watershed planning efforts, stream and wetland restoration and protection, 
+                                                       the health of lakes, rivers, streams and estuaries by promoting and funding state and local watershed planning efforts, stream and wetland restoration and protection, 
                                                        education and outreach, and other measures to reduce and prevent NPS pollution from affecting the Commonwealth’s waters" [5].'),
                                                      p(),
                                                      p(),
@@ -840,7 +840,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                      tabPanel("County",
                                               p(),
                                               p('"In urbanizing areas such as the suburbs near Richmond, Hampton Roads, and Northern Virginia, control over how private property 
-                                                is developed may be a contentious process involving landowners and their lawyers, neighbors, or local residents upset over additional 
+                                                is developed may be a contentious process involving landowners and their lawyers, neighbors or local residents upset over additional 
                                                 development, and local officials. In Fairfax, Loudoun, and Prince William counties over the last 30 years, the Board of County Supervisor 
                                                 election campaigns have been based on growth management issues. Local officials have reacted to citizen complaints, and incumbents have 
                                                 been voted out of office because they were either too supportive of growth or too restrictive” [1].'),
