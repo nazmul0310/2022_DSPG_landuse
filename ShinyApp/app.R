@@ -11,6 +11,7 @@
 
 library(shiny)
 library(shinycssloaders)
+library(shinyWidgets)
 library(shinythemes)
 library(stringr)
 library(shinyjs)
@@ -119,8 +120,7 @@ edu.func <- function(inputYear, inputCounty) {
 
     # Goochland
 
-gcon<- st_read("data/Conservation/Gooch_Preservation.shp")
-gcon <- st_transform(gcon, "+proj=longlat +datum=WGS84")
+gcon <- st_read("data/Conservation/Gooch_Preservation.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 goochland_con <- leaflet()%>%
   addTiles() %>%
@@ -131,8 +131,7 @@ goochland_con <- leaflet()%>%
 
     # Powhatan
 
-pcon<- st_read("data/Conservation/Powhatan_Natural_Conservation.shp")
-pcon <- st_transform(pcon, "+proj=longlat +datum=WGS84")
+pcon <- st_read("data/Conservation/Powhatan_Natural_Conservation.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 pcon$col=sample(c('red','yellow','green'),nrow(pcon),1)
 
 powhatan_con <- leaflet()%>%
@@ -150,13 +149,6 @@ powhatan_con <- leaflet()%>%
 
 
   ## LAND USE  =================================================
-
-m <- leaflet()%>%
-  addTiles() %>%
-  setView(lng=-77.949, lat=37.742, zoom=10.48) %>% 
-  addPolygons(data=gl_cnty,
-              fillColor = "transparent") 
-
 
 gcrop_values <- c("Developed", 
                   "Double cropped", 
@@ -195,59 +187,19 @@ gcrop_legendpalette21 <- colorFactor(palette = gcrop_colors[-9],levels=gcrop_val
 
 croplayer1 <- read.csv("data/ag_analysis.csv")
 
-gcrop21 <- croplayer1 %>% 
-  filter(County == "Goochland", Year==2021) %>%
-  ggplot(aes(x = `Combined`, y = `Area.Acre`, fill = `Combined`)) + 
-  geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
-  coord_flip() +  
-  theme_light() +
-  theme(axis.text.y = element_text(hjust=0)) +
-  theme(legend.position = "none") +     
-  scale_fill_manual(values = gcrop_colors) + 
-  ylim(0, 130000) + 
-  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type") 
-gcrop21 <-ggplotly(gcrop21, tooltip = c("text")) 
-
-gcrop12 <- croplayer1 %>% 
-  filter(County == "Goochland", Year== 2012) %>%
-  ggplot(aes(x = `Combined`, y = `Area.Acre`, fill = `Combined`)) + 
-  geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
-  coord_flip() + 
-  theme_light() +
-  theme(axis.text.y = element_text(hjust=0)) +
-  theme(legend.position = "none") + 
-  scale_fill_manual(values = gcrop_colors) + 
-  ylim(0, 130000) + 
-  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
-gcrop12 <-ggplotly(gcrop12, tooltip = c("text"))
-
-pcrop21 <- croplayer1 %>% 
-  filter(County == "Powhatan", Year==2021) %>%
-  ggplot(aes(x = `Combined`, y = `Area.Acre`, fill = `Combined`)) + 
-  geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
-  coord_flip() + 
-  theme_light() +
-  theme(axis.text.y = element_text(hjust=0)) +
-  theme(legend.position = "none") + 
-  ylim(0, 13000) + 
-  scale_fill_manual(values = gcrop_colors)+ 
-  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
-pcrop21 <-ggplotly(pcrop21, tooltip = c("text"))
-
-pcrop12 <- croplayer1 %>% 
-  filter(County == "Powhatan", Year== 2012) %>%
-  ggplot(aes(x = `Combined`, y = `Area.Acre`, fill = `Combined`)) + 
-  geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(`Combined`, "\n", "Total Acres: ", round(`Area.Acre`, 0)))) + 
-  coord_flip() + 
-  theme_light() +
-  theme(axis.text.y = element_text(hjust=0)) +
-  theme(legend.position = "none") + 
-  ylim(0, 130000) + 
-  scale_fill_manual(values = gcrop_colors) + 
-  labs( title = "Total Acreage by Land type", x = "Acreage", y = "Land type")
-pcrop12 <- ggplotly(pcrop12, tooltip = c("text"))
-
-
+cropPlot.func <- function(county, year){
+  data <- croplayer1 %>% filter(County == county, Year == year)
+  crop.plt <- data %>% ggplot(aes(x = Combined, y = Area.Acre, fill = Combined)) + 
+    geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(Combined, "\nTotal Acres: ", round(Area.Acre, 0)))) + 
+    coord_flip() + 
+    theme_light() + 
+    theme(axis.text.y = element_text(hjust=0), legend.position = "none") +
+    scale_fill_manual(values = gcrop_colors) + 
+    ylim(0, 130000) + 
+    labs(title = "Total Acreage by Land Type", x = "Acreage", y = "Land type") 
+  crop.plt <- ggplotly(crop.plt, tooltip = "text")
+  crop.plt
+}
 
 g.soilData <- read_sf("data/Soil_Quality/Goochland/Goochland_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 p.soilData <- read_sf("data/Soil_Quality/Powhatan/Powhatan_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
@@ -548,6 +500,7 @@ ui <- navbarPage(title = "DSPG 2022",
                  theme = shinytheme("lumen"),
                  tags$head(tags$style('.selectize-dropdown {z-index: 10000}')), 
                  useShinyjs(),
+                 
                  
                  ## Tab Overview--------------------------------------------
                  tabPanel("Overview", value = "overview",
@@ -994,6 +947,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          )), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
+                                                                chooseSliderSkin(skin = "Shiny", color = "#861F41"),
                                                                 sliderInput(inputId = "luYear.g", label = "Year:", 
                                                                             min = 2018, max = 2021, value = 2021, 
                                                                             sep = "", width = "150%"),
@@ -1651,10 +1605,10 @@ server <- function(input, output){
   
   output$gcrop_graph <- renderPlotly({
     if(gcrop() == "gcrop12"){
-      gcrop12
+      cropPlot.func("Goochland", 2012)
     }
     else if(gcrop() == "gcrop21"){
-      gcrop21
+      cropPlot.func("Goochland", 2021)
     }
   })
   
@@ -1664,10 +1618,10 @@ server <- function(input, output){
   
   output$pcrop_graph <- renderPlotly({
     if(pcrop() == "pcrop12"){
-      pcrop12
+      cropPlot.func("Powhatan", 2012)
     }
     else if(pcrop() == "pcrop21"){
-      pcrop21
+      cropPlot.func("Powhatan", 2021)
     }
   })
   
