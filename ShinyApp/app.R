@@ -36,6 +36,44 @@ library(htmlwidgets) #for transition matrix
 options(scipen=999)
 options(shiny.maxRequestSize = 100*1024^2)
 
+# CODE TO DETECT ORIGIN OF LINK AND CHANGE LOGO ACCORDINGLY
+jscode <- "function getUrlVars() {
+                var vars = {};
+                var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+                    vars[key] = value;
+                });
+                return vars;
+            }
+           function getUrlParam(parameter, defaultvalue){
+                var urlparameter = defaultvalue;
+                if(window.location.href.indexOf(parameter) > -1){
+                    urlparameter = getUrlVars()[parameter];
+                    }
+                return urlparameter;
+            }
+            var mytype = getUrlParam('type','Empty');
+            function changeLinks(parameter) {
+                links = document.getElementsByTagName(\"a\");
+                for(var i = 0; i < links.length; i++) {
+                   var link = links[i];
+                   var newurl = link.href + '?type=' + parameter;
+                   link.setAttribute('href', newurl);
+                 }
+            }
+           var x = document.getElementsByClassName('navbar-brand');
+           if (mytype != 'economic') {
+             x[0].innerHTML = '<div style=\"margin-top:-14px\"><a href=\"https://datascienceforthepublicgood.org/events/symposium2020/poster-sessions\">' +
+                              '<img src=\"DSPG_black-01.png\", alt=\"DSPG 2020 Symposium Proceedings\", style=\"height:42px;\">' +
+                              '</a></div>';
+             //changeLinks('dspg');
+           } else {
+             x[0].innerHTML = '<div style=\"margin-top:-14px\"><a href=\"https://datascienceforthepublicgood.org/economic-mobility/community-insights/case-studies\">' +
+                              '<img src=\"AEMLogoGatesColorsBlack-11.png\", alt=\"Gates Economic Mobility Case Studies\", style=\"height:42px;\">' +
+                              '</a></div>';
+             //changeLinks('economic'); 
+           }
+           "
+
 # DATA --------------------------------------------------------------------------------------------------------------------
 
 ## NECESSITIES =================================================
@@ -507,6 +545,7 @@ hotspot.func <- function(county, range){
   hotspot.plt
 }
 
+
 # ui --------------------------------------------------------------------------------------------------------------------
 
 ui <- navbarPage(title = "DSPG 2022",
@@ -514,7 +553,6 @@ ui <- navbarPage(title = "DSPG 2022",
                  theme = shinytheme("lumen"),
                  tags$head(tags$style('.selectize-dropdown {z-index: 10000}')), 
                  useShinyjs(),
-                 
                  
                  ## Tab Overview--------------------------------------------
                  tabPanel("Overview", value = "overview",
@@ -531,15 +569,15 @@ ui <- navbarPage(title = "DSPG 2022",
                                    align = "justify",
                                    column(4,
                                           h2(strong("Project Background")),
-                                          p(strong("The setting:"), "The setting: Goochland and Powhatan County are two counties on the urban fringe outside of Richmond, Virginia. Communities on the urban fringe are located between both rural and urban areas. Both counties are known for 
-                                            their rich agricultural histories as well as their proximity to the state capital. Although Powhatan County has been growing and evolving faster than the average rate, they like Goochland County would like to keep their agricultural roots."),
+                                          p(strong("The setting:"), "Goochland and Powhatan County are two counties on the urban fringe outside of Richmond, Virginia. Communities on the urban fringe are located between both rural and urban areas. Both counties are known for 
+                                            their rich agricultural histories as well as their proximity to the state capital. Although Powhatan County has been growing and evolving faster than the average rate, they, like Goochland County, would like to keep their agricultural roots."),
                                           p(),
-                                          p(strong("The problem:"), "Both Goochland and Powhatan County are approximately 40 minutes away from Richmond. Being this close to a large city has its advantages, but also its drawbacks. One of the biggest drawbacks is land conversion. 
-                                            Land conversion is when land shifts its use from one to another. In the case of the two counties, it means land is changing from agricultural land to residential. This has the possibility to hurt the economies of the largely rural counties. 
-                                            Both counties have enacted policies to help combat land conversion: Powhatan with their land tax deferral program and Goochland with their 85:15 rural land commitment. Both counties keep administrative data, but do not have the resources or 
-                                            the knowledge to analyze it. This is a key step in understanding the factors that cause land conversation as well as the probability that a parcel of land will parcelize further."),
+                                          p(strong("The problem:"), "Both Goochland and Powhatan County are approximately 40 minutes away from Richmond. Being this close to a large metropolitan area has its advantages and disadvantages. One of the biggest drawbacks is land conversion. 
+                                            Land conversion is when land shifts its use from one to another. In the case of the two counties, it means land is changing from agricultural land primarily to residential housing development. This has the possibility to hurt the economies of the largely rural counties. 
+                                            Both counties have enacted policies to help combat land conversion: Powhatan implemented a land tax deferral program and Goochland with their 85-15% rural land commitment, where they maintain 85% of land as rural. Both counties keep administrative data, but have not launched an in depth
+                                            analysis to understand it. This is a key step in understanding the factors that cause land conversation as well as the probability that a parcel of land will parcelize further."),
                                           p(),
-                                          p(strong("The project:"), "This Virginia Tech", a(href = "https://aaec.vt.edu/index.html", "Department of Argicultural and Applied Economics", target = "_blank"),
+                                          p(strong("The project:"), "The Virginia Tech", a(href = "https://aaec.vt.edu/index.html", "Department of Argicultural and Applied Economics", target = "_blank"),
                                             "Data Science for Public Good (DSPG) project uses data science to analyze land conversion in Goochland and Powhatan counties in order to provide stakeholders with 
                                             a better understanding of how land is being distributed, specifically in regards to agriculture.")
                                    ),
@@ -548,11 +586,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                           p('Our team worked with Goochland County and Powhatan County to help analyze land conversion and agriculture loss by using existing administrative data. Both counties want to retain their rural/agricultural 
                                             character and have introduced policies to encourage the conservation of land and discourage development that may require further land conversion. Our team researched background information on both counties 
                                             as well as looked into data from sources including the counties, the US Census, and the Virginia Department of Transportation. All of the data sources that have been referenced in our analysis can be found 
-                                            under the "Data Sources" tab. The team also met with the stakeholders on a regular basis to make sure that the project was in line with what they were expecting and to allow county administrators and 
+                                            under the'),
+                                          actionLink("overview", strong("Data Sources")),
+                                          p('tab. The team also met with the stakeholders on a regular basis to make sure that the project was in line with their expectations and to allow county administrators and 
                                             AGRICULTURE ASSOCIATION members to look over our findings and make suggestions. In addition to the meetings, we also maintained contact by email to ask questions pertaining to the project and the data provided.'),
                                           p(),
-                                          p("We collected data from several sources to create our graphs, maps, and tables. These visualizations allowed us to analyze and present our findings timely and accurately. More specifically, we:"),
-                                          tags$li("Provided census tract- and county-level graphs of Goochland and Powhatan County residents'", strong("sociodemographic and socioeconomic characteristics,"), " highlighting underprivileged areas."),
+                                          p("We collected data from several sources to create our graphs, maps, and tables. These visualizations allowed us to analyze and present our findings in a more digestible manner. More specifically, we:"),
+                                          tags$li("Provided census tract- and county-level graphs of Goochland and Powhatan County residents'", strong("sociodemographic and socioeconomic characteristics"), ", highlighting underprivileged areas."),
                                           tags$li("Used USDA data to create a map of", strong("crops and land types"), "in the counties. "),
                                           tags$li("Used USDA data to create a map of", strong("soil quality"), "throughout the counties."),
                                           tags$li("Mapped traffic data to show ", strong("traffic volume and commute times"), "to Richmond, Virginia."),
@@ -564,11 +604,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                    column(4,
                                           h2(strong("Dashboard Aims")),
                                           p("Our dashboard is aimed at:"),
-                                          p(strong("Powhatan and Goochland County governments."), "Our analyses will provide further insight to the counties and allow them to better understand if and how land conversion is occuring. 
+                                          p(strong("Powhatan and Goochland County governments."), "Our analyses provide further insights and allow a better understanding about land conversion within each county. 
                                             Our statistical analysis looks at and explains the relationship between land conversion and several factors including traffic, ..., and ... We hope that our findings will inform decision-making
                                             regarding land conversion and conservation within the counties. "),
                                           p(strong("Researchers working on land use conversion."), "Land conversion is a problem all over the country, not just Goochland and Powhatan counties. Our dashboard can act as an example 
-                                            or template to those researching the topic as well as a starting off point for those looking specifically at Goochland and Powhatan.")
+                                            or template to those researching the topic as well as a starting point for those looking specifically at Goochland and Powhatan.")
                                    )
                           ),
                           fluidRow(align = "center",
@@ -587,8 +627,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                               align = "justify",
                                               column(4, 
                                                      h4(strong("County Background")),
-                                                     p("Goochland County is located in the Piedmont of the Commonwealth of Virginia. It covers 281.42 square miles. This makes Goochland the 71st biggest
-                                                       county in Virginia. The county is known for its fertile land and mineral deposits. The James River flows through the center of the county which
+                                                     p("Goochland County is located in the Piedmont of the Commonwealth of Virginia. It covers 281.42 square miles. This makes Goochland the 71 
+                                                     county in Virginia. The county is known for its fertile land and mineral deposits. The James River flows through the center of the county which
                                                        supplied water to farmlands and to mills. Coal was mined in the east and gold in the west. Today, agriculture is still 
                                                        important to the county economy. Goochland has updated its voting districts in 2022 to better represent the population of all 5 districts. 
                                                        Goochland Country also has a vast summer program with plenty of activates. The activities are located all over the county at different facilities 
@@ -605,7 +645,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        of earners in Goochland earn over $200,000 [8]."),
                                                      p("Nearly 93.1% of the population 25 and over have graduated high school and gone to further their academic career. The highest level of education, a graduate or 
                                                        professional degree, has been attained by around 3,531 people, or 20.1% of the population over 25 years old [9]."),
-                                                     p("According to the 2017 agricultural census, there were approximately 355 farms with an average farm size of 160 acres. This makes the total land coverage of farms to be 56,739 acres. 
+                                                     p("According to the 2017 Agricultural Census, there were approximately 355 farms with an average farm size of 160 acres. This makes the total land coverage of farms to be 56,739 acres. 
                                                      $11,740,000 was generated from agricultural products sold to market. 46% of farms sold less than $2,500, and 3% of farms sold over $100,000. Grains, oilseeds, dry beans, and dry peas were the main crops that 
                                                        were sold ($2,846,000) and milk from cows were the main livestock and poultry products sold ($4,936,000) [1]."),
                                                      p("1.0% of Goochland’s population moved within the county, 8.4% moved into the county from a different county in VA, .7% moved from a completely different state, and .3% 
@@ -633,7 +673,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        the population every year."),
                                                               p("The" ,strong("income distribution"), "graph illustrates the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied 
                                                        by a decrease in earnings below $75,000. It is also notable that earnings above $100,000 and below $35,000 are the largest categories throughout all years."),
-                                                              p("The" ,strong("median earnings"), "graphs highlight the fact that those with a highest educational attainment of Some college/Associates earn the most. The median earnings for this 
+                                                              p("The" ,strong("median earnings"), "graphs highlight the fact that those who have gone through some college or attained an associates degree earn the most. The median earnings for this 
                                                        group were significantly higher than others in 2017 and 2018, but saw a significant decrease to $65,890 in 2019. This number goes back up to $75,313 in 2020; still much lower than the first two years.")),
                                                      
                                               ),
@@ -1500,6 +1540,8 @@ ui <- navbarPage(title = "DSPG 2022",
 # server --------------------------------------------------------------------------------------------------------------------
 
 server <- function(input, output){
+  
+  runjs(jscode)
   
   ### SOCIODEMOGRAPHICS  =================================================
   
