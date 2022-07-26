@@ -34,7 +34,7 @@ library(highcharter) #for transition matrix
 library(htmlwidgets) #for transition matrix
 
 options(scipen=999)
-options(shiny.maxRequestSize = 100*1024^2)
+options(shiny.maxRequestSize = 500*1024^2)
 
 # CODE TO DETECT ORIGIN OF LINK AND CHANGE LOGO ACCORDINGLY
 jscode <- "function getUrlVars() {
