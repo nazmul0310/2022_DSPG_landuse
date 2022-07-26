@@ -545,7 +545,6 @@ hotspot.func <- function(county, range){
   hotspot.plt
 }
 
-
 # ui --------------------------------------------------------------------------------------------------------------------
 
 ui <- navbarPage(title = "DSPG 2022",
@@ -583,13 +582,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                    ),
                                    column(4,
                                           h2(strong("Our Work")),
-                                          p('Our team worked with Goochland County and Powhatan County to help analyze land conversion and agriculture loss by using existing administrative data. Both counties want to retain their rural/agricultural 
+                                          p(paste0('Our team worked with Goochland County and Powhatan County to help analyze land conversion and agriculture loss by using existing administrative data. Both counties want to retain their rural/agricultural 
                                             character and have introduced policies to encourage the conservation of land and discourage development that may require further land conversion. Our team researched background information on both counties 
                                             as well as looked into data from sources including the counties, the US Census, and the Virginia Department of Transportation. All of the data sources that have been referenced in our analysis can be found 
-                                            under the'),
-                                          actionLink("overview", strong("Data Sources")),
-                                          p('tab. The team also met with the stakeholders on a regular basis to make sure that the project was in line with their expectations and to allow county administrators and 
-                                            AGRICULTURE ASSOCIATION members to look over our findings and make suggestions. In addition to the meetings, we also maintained contact by email to ask questions pertaining to the project and the data provided.'),
+                                            under the', actionLink("overview", strong("Data Sources")), 'tab. The team also met with the stakeholders on a regular basis to make sure that the project was in line with their expectations and to allow county administrators and 
+                                            AGRICULTURE ASSOCIATION members to look over our findings and make suggestions. In addition to the meetings, we also maintained contact by email to ask questions pertaining to the project and the data provided.')),
                                           p(),
                                           p("We collected data from several sources to create our graphs, maps, and tables. These visualizations allowed us to analyze and present our findings in a more digestible manner. More specifically, we:"),
                                           tags$li("Provided census tract- and county-level graphs of Goochland and Powhatan County residents'", strong("sociodemographic and socioeconomic characteristics"), ", highlighting underprivileged areas."),
