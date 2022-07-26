@@ -593,9 +593,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        professional degree, has been attained by around 3,531 people, or 20.1% of the population over 25 years old [9]."),
                                                      p("According to the 2017 agricultural census, there were approximately 355 farms with an average farm size of 160 acres. This makes the total land coverage of farms to be 56,739 acres. 
                                                      $11,740,000 was generated from agricultural products sold to market. 46% of farms sold less than $2,500, and 3% of farms sold over $100,000. Grains, oilseeds, dry beans, and dry peas were the main crops that 
-                                                       were sold ($2,846,000) and milk from cows were the main livestock and poultry products sold ($4,936,000) [10]."),
+                                                       were sold ($2,846,000) and milk from cows were the main livestock and poultry products sold ($4,936,000) [1]."),
                                                      p("1.0% of Goochland’s population moved within the county, 8.4% moved into the county from a different county in VA, .7% moved from a completely different state, and .3% 
-                                                       moved from abroad [11]."),
+                                                       moved from abroad [10]."),
                                               ) ,
                                               column(8, 
                                                      h4(strong("Sociodemographics")),
@@ -626,13 +626,16 @@ ui <- navbarPage(title = "DSPG 2022",
                                      ),
                                      column(12, 
                                             h4("References: "), 
-                                            p(tags$small("[1] United States Department of Agriculture. Goochland County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51075.pdf")), 
-                                            p(tags$small("[2] United States Department of Agriculture. Goochland County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51075.pdf")), 
-                                            p(tags$small("[3] U.S. Census Bureau (2022). Age and Sex, 2020: ACS 5-Year Estimates Subject Tables. Retrieved from https://data.census.gov/cedsci/table?t=Populations%20and%20People&g=0500000US51075&tid=ACSST5Y2020.S0101.")), 
-                                            p(tags$small("[4] U.S. Census Bureau (2022). Race, 2020: DEC Redistricting Data (PL 94-171). Retrieved from https://data.census.gov/cedsci/table?t=Populations%20and%20People&g=0500000US51075.")) ,
-                                            p(tags$small("[5] U.S. Census Bureau (2022). Employment Status, 2020: ACS 5-Year Estimates Subject Tables. Retrieved from https://data.census.gov/cedsci/table?t=Employment%3AEmployment%20and%20Labor%20Force%20Status&g=0500000US51075&y=2020&tid=ACSST5Y2020.S2301&moe=false.")) ,
-                                            p(tags$small("[6] ")),
-                                            p(tags$small("[7]")),
+                                            p(tags$small("[1] United States Department of Agriculture. Goochland County Virginia - county profile. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51075.pdf")), 
+                                            p(tags$small("[2] Goochland County. (n.d.). Parks &amp;&nbsp;recreation. Goochland County, VA - Official Website. Retrieved July 25, 2022, from https://www.goochlandva.us/236/Parks-Recreation")), 
+                                            p(tags$small("[3] U.S. Census Bureau (2022). Age and sex, 2020: ACS 5-Year estimates subject tables. Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?t=Populations%20and%20People&g=0500000US51075&tid=ACSST5Y2020.S0101.")), 
+                                            p(tags$small("[4] U.S. Census Bureau (2022). Race, 2020: DEC redistricting data (PL 94-171). Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?t=Populations%20and%20People&g=0500000US51075.")) ,
+                                            p(tags$small("[5] U.S. Census Bureau (2022). Employment status, 2020: ACS 5-Year estimates subject tables. Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?t=Employment%3AEmployment%20and%20Labor%20Force%20Status&g=0500000US51075&y=2020&tid=ACSST5Y2020.S2301&moe=false.")) ,
+                                            p(tags$small("[6] U.S. Census Bureau (2022). Industry by occupation for the civilian employed population 16 years and over, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Occupation&g=0500000US51075&y=2020&tid=ACSST5Y2020.S2405")),
+                                            p(tags$small("[7] U.S. Census Bureau (2022). Median income in the past 12 months (in 2020 inflation-adjusted dollars), 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Income%20%28Households,%20Families,%20Individuals%29&g=0500000US51075&y=2020&tid=ACSST5Y2020.S1903")),
+                                            p(tags$small("[8] U.S. Census Bureau (2022). Income in the past 12 months (in 2020 inflation-adjusted dollars), 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Income%20%28Households,%20Families,%20Individuals%29&g=0500000US51075&y=2020")),
+                                            p(tags$small("[9] U.S. Census Bureau (2022). Educational attainment, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Education&g=0500000US51075&y=2020")),
+                                            p(tags$small("[10] U.S. Census Bureau (2022). Geographic mobility by selected characteristics in the United States, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Residential%20Mobility&g=0500000US51075&y=2020")),
                                             p("", style = "padding-top:10px;")) 
                             ), 
                             tabPanel("Powhatan", 
@@ -687,15 +690,22 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p("The", strong("income distribution"), "graph illustrates the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied by a consistent decrease in earnings below $75,000."),
                                                      p("The", strong("median earnings"), "graphs highlight the fact that those with a highest educational attainment of Some college/Associates earn the most. The median earnings for this group were significantly higher than others up until 2019, but saw 
                                                        a significant decrease to $66,915 in 2020. This number is nearly identical to the median earnings for those with less than a high school education at $66,716."),
-                                              ),
+                                              )),
                                               column(12, 
                                                      h4("References: "), 
                                                      p(tags$small("[1] About Powhatan. About Powhatan | Powhatan County, VA - Official Website. (n.d.). Retrieved July 15, 2022, from http://www.powhatanva.gov/317/About-Powhatan")),
                                                      p(tags$small("[2] Powhatan WMA. Virginia Department of Wildlife Resources. (n.d.). Retrieved July 15, 2022, from https://dwr.virginia.gov/wma/powhatan/")),
-                                                     p(tags$small("[3] American Community Survey 5-Year Estimates 2016/2020")),
-                                                     p(tags$small("United States Department of Agriculture. Powhatan County Virginia - National Agricultural Statistics Service. National Agricultural Statistics Survey. Retrieved July 6, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51145.pdf")) ,
+                                                     p(tags$small("[3] U.S. Census Bureau (2022). Age and sex, 2020: ACS 5-Year estimates subject tables. Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?t=Populations%20and%20People&g=0500000US51145&y=2020&tid=ACSST5Y2020.S0101")), 
+                                                     p(tags$small("[4] U.S. Census Bureau (2022). Race, 2020: DEC redistricting data (PL 94-171). Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?g=0500000US51145&y=2020&tid=DECENNIALPL2020.P1")) ,
+                                                     p(tags$small("[5] U.S. Census Bureau (2022). Employment status, 2020: ACS 5-Year estimates subject tables. Retrieved July 18, 2022, from https://data.census.gov/cedsci/table?t=Employment%3AEmployment%20and%20Labor%20Force%20Status&g=0500000US51145&y=2020&tid=ACSST5Y2020.S2301")) ,
+                                                     p(tags$small("[6] U.S. Census Bureau (2022). Industry by occupation for the civilian employed population 16 years and over, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Occupation&g=0500000US51145&y=2020&tid=ACSST5Y2020.S2405")),
+                                                     p(tags$small("[7] U.S. Census Bureau (2022). Median income in the past 12 months (in 2020 inflation-adjusted dollars), 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Income%20%28Households,%20Families,%20Individuals%29&g=0500000US51145&y=2020&tid=ACSST5Y2020.S1903")),
+                                                     p(tags$small("[8] U.S. Census Bureau (2022). Income in the past 12 months (in 2020 inflation-adjusted dollars), 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Income%20%28Households,%20Families,%20Individuals%29&g=0500000US51145&y=2020&tid=ACSST5Y2020.S1901")),
+                                                     p(tags$small("[9] U.S. Census Bureau (2022). Educational attainment, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Education&g=0500000US51145&y=2020&tid=ACSST5Y2020.S1501")),
+                                                     p(tags$small("[10] United States Department of Agriculture. Powhatan County Virginia - county profile. National Agricultural Statistics Survey. Retrieved July 25, 2022, from https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/County_Profiles/Virginia/cp51145.pdf")), 
+                                                     p(tags$small("[11] U.S. Census Bureau (2022). Geographic mobility by selected characteristics in the United States, 2020: ACS 5-Year estimates subject tables. Retrieved July 25, 2022, from https://data.census.gov/cedsci/table?t=Residential%20Mobility&g=0500000US51145&y=2020&tid=ACSST5Y2020.S0701")),
                                                      p("", style = "padding-top:10px;")) 
-                                     ), 
+                                     , 
                             ) 
                             
                             
@@ -720,7 +730,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        This program has been a major driver of land retirement since it was implemented in 1985. The program is motivated by environmental 
                                                        protection goals. To get approved for the land retirement program, your land must hit specific criteria based on targeted environmental 
                                                        factors. There is then a bidding process. To farmers, this is an incentive to retire land. Studies show that this policy has led to farmers 
-                                                       retire their less productive land. In 2005, “CRP paid $1.7 billion to keep a land area almost the size of Iowa out of production” (source). 
+                                                       retire their less productive land. In 2005, “CRP paid $1.7 billion to keep a land area almost the size of Iowa out of production” [1]. 
                                                        This federal land conversion program incentivizes farmers to retire their land- and lower production. The goal is to protect the environment."),
                                                      br(),
                                                      p(strong("Federal Crop Insurance Program:")),
@@ -729,109 +739,122 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        land-use, but it does influence conversion rates. In 1993, after some catastrophic flooding, congress passed the Federal Crop Insurance Reform Act. This 
                                                        act increased the premium subsidies for all crop insurance products- now the program includes a revenue insurance option and catastrophic coverage. About 
                                                        60% of cultivated cropland in the Unites States is covered by the Federal Crop Insurance Program. This program raises incentives to grow crops, and could 
-                                                       influence farmers to cultivate riskier, less productive land (source)."),
+                                                       influence farmers to cultivate riskier, less productive land [1]."),
                                                      br(),
                                                      p(strong("Emergency Relief Program (ERP):")), 
                                                      p("The purpose of this program is to help agriculture producers offset damage caused by natural disasters such as drought or 
-                                                     flooding (source). Funds are distributed in two phases, to aid livestock producers impacted by natural disasters. The USDA announced in May of 2022 that 
+                                                     flooding [2]. Funds are distributed in two phases, to aid livestock producers impacted by natural disasters. The USDA announced in May of 2022 that 
                                                        “commodity and specialty crop producers impacted by natural disaster events in 2020 and 2021 will soon begin receiving emergency relief payments totaling 
-                                                       approximately $6 billion through the Farm Service Agency’s (FSA) new Emergency Relief Program (ERP) to offset crop yield and value losses” (source)."),
+                                                       approximately $6 billion through the Farm Service Agency’s (FSA) new Emergency Relief Program (ERP) to offset crop yield and value losses” [3]."),
                                                      p(),
                                                      p(),
-                                                     h4("References:"),
-                                                     p(tags$small("[1] How Can You Help Protect Source Water? (n.d.). Retrieved July 29, 2021, from https://www.epa.gov/sourcewaterprotection/how-can-you-help-protect-source-water")), 
-                                                     p(tags$small("[2] Well maintenance. (2009, April 10). Retrieved July 29, 2021, from https://www.cdc.gov/healthywater/drinking/private/wells/maintenance.html#:~:text=Wells%20should%20be%20checked%20and,example%2C%20arsenic%20and%20radon).")) ,
-                                                     p(tags$small("[3] A Guide to Private Wells (pp. 5-25, Publication). (1995). Blacksburg, VA: Virginia Water Resources Research Center.")) ,
-                                                     p("", style = "padding-top:10px;"),
-                                                     
                                                      
                                               ) , 
                                               column(6, 
                                                      p("", style = "padding-top:10px;"),
                                                      p(strong("Emergency Conservation Program (ECP):")), 
-                                                     p("This program “provides funding and technical assistance for farmers and ranchers to restore farmland damaged by natural disasters and for emergency water 
-                                                       conservation measures in severe droughts” (source). This program does so by giving landowners funding to install water conservation systems or to repair 
+                                                     p('This program “provides funding and technical assistance for farmers and ranchers to restore farmland damaged by natural disasters and for emergency water 
+                                                       conservation measures in severe droughts" [4]. This program does so by giving landowners funding to install water conservation systems or to repair 
                                                        damaged farmland. This is another example of a conservation program that gives farmers insurance, which could incentive farmers to continue to cultivate their 
                                                        land- regardless of the potential risks associated with damage from storms and droughts. Farms are eligible for this assistance if the damage is affecting 
-                                                       productivity, there is evidence that conditions will worsen without intervention, and the repairs will be too costly without federal assistance (source). 
+                                                       productivity, there is evidence that conditions will worsen without intervention, and the repairs will be too costly without federal assistance [4]. 
                                                        Up to 75% of the costs can be provided. The FSA County Committee can “approve applications up to $125,000 while $125,001 to $250,000 requires state committee 
-                                                       approval (source)."),
+                                                       approval" [4].'),
                                                      br(), 
                                                      p(strong("Source Water Protection Program (SWPP):")),
                                                      p("This program is a joint project with the U.S. Department of Agriculture (USDA) Farm Service Agency (FSA) and the National Rural Water Association (NRWA), 
-                                                       a non-profit water and wastewater utility membership organization (source). It was designed with the goal of protecting surface and ground water that is 
+                                                       a non-profit water and wastewater utility membership organization [5]. It was designed with the goal of protecting surface and ground water that is 
                                                        used as drinking water by rural residents. The NRWA employs full-time rural source water technicians that work with state and county FSA staff to make decisions 
                                                        on where pollution prevention is needed. The SWPP works at the local level, to educate and encourage farmers to prevent source water prevention. With this program, 
                                                        it is the local community to create and invest in a water protection plan."),
                                                      br(),
                                                      p(strong("Agriculture Risk Coverage (ARC) and Price Loss Coverage (PLC):")),
-                                                     p("ARC program is an “income support program that provides payments when actual crop revenue declines below a specified guaranteed level” (source). PLC program “provides 
-                                                     income support payments when the effective price for a covered commodity falls below its effective reference price” (source). Both programs provide financial protection 
-                                                       to farmers. They serve as a safety net from drops in crop revenues and prices."),
+                                                     p('ARC program is an “income support program that provides payments when actual crop revenue declines below a specified guaranteed level [6]." PLC program “provides 
+                                                     income support payments when the effective price for a covered commodity falls below its effective reference price [6]." Both programs provide financial protection 
+                                                     to farmers. They serve as a safety net from drops in crop revenues and prices.')),
+                                              column(12,
+                                                     h4("References:"),
+                                                     p(tags$small("[1] Lubowski, R. N., Bucholtz, S., Claassen, R., Roberts, M. J., Cooper, J. C., Gueorguieva, A., & Johansson, R. (n.d.). Environmental Effects of Agricultural Land-Use Change United States Department of Agriculture The Role of Economics and Policy. Retrieved July 25, 2022, from www.ers.usda.gov")), 
+                                                     p(tags$small("[2] USDA. (n.d.). Emergency relief. USDA Farm Service Agency. Retrieved July 25, 2022, from https://www.fsa.usda.gov/programs-and-services/emergency-relief/index ")),
+                                                     p(tags$small("[3] USDA. (n.d.). USDA to provide approximately $6 billion to commodity and specialty crop producers impacted by 2020 and 2021 natural disasters. USDA Farm Service Agency. Retrieved July 25, 2022, from https://www.fsa.usda.gov/state-offices/Virginia/news-releases/usda-to-provide-approximately-6-billion-to-commodity-and-specialty-crop-producers-impacted-by-2020-and-2021-natural-disasters- ")),
+                                                     p(tags$small("[4] USDA. (n.d.). Emergency conservation program. USDA Farm Service Agency. Retrieved July 25, 2022, from https://www.fsa.usda.gov/programs-and-services/conservation-programs/emergency-conservation/index")),
+                                                     p(tags$small('[5] "Grassroots" source water protection program. USDA Farm Service Agency. (n.d.). Retrieved July 25, 2022, from https://www.fsa.usda.gov/programs-and-services/conservation-programs/source-water-protection/index')),
+                                                     p(tags$small("[6] USDA. (n.d.). Agriculture risk coverage (ARC) &amp; Price Loss Coverage (PLC). USDA Farm Service Agency. Retrieved July 25, 2022, from https://www.fsa.usda.gov/Assets/USDA-FSA-Public/usdafiles/FactSheets/2019/arc-plc_overview_fact_sheet-aug_2019.pdf")),
+                                                     p("", style = "padding-top:10px;"),
                                               )), 
                                      tabPanel("State",
                                               p(),
                                               p('State level officials work within the confines of both federal and local policy. They aim to simultaneously enhance federal policy, while enabling local officials to make comprehensive 
-                                              land-use plans. The state of Virginia is under the Dillon Rule which states that local ordinances must be consistent with state law (source). Local officials are the ones approving parcel-specific 
-                                              land use plans, but state and federal officials play a key role (source). “The state courts are the "referees" to determine if land use decisions violated some aspect of various state laws, or if 
-                                                the land use rules violated the state constitution in some way (source).'),
+                                              land-use plans. The state of Virginia is under the Dillon Rule which states that local ordinances must be consistent with state law [1]. Local officials are the ones approving parcel-specific 
+                                              land use plans, but state and federal officials play a key role [1]. “The state courts are the "referees" to determine if land use decisions violated some aspect of various state laws, or if 
+                                                the land use rules violated the state constitution in some way [1].'),
                                               column(6, 
                                                      p("", style = "padding-top:10px;"),
                                                      p(strong("Conservation Reserve Enhancement program (CREP):")), 
                                                      p("This is a state sponsored enhancement to the federal CRP. It is a cost-share program where federal reimbursement are made through the FSA for up to 
                                                        “50% of a participant's eligible expenses for implementing best management practices (BMP)”. BMP examples include adding fencing, alternative watering 
-                                                       systems, and restoring wetlands. Participation in this program is voluntary, and the contract period is around 10-15 years (source)."),
+                                                       systems, and restoring wetlands. Participation in this program is voluntary, and the contract period is around 10-15 years [2]."),
                                                      br(),
                                                      p(strong("Agriculture and Forestal Districts (AFD):")),
-                                                     p("The AFD program in Virginia was designed to “preserve and protect open spaces, forested areas, and agricultural lands” (source). This program makes 
+                                                     p("The AFD program in Virginia was designed to “preserve and protect open spaces, forested areas, and agricultural lands” [3] This program makes 
                                                        it so land taxes are based on use rather than taxing solely on the market value. Land used for growing crops, for example, is taxed differently than 
                                                        developed property. This state level policy encourages localities to be purposeful with their property taxes. The hope is that this policy will be used 
                                                        to conserve and protect agricultural and forest land. These lands can be valued as “natural and ecological resources which provide essential open spaces 
-                                                       for clean air sheds, watershed protection, wildlife habitat, aesthetic quality and other environmental purposes” (source). This program was formed in 1977 
-                                                       (source). The potential benefits are to lower property taxes, safeguard the rural character of the community, and offer protection from eminent domain (source)."),
+                                                       for clean air sheds, watershed protection, wildlife habitat, aesthetic quality and other environmental purposes” [3]. This program was formed in 1977 
+                                                       [4]. The potential benefits are to lower property taxes, safeguard the rural character of the community, and offer protection from eminent domain [4]."),
                                                      br(),
                                                      p(strong("Nonpoint Source (NPS) Pollution Management Program:")), 
-                                                     p("This is a diverse network of state and local government programs that . Collectively, these programs “help to prevent water quality degradation and to restore 
+                                                     p('This is a diverse network of state and local government programs that “help to prevent water quality degradation and to restore 
                                                        the health of lakes, rivers, streams and estuaries by promoting and funding state and local watershed planning efforts, stream and wetland restoration and protection, 
-                                                       education and outreach, and other measures to reduce and prevent NPS pollution from affecting the Commonwealth’s waters” (source)."),
+                                                       education and outreach, and other measures to reduce and prevent NPS pollution from affecting the Commonwealth’s waters" [5].'),
                                                      p(),
                                                      p(),
-                                                     h4("References:"),
-                                                     p(tags$small("[1] How Can You Help Protect Source Water? (n.d.). Retrieved July 29, 2021, from https://www.epa.gov/sourcewaterprotection/how-can-you-help-protect-source-water")), 
-                                                     p(tags$small("[2] Well maintenance. (2009, April 10). Retrieved July 29, 2021, from https://www.cdc.gov/healthywater/drinking/private/wells/maintenance.html#:~:text=Wells%20should%20be%20checked%20and,example%2C%20arsenic%20and%20radon).")) ,
-                                                     p(tags$small("[3] A Guide to Private Wells (pp. 5-25, Publication). (1995). Blacksburg, VA: Virginia Water Resources Research Center.")) ,
-                                                     p("", style = "padding-top:10px;"),
-                                                     
-                                                     
+                                                   
                                               ) , 
                                               column(6, 
                                                      p("", style = "padding-top:10px;"),
                                                      p(strong("Chesapeake Bay Preservation Act:")),
                                                      p("This program was developed in 1988 as an element of Virginia's NPS management program. The goal is to protect and improve water quality in the Chesapeake 
-                                                     Bay by requiring effective land use management practices (source)."), 
+                                                     Bay by requiring effective land use management practices [6]."), 
                                                      p('"The Bay Act program is the only program administered by the Commonwealth of Virginia that comprehensively addresses the effects of land use planning and 
                                                      development on water quality. The Bay Act recognizes that local governments have the primary responsibility for land use decisions and expands their authority 
-                                                     to manage water quality, and establish a direct relationship between water quality protection and local land use decision-making" (source).'),
+                                                     to manage water quality, and establish a direct relationship between water quality protection and local land use decision-making" [6].'),
                                                      br(),
                                                      p(strong("Total Maximum Daily Load (TMDL):")),
                                                      p("Significant portions of the Chesapeake Bay have been identified as not meeting water quality standards. Despite the Chesapeake Bay program, water quality goals 
-                                                     have not been met. In December of 2010, the EPA issued a TMDL, a “pollution diet” to protect the Bay (source). This TMDL is divided among all the Bay states. However,
+                                                     have not been met. In December of 2010, the EPA issued a TMDL, a “pollution diet” to protect the Bay [7]. This TMDL is divided among all the Bay states. However,
                                                        “regional or statewide consistency is rare in Virginia's land use planning process - even statewide requirements such as the Chesapeake Bay Regulations are interpreted 
-                                                       differently by different jurisdictions” (source)."),
-                                              )) ,
+                                                       differently by different jurisdictions” [1]."),
+                                              ),
+                                              column(12,
+                                                     h4("References:"),
+                                                     p(tags$small("[1] Land use planning in Virginia. Virginia Places. (n.d.). Retrieved July 25, 2022, from http://www.virginiaplaces.org/landuseplan/")), 
+                                                     p(tags$small("[2] USDA. (n.d.). Conservation reserve enhancement program. USDA Farm Service Agency. Retrieved July 25, 2022, from https://www.fsa.usda.gov/programs-and-services/conservation-programs/conservation-reserve-enhancement/index")) ,
+                                                     p(tags$small("[3] Virginia General Assembly. (n.d.). Code of Virginia. Virginia's Legislative Information System. Retrieved July 25, 2022, from https://law.lis.virginia.gov/vacodepopularnames/agricultural-and-forestal-districts-act/ ")) ,
+                                                     p(tags$small("[4] Virginia Department of Forestry. (n.d.). Agricultural &amp; forestal district program- Louisa County. Virginia Department of Forestry. Retrieved July 25, 2022, from https://dof.virginia.gov/wp-content/uploads/afd-program-brochure_11212019-stone-version.pdf")),
+                                                     p(tags$small("[5] Virginia Nonpoint Source Management Program Plan (2019 Update). (2019).")),
+                                                     p(tags$small("[6] Virginia Department of Environmental Quality. (n.d.). Chesapeake Bay preservation act. Virginia Department of Environmental Quality. Retrieved July 25, 2022, from https://www.deq.virginia.gov/water/chesapeake-bay/chesapeake-bay-preservation-act#:~:text=Under%20the%20Bay%20Act%20framework%2C%20the%20Chesapeake%20Bay,and%20implement%20in%20administering%20their%20Bay%20Act%20programs.")),
+                                                     p(tags$small("[7] Virginia Department of Environmental Quality. (n.d.). Chesapeake Bay TMDLs. Virginia Department of Environmental Quality. Retrieved July 25, 2022, from https://www.deq.virginia.gov/water/chesapeake-bay/chesapeake-bay-tmdls ")),
+                                                     p("", style = "padding-top:10px;")),
+                                              ),
                                      tabPanel("County",
                                               p(),
                                               p('"In urbanizing areas such as the suburbs near Richmond, Hampton Roads, and Northern Virginia, control over how private property 
                                                 is developed may be a contentious process involving landowners and their lawyers, neighbors or local residents upset over additional 
                                                 development, and local officials. In Fairfax, Loudoun, and Prince William counties over the last 30 years, the Board of County Supervisor 
                                                 election campaigns have been based on growth management issues. Local officials have reacted to citizen complaints, and incumbents have 
-                                                been voted out of office because they were either too supportive of growth or too restrictive.” (source)."'),
+                                                been voted out of office because they were either too supportive of growth or too restrictive” [1].'),
                                               column(6,
                                                      h1(strong("Goochland"), align = "center"),
                                                      p("", style = "padding-top:10px;"),
                                                      fluidRow(style = "margin: 6px;", align = "justify",
+<<<<<<< HEAD
+                                                              leafletOutput("goochland_con"),
+                                                              p("The areas highlighted in purple represent", strong("Rural Preservation Districts"), "which allow for residential development but continue to allow agricultural uses in the preservation area, equestrian activities, and forest management plans [2]."),
+=======
                                                               leafletOutput("goochland_con") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                               p("The areas highlighted in purple represent", strong("Rural Preservation Districts"), "which allow for residential development but continue to allow agricultural uses in the preservation area, equestrian activities, and forest management plans [1]."),
+>>>>>>> f4b8d2a965f004598147f91f1307a37e805172df
                                                               p("Goochland County runs a land use program which assesses land based on use value as opposed to market value. The program was adopted by the county in 1978. There are multiple requirements for land to be eligible for the program as established by the State Land Evaluation Advisory Council:"),
                                                               tags$ul(
                                                                 
@@ -844,11 +867,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 tags$li("All real estate taxes have been paid on parcel "),
                                                                 
                                                               ),
-                                                              p("There are also multiple land use categories including agriculture, horticulture, and forest use (source)."),
-                                                              p("The main agricultural districts in the county include A1 (General), A2 (Limited), and A3 (Intensive) (source). These districts promote the protection
+                                                              p("There are also multiple land use categories including agriculture, horticulture, and forest use [3]."),
+                                                              p("The main agricultural districts in the county include A1 (General), A2 (Limited), and A3 (Intensive) [4]. These districts promote the protection
                                                      of agricultural land and encourage agribusiness. The Goochland County 2035 Comprehensive Plan includes an agricultural commitment to maintaining approximately
-                                                     85% of the county in the Rural Enhancement Land Use Designation through 2035 (source). The county also supports economic development and tourism through the
-                                                     ACRES initiative which “[Supports] Goochland’s Agricultural Community through Accessibility, Connectivity, Readiness, Education, and Sustainability” (source).
+                                                     85% of the county in the Rural Enhancement Land Use Designation through 2035 [5]. The county also supports economic development and tourism through the
+                                                     ACRES initiative which “[Supports] Goochland’s Agricultural Community through Accessibility, Connectivity, Readiness, Education, and Sustainability” [6].
                                                      The initiative encourages the recognition of Goochland County’s agricultural history and identity and promotes rural economic development/tourism."))),
                                               column(6,
                                                      h1(strong("Powhatan"), align = "center"),
@@ -858,7 +881,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                                               p("The map above highlights the many different types of conservation districts in Powhatan County."), 
                                                               tags$ul(
                                                                 
+<<<<<<< HEAD
+                                                                tags$li("The green layer represents", strong("Agricultural Forestal Districts (AFD)"),"which are areas of land that are recognized by the county as being economically and environmentally valuable resources for all [7]."),
+=======
                                                                 tags$li("The orange layer represents", strong("Priority Conservation Areas"), "which are protected for long term conservation."),
+>>>>>>> f4b8d2a965f004598147f91f1307a37e805172df
                                                                 
                                                                 tags$li("The red layer represents", strong("Protected Lands"), "which are protected due to their natural, cultural, or ecological value."),
                                                                 
@@ -869,20 +896,27 @@ ui <- navbarPage(title = "DSPG 2022",
                                                               p('Powhatan County land use policy includes a land use deferral program, Powhatan County code Section 70-76, which states that the purpose of land use is
                                                      to “preserve real estate devoted to agricultural, horticultural, forest and open space uses within its boundaries in the public interest....". 
                                                      The land use deferral program “offers a deferral of a portion of the real estate taxes for qualifying properties”. This ordinance was adopted by the
-                                                     county in 1976 and approximately 40% of the county is in land use today (source). Powhatan County also has an Agricultural and Forestal District (AFD)
+                                                     county in 1976 and approximately 40% of the county is in land use today [8]. Powhatan County also has an Agricultural and Forestal District (AFD)
                                                      Program which allows the county, with the landowner’s consent, to take land out of development in exchange for a land use tax rate as opposed to market
                                                      value tax rate. As of September/October 2020, there are approximately 5640 acres of AFD land. This program serves to protect natural lands as well as prevent
                                                      landowners from having to sell their land as market values and tax rates continue to increase. One benefit that the AFD program has over the land use deferral
-                                                     program is that it is officially included in the County’s Comprehensive Plan (source). '),
+                                                     program is that it is officially included in the County’s Comprehensive Plan [9]. '),
                                                               p('The county’s zoning ordinance categorizes rural districts into 6 groups. The main agricultural districts are A-20 (min 20 ac), A-10 (min 10 ac), and A-C.
                                                      The 3 other rural districts are largely dedicated to residential zoning. The 2010 long range comprehensive plan also includes sections on natural conservation
-                                                     and rural preservation which outline land use policies to be “used when addressing development and land use issues” (source). These policies promote the
+                                                     and rural preservation which outline land use policies to be “used when addressing development and land use issues” [10]. These policies promote the
                                                      conservation of open land and farmland and recognize agriculture as an economic driver of the community.'))),
                                               column(12, 
                                                      h4("References:"),
-                                                     p(tags$small("[1] Planning and Zoning Initiatives. Planning and Zoning Initiatives | Goochland County, VA - Official Website. (n.d.). Retrieved July 18, 2022, from https://www.goochlandva.us/1058/Planning-and-Zoning-Initiatives ")), 
-                                                     p(tags$small("[2] Well maintenance. (2009, April 10). Retrieved July 29, 2021, from https://www.cdc.gov/healthywater/drinking/private/wells/maintenance.html#:~:text=Wells%20should%20be%20checked%20and,example%2C%20arsenic%20and%20radon).")) ,
-                                                     p(tags$small("[3] A Guide to Private Wells (pp. 5-25, Publication). (1995). Blacksburg, VA: Virginia Water Resources Research Center.")) ,
+                                                     p(tags$small("[1] Land use planning in Virginia. Virginia Places. (n.d.). Retrieved July 25, 2022, from http://www.virginiaplaces.org/landuseplan/")),
+                                                     p(tags$small("[2] Planning and Zoning Initiatives. Planning and Zoning Initiatives | Goochland County, VA - Official Website. (n.d.). Retrieved July 18, 2022, from https://www.goochlandva.us/1058/Planning-and-Zoning-Initiatives ")), 
+                                                     p(tags$small("[3] Goochland County. (n.d.). Land use program information. Goochland County, VA - Official Website. Retrieved July 25, 2022, from https://www.goochlandva.us/339/Land-Use")) ,
+                                                     p(tags$small("[4] Goochland County, Virginia - Code of Ordinances. Municode Library. (n.d.). Retrieved July 25, 2022, from https://library.municode.com/va/goochland_county/codes/code_of_ordinances?nodeId=COOR_CH15ZO")),
+                                                     p(tags$small("[5] Goochland County. (n.d.). Goochland County 2035 Comprehensive Plan. Retrieved July 25, 2022, from https://capitalregionland.org/wp-content/uploads/2021/11/Goochland-County-Comprehensive-Plan-Land-Use-chapter.pdf")),
+                                                     p(tags$small("[6] Goochland County Agricultural Center. (n.d.). A.C.R.E.S. Initiative. Retrieved July 25, 2022, from https://www.goochlandva.us/DocumentCenter/View/6731/ACRES-2019?bidId=")),
+                                                     p(tags$small("[7] Powhatan County. (n.d.). Agricultural &amp; forestal district program. Powhatan County, VA - Official Website. Retrieved July 25, 2022, from http://www.powhatanva.gov/1784/Agricultural-Forestal-District-Program")),
+                                                     p(tags$small("[8] Powhatan County. (n.d.). Land use deferral. Powhatan County, VA - Official Website. Retrieved July 25, 2022, from http://www.powhatanva.gov/216/Land-Use-Deferral#:~:text=Per%20Powhatan%20County%20code%20Section,adopted%20this%20ordinance%20in%201976.")),
+                                                     p(tags$small("[9] Powhatan County Agricultural and Forestal District Advisory Committee. (2020). Powhatan county agricultural and forestal district (AFD) Review. Retrieved July 25, 2022, from http://www.powhatanva.gov/DocumentCenter/View/5923/AFDAC-Review-of-Agricultural-and-Forestal-Districts-AFDs-October-2020")),
+                                                     p(tags$small("[10] Powhatan County. (2019). 2010 Long-Range Comprehensive Plan. Retrieved July 25, 2022, from http://www.powhatanva.gov/DocumentCenter/View/85/2010-Powhatan-County-Long-Range-Comprehensive-Plan-")),
                                                      p("", style = "padding-top:10px;")) 
                                      )
                                    ) 
