@@ -193,11 +193,11 @@ names(GoochlandAllParcel) <- c("FIN_MLUSE", "year", "geometry")
 PowhatanAllParcel <- read_sf("data/luParcelData/PowAll.shp")
 
 luPlotFunction <- function(inputYear, county) {
-  
+
   lu.plt <- leaflet() %>%
     addTiles() %>%
     addProviderTiles(providers$CartoDB.Positron)
-  
+
   # Sets view based on county
   if(county == "Powhatan"){
     lu.plt <- lu.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10) %>% addPolygons(data = po_cnty, fillOpacity = 0)
@@ -205,35 +205,35 @@ luPlotFunction <- function(inputYear, county) {
   }
   else{
     lu.plt <- lu.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
-    parcelData <- GoochlandAllParcel %>% filter(year == inputYear) 
+    parcelData <- GoochlandAllParcel %>% filter(year == inputYear)
   }
-  
-  LUC_values <- c("Single Family Residential Urban", 
-                  "Single Family Residential Suburban", 
-                  "Multi-Family Residential", 
-                  "Commerical / Industrial", 
-                  "Agricultural / Undeveloped (20-99 Acres)", 
-                  "Agricultural / Undeveloped (100+ Acres)", 
-                  "Other", 
+
+  LUC_values <- c("Single Family Residential Urban",
+                  "Single Family Residential Suburban",
+                  "Multi-Family Residential",
+                  "Commerical / Industrial",
+                  "Agricultural / Undeveloped (20-99 Acres)",
+                  "Agricultural / Undeveloped (100+ Acres)",
+                  "Other",
                   "Undefined")
-  
+
   LUC_values <- factor(LUC_values, levels = LUC_values)
-  
+
   mypalette <- colorBin(palette = "viridis", as.numeric(LUC_values), bins = 8)
   colors <- mypalette(unclass(LUC_values))
   colors[8] <- "#4D4D4D" # undefined gets a grayed out color
   legendpalette <- colorFactor(palette = colors,levels=LUC_values)
-  
+
   lu.plt <- leaflet() %>%
     addTiles() %>%
     addProviderTiles(providers$CartoDB.Positron) %>%
-    addPolygons(data = parcelData %>% filter(FIN_MLUSE == "Single Family Residential Urban"), 
+    addPolygons(data = parcelData %>% filter(FIN_MLUSE == "Single Family Residential Urban"),
                 fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
                 group = "Single Family Urban") %>%
-    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Single Family Residential Suburban"), 
+    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Single Family Residential Suburban"),
                 fillColor = colors[2], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
                 group = "Single Family Suburban") %>%
-    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Multi-Family Residential"), 
+    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Multi-Family Residential"),
                 fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
                 group = "Multi-Family Residential") %>%
     addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Commerical / Industrial") ,
@@ -254,12 +254,12 @@ luPlotFunction <- function(inputYear, county) {
     addLayersControl(
       overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Undefined"),
       position = "bottomleft",
-      options = layersControlOptions(collapsed = FALSE)) %>% 
-    addLegend(data=parcelData, "bottomright", 
+      options = layersControlOptions(collapsed = FALSE)) %>%
+    addLegend(data=parcelData, "bottomright",
               pal = legendpalette, values = LUC_values,
               title = "Land Use Type",
               labFormat = labelFormat(),
-              opacity = 1) 
+              opacity = 1)
   lu.plt
 }
 
@@ -999,13 +999,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
                                                                 chooseSliderSkin(skin = "Shiny", color = "#861F41"),
-                                                                sliderInput(inputId = "luYear.g", label = "Year:", 
-                                                                            min = 2018, max = 2021, value = 2021, 
+                                                                sliderInput(inputId = "luYear.g", label = "Year:",
+                                                                            min = 2018, max = 2021, value = 2021,
                                                                             sep = "", width = "150%"),
-                                                                
-                                                                
+
+
                                                                 leafletOutput(outputId = "luPlot.g") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
-                                                                
+
                                                                 
                                                                 br(),
                                                                 h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
@@ -1137,13 +1137,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 )), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
-                                                                sliderInput(inputId = "luYear.p", label = "Year:", 
-                                                                            min = 2015, max = 2021, value = 2021, 
+                                                                sliderInput(inputId = "luYear.p", label = "Year:",
+                                                                            min = 2015, max = 2021, value = 2021,
                                                                             sep = "", width = "150%"),
-                                                                
-                                                                
+
+
                                                                 leafletOutput(outputId = "luPlot.p") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
-                                                                
+
                                                                 h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
                                                                 highchartOutput("pow_sankey",height = 600) %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                                 
@@ -1756,10 +1756,10 @@ server <- function(input, output){
   output$luPlot.g <- renderLeaflet({
     luPlotFunction(input$luYear.g, "Goochland")
   }) %>% bindCache(input$luYear.g) #will it be faster?
-  
+
   output$luPlot.p <- renderLeaflet({
     luPlotFunction(input$luYear.p, "Powhatan")
-    
+
   })
   
   output$gooch_sankey <- renderHighchart({ 
