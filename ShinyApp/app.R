@@ -165,7 +165,7 @@ pcon <- st_read("data/Conservation/Powhatan_Natural_Conservation.shp") %>% st_tr
 goochland_con <- leaflet()%>%
   addTiles() %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
-  setView(lng=-77.885376, lat=37.684143, zoom=10.48) %>% 
+  setView(lng=-78, lat=37.75, zoom=10.48) %>% 
   addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="purple")%>%
   addPolygons(data=gl_cnty, weight=2, color="black", fillOpacity=0, opacity = 1)
 
@@ -181,9 +181,6 @@ powhatan_con <- leaflet()%>%
     overlayGroups = c("Priority Conservation Areas", "Protected Lands", "AFD"),
     position = "bottomleft",
     options = layersControlOptions(collapsed = FALSE))
-
-
-## LAND USE  =================================================
 
 
 ### LAND USE =================================================
@@ -265,8 +262,8 @@ luPlotFunction <- function(inputYear, county) {
 
 #transition matrix
 agLabels <- c("Agricultural / Undeveloped (20-99 Acres) (before)", "Agricultural / Undeveloped (100+ Acres) (before)")
-g.sankey <- read.csv("data/luParcelData/g_sankey.csv") %>% select(LUC_old,LUC_new) %>% filter(LUC_old %in% agLabels)
-p.sankey <- read.csv("data/luParcelData/p_sankey.csv") %>% select(MLUSE_old,MLUSE_new)  %>% filter(MLUSE_old %in% agLabels)
+g.sankey <- read.csv("data/luParcelData/g_sankey.csv") %>% select(LUC_old,LUC_new) %>% filter(LUC_old %in% agLabels, LUC_old != LUC_new)
+p.sankey <- read.csv("data/luParcelData/p_sankey.csv") %>% select(MLUSE_old,MLUSE_new)  %>% filter(MLUSE_old %in% agLabels, MLUSE_old != MLUSE_new)
 
 thm.p <- hc_theme(colors = c("#fde725", "#fde725", "#1fa187", "#addc30", "#3b528b",  "#5ec962", "#1fa187"),
                 chart = list(backgroundColor = "#ffffff"),
@@ -388,6 +385,7 @@ psoil <-ggplotly(psoil, tooltip = "text")
 
 
 ### TRAFFIC ===============================================
+
 gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 groads<- st_read("data/Traffic_Hotspot/Gooch_roads.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 ptraffic<- st_read("data/Traffic_Hotspot/Powhatan_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
@@ -403,7 +401,7 @@ trafficVol.func <- function(county){
     trafficData <- ptraffic
   }
   else{
-    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
+    trafficVol.plt <- trafficVol.plt %>% setView(lng=-78, lat=37.75, zoom = 10) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
     roadData <- groads
     trafficData <- gtraffic
   }
@@ -443,7 +441,7 @@ travelTime.func <- function(county){
     travelTime.plt <- travelTime.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
     data <- pow.travelTimes
   } else {
-    travelTime.plt <- travelTime.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10)
+    travelTime.plt <- travelTime.plt %>% setView(lng=-78, lat=37.75, zoom = 10)
     data <- gooch.travelTimes
   }
   
@@ -467,6 +465,7 @@ travelTime.func <- function(county){
 
 
 ## PARCELLATION ============================================
+
 gooch_parcellation <- st_read("data/parcellationData/Gooch_Parcellation_LT.shp") %>%
   st_transform(crs = st_crs("EPSG:4326"))
 gooch_parcellation$year <- substr(gooch_parcellation$UNIQID_1, 1, 4)
@@ -478,6 +477,7 @@ pow_parcellation$year <- substr(pow_parcellation$UNIQ_ID_12, 1, 4)
   # both have substr to get the year from the first four characters of UNIQID_1/_12 
 
 ### PARCELS ============================================
+
 parc.func <- function(data, range, county, cnty){
   
   # Declares initial leaflet, nothing added to it.
@@ -513,6 +513,7 @@ parc.func <- function(data, range, county, cnty){
 }
 
 ### HOTSPOTS ============================================
+
 hotspot.func <- function(county, range){
   
   hotspot.plt <- leaflet()%>%
@@ -573,7 +574,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                           p(),
                                           p(strong("The problem:"), "Both Goochland and Powhatan County are approximately 40 minutes away from Richmond. Being this close to a large metropolitan area has its advantages and disadvantages. One of the biggest drawbacks is land conversion. 
                                             Land conversion is when land shifts its use from one to another. In the case of the two counties, it means land is changing from agricultural land primarily to residential housing development. This has the possibility to hurt the economies of the largely rural counties. 
-                                            Both counties have enacted policies to help combat land conversion: Powhatan implemented a land tax deferral program and Goochland with their 85-15% rural land commitment, where they maintain 85% of land as rural. Both counties keep administrative data, but have not launched an in depth
+                                            Both counties have enacted policies to help combat land conversion: Powhatan implemented a land tax deferral program and Goochland with their 85-15 rural land commitment, where they maintain 85% of land as rural. Both counties keep administrative data, but have not launched an in depth
                                             analysis to understand it. This is a key step in understanding the factors that cause land conversation as well as the probability that a parcel of land will parcelize further."),
                                           p(),
                                           p(strong("The project:"), "The Virginia Tech", a(href = "https://aaec.vt.edu/index.html", "Department of Argicultural and Applied Economics", target = "_blank"),
@@ -585,16 +586,16 @@ ui <- navbarPage(title = "DSPG 2022",
                                           p('Our team worked with Goochland County and Powhatan County to help analyze land conversion and agriculture loss by using existing administrative data. Both counties want to retain their rural/agricultural 
                                             character and have introduced policies to encourage the conservation of land and discourage development that may require further land conversion. Our team researched background information on both counties 
                                             as well as looked into data from sources including the counties, the US Census, and the Virginia Department of Transportation. All of the data sources that have been referenced in our analysis can be found 
-                                            under the Data Sources tab. The team also met with the stakeholders on a regular basis to make sure that the project was in line with their expectations and to allow county administrators and 
-                                            AGRICULTURE ASSOCIATION members to look over our findings and make suggestions. In addition to the meetings, we also maintained contact by email to ask questions pertaining to the project and the data provided.'),
+                                            under the Data Sources tab. The team also met with the stakeholders on a regular basis to make sure that the project was in line with their expectations and to allow Virginia Cooperative Extension professionals 
+                                            to look over our findings and make suggestions. In addition to the meetings, we also maintained contact by email to ask questions pertaining to the project and the data provided.'),
                                           p(),
                                           p("We collected data from several sources to create our graphs, maps, and tables. These visualizations allowed us to analyze and present our findings in a more digestible manner. More specifically, we:"),
-                                          tags$li("Provided census tract- and county-level graphs of Goochland and Powhatan County residents'", strong("sociodemographic and socioeconomic characteristics"), ", highlighting underprivileged areas."),
+                                          tags$li("Provided county-level graphs of Goochland and Powhatan County residents'", strong("sociodemographic and socioeconomic"), "characteristics."),
                                           tags$li("Used USDA data to create a map of", strong("crops and land types"), "in the counties. "),
                                           tags$li("Used USDA data to create a map of", strong("soil quality"), "throughout the counties."),
                                           tags$li("Mapped traffic data to show ", strong("traffic volume and commute times"), "to Richmond, Virginia."),
                                           tags$li("Mapped the locations of", strong("land parcels"), "to provide insight on the frequency of parcellation and identify any patterns."),
-                                          tags$li("Created a", strong("Multinomial Logistic regression model"), "to estimate the probability of land conversion. "), 
+                                          tags$li("Created a", strong("linear regression model"), "to estimate the probability of land conversion. "), 
                                           p(),
                                           p("This dashboard compiles our findings and allows extension professionals, stakeholders, and other users to explore the information interactively."),
                                    ),
@@ -602,8 +603,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                           h2(strong("Dashboard Aims")),
                                           p("Our dashboard is aimed at:"),
                                           p(strong("Powhatan and Goochland County governments."), "Our analyses provide further insights and allow a better understanding about land conversion within each county. 
-                                            Our statistical analysis looks at and explains the relationship between land conversion and several factors including traffic, ..., and ... We hope that our findings will inform decision-making
-                                            regarding land conversion and conservation within the counties. "),
+                                            Our statistical analysis looks at and explains the relationship between land conversion and several factors including soil quality and traffic volume. More information on our statistical analysis
+                                            can be found under our Findings and Predictions tab. We hope that our results will inform decision-making regarding land conversion and conservation within the counties."),
                                           p(strong("Researchers working on land use conversion."), "Land conversion is a problem all over the country, not just Goochland and Powhatan counties. Our dashboard can act as an example 
                                             or template to those researching the topic as well as a starting point for those looking specifically at Goochland and Powhatan.")
                                    )
@@ -623,12 +624,12 @@ ui <- navbarPage(title = "DSPG 2022",
                                               align = "justify",
                                               column(4, 
                                                      h4(strong("County Background")),
-                                                     p("Goochland County is located in the Piedmont of the Commonwealth of Virginia. It covers 281.42 square miles. This makes Goochland the 71 
-                                                     county in Virginia. The county is known for its fertile land and mineral deposits. The James River flows through the center of the county which
+                                                     p("Goochland County is located in the Piedmont of the Commonwealth of Virginia. It covers 281.42 square miles. This makes Goochland the 71st 
+                                                       county in Virginia. The county is known for its fertile land and mineral deposits. The James River flows through the center of the county which
                                                        supplied water to farmlands and to mills. Coal was mined in the east and gold in the west. Today, agriculture is still 
-                                                       important to the county economy. Goochland has updated its voting districts in 2022 to better represent the population of all 5 districts. 
-                                                       Goochland Country also has a vast summer program with plenty of activates. The activities are located all over the county at different facilities 
-                                                       including the skate park, gymnasium, the baseball fields, weight room, trails, and many more [1][2]. "),
+                                                       important to the county economy. Goochland has updated its voting districts in 2022 to better represent the population of all 5 districts [1]. 
+                                                       Goochland County also has a vast summer program with plenty of activities. The activities are located all over the county at different facilities 
+                                                       including the skate park, gymnasium, the baseball fields, weight room, trails, and many more [2]."),
                                                      
                                                      h4(strong("Summary Statistics")),
                                                      p("Goochland County’s population is 23,472, which is split between 49.8% male (11,698), and 50.2% female (11,774) [3]. 23,524 identify as one 
@@ -658,7 +659,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      radioButtons(inputId = "yearSelect_gsoc", label = "Select Year: ", 
                                                                   choices = c("2017", "2018", "2019", "2020"), 
                                                                   selected = "2020"),
-                                                     plotOutput("gsoc", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
+                                                     plotOutput("gsoc", height = "500px"),
                                                      fluidRow(style = "margin: 6px;",
                                                               align = "justify",
                                                               h4(strong("Visualization Summaries")),
@@ -699,14 +700,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p("Powhatan County, located in the Virginia’s Central Piedmont, was founded in 1777 by the Virginia General Assembly. It is 272 square miles and is home to a population 
                                                        of 29,253. The county is approximately 20 miles from Richmond and 2 hours from Washington, D.C. The James River borders the north end of the county, contributing to the formation of many creeks stretching southward. 
                                                        There are five districts within the county and 12 polling places interspersed through them. Powhatan is rich in history and offers an abundance of tourist 
-                                                       attractions contributing to its thriving economy. There are three parks/wildlife management areas within the county: Powhatan Wildlife Management Area, Fighting Creek Park, 
+                                                       attractions contributing to its thriving economy [1]. There are three parks/wildlife management areas within the county: Powhatan Wildlife Management Area, Fighting Creek Park, 
                                                        and Powhatan State Park. Where once were several farms, the Powhatan Wildlife Management Area is 4,462 acres that provide many experiences such as hunting, fishing and other 
-                                                       forested activities that aim to maintain the diversity of its natural wildlife species. [1][2]"),
+                                                       forested activities that aim to maintain the diversity of its natural wildlife species [2]."),
                                                      
                                                      h4(strong("Summary Statistics")),
                                                      p("The total population  of Powhatan County is 29,253, split between 51% male (15,188), and 49% female (14,065) [3]. 28,762 identify as one race, where 25,732 are white, 2,505 are African 
                                                        American, 64 are American Indian and Alaska Native, 169 are Asian, 24 are Native Hawaiian and Other Pacific Islander, and 268 are some other race [4]."),
-                                                     p("24,715 or 57.3% of the population within Powhatan County is employed. The unemployment rate is 1.4%. [5]"),
+                                                     p("24,715 or 57.3% of the population within Powhatan County is employed. The unemployment rate is 1.4% [5]."),
                                                      p("Of the 13,938 civilian employed population, there are very few that are employed in agriculture, forestry, fishing, hunting, and mining. Around .94% of the civilian employed 
                                                        population fall under that category. Of that .94% of the workers, around half of them serve roles in management, business, science, and art occupations while 14.5% of that 
                                                        population work in natural resources, construction, and maintenance occupations [6]."),
@@ -731,7 +732,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      radioButtons(inputId = "yearSelect_psoc", label = "Select Year: ", 
                                                                   choices = c("2017", "2018", "2019", "2020"), 
                                                                   selected = "2020"),
-                                                     plotOutput("psoc", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
+                                                     plotOutput("psoc", height = "500px"),
                                                      h4(strong("Visualization Summaries")),
                                                      p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. The 25-44 age group has been 
                                                        the second largest, but has faced more inconsistency and has seen a decrease since 2018."),
@@ -821,8 +822,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        it is the local community to create and invest in a water protection plan."),
                                                      br(),
                                                      p(strong("Agriculture Risk Coverage (ARC) and Price Loss Coverage (PLC):")),
-                                                     p('The ARC program is an “income support program that provides payments when actual crop revenue declines below a specified guaranteed level [6]." PLC program “provides 
-                                                     income support payments when the effective price for a covered commodity falls below its effective reference price [6]." Both programs provide financial protection 
+                                                     p('The ARC program is an “income support program that provides payments when actual crop revenue declines below a specified guaranteed level" [6]. PLC program “provides 
+                                                     income support payments when the effective price for a covered commodity falls below its effective reference price" [6]. Both programs provide financial protection 
                                                      to farmers. They serve as a safety net from drops in crop revenues and prices.'))),
                                               column(12,
                                                      h4("References:"),
@@ -849,7 +850,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        systems, and restoring wetlands. Participation in this program is voluntary, and the contract period is around 10-15 years [2]."),
                                                      br(),
                                                      p(strong("Agriculture and Forestal Districts (AFD):")),
-                                                     p("The AFD program in Virginia was designed to “preserve and protect open spaces, forested areas, and agricultural lands” [3] This program makes 
+                                                     p("The AFD program in Virginia was designed to “preserve and protect open spaces, forested areas, and agricultural lands” [3]. This program makes 
                                                        it so land taxes are based on use rather than taxing solely on the market value. Land used for growing crops, for example, is taxed differently than 
                                                        developed property. This state-level policy encourages localities to be purposeful with their property taxes. The hope is that this policy will be used 
                                                        to conserve and protect agricultural and forest land. These lands can be valued as “natural and ecological resources which provide essential open spaces 
@@ -938,11 +939,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                               ),
                                                               p('Powhatan County land use policy includes a land use deferral program, Powhatan County code Section 70-76, which states that the purpose of land use is
-                                                     to “preserve real estate devoted to agricultural, horticultural, forest and open space uses within its boundaries in the public interest....". 
+                                                     to “preserve real estate devoted to agricultural, horticultural, forest and open space uses within its boundaries in the public interest..." 
                                                      The land use deferral program “offers a deferral of a portion of the real estate taxes for qualifying properties”. This ordinance was adopted by the
                                                      county in 1976 and approximately 40% of the county is in land use today [8]. Powhatan County also has an Agricultural and Forestal District (AFD)
                                                      Program which allows the county, with the landowner’s consent, to take land out of development in exchange for a land use tax rate as opposed to market
-                                                     value tax rate. As of September/October 2020, there are approximately 5640 acres of AFD land. This program serves to protect natural lands as well as prevent
+                                                     value tax rate. As of September/October 2020, there are approximately 5,640 acres of AFD land. This program serves to protect natural lands as well as prevent
                                                      landowners from having to sell their land as market values and tax rates continue to increase. One benefit that the AFD program has over the land use deferral
                                                      program is that it is officially included in the County’s Comprehensive Plan [9]. '),
                                                               p('The county’s zoning ordinance categorizes rural districts into 6 groups. The main agricultural districts are A-20 (min 20 ac), A-10 (min 10 ac), and A-C.
@@ -982,18 +983,18 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 fluidRow(style = "margin: 6px;", align = "justify",
                                                                          h4(strong("Land Use in Goochland County")),
                                                                          p("Each parcel of land in Goochland County has an assigned land use. These land uses are: Single Family Urban, Single Family Suburban, 
-                                                                  Multi-Family Residential, Commercial & Industrial, Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), Other, 
+                                                                  Multi-Family Residential, Commercial & Industrial, Agriculture / Undeveloped (20-99 Acres), Agriculture / Undeveloped (100+ Acres), Other, 
                                                                   and Undefined. We used the state of Virginia’s land use codes to make our maps cleaner. This involved condensing some of the categories 
                                                                   from Goochland’s system into the other category. In our data, we also had some parcels with no land use category. Those parcels make up the 
                                                                   undefined category."),
-                                                                         p("Based on the Goochland County map on the right, Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) are the 
+                                                                         p("Based on the Goochland County map on the right, Agriculture / Undeveloped (20-99 Acres) and Agriculture / Undeveloped (100+ Acres) are the 
                                                                   two biggest land use categories for all years. Single Family Suburban is third biggest in acreage. The map itself doesn’t change a lot but the
                                                                   number of parcels that change is a lot."), 
                                                                          h4(strong("Land Use Transition Matrix")),
                                                                          p("The transition matrix under the map shows the land conversion from 2018-2022 in Goochland County. Based on the matrix the three categories that 
-                                                                are changing the most are Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), and Undefined. While the category that 
-                                                                goes the most is Single Family Urban. This category grew by 530 parcels. Both Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) 
-                                                                lost many parcels of land to different land uses. Most of the parcels that changed from both Agriculture/Undeveloped (20-99) and Agriculture/Undeveloped (100+ Acres) 
+                                                                are changing the most are Agriculture / Undeveloped (20-99 Acres), Agriculture / Undeveloped (100+ Acres), and Undefined. While the category that 
+                                                                goes the most is Single Family Urban. This category grew by 530 parcels. Both Agriculture / Undeveloped (20-99 Acres) and Agriculture / Undeveloped (100+ Acres) 
+                                                                lost many parcels of land to different land uses. Most of the parcels that changed from both Agriculture / Undeveloped (20-99) and Agriculture / Undeveloped (100+ Acres) 
                                                                 changed to Single Family Urban.")
                                                                 )), 
                                                          column(8, 
@@ -1042,7 +1043,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   "Total Acreage by Land Type 2012" = "gcrop12")
                                                                 ),
                                                                 
-                                                                plotlyOutput("gcrop_graph", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
+                                                                plotlyOutput("gcrop_graph", height = "500px"),
                                                                 p(tags$small("Data Source: United States Department of Agriculture"))
                                                          ),
                                                 ) ,
@@ -1080,7 +1081,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 h4(strong("Soil Quality Map")),
                                                                 leafletOutput("g.soilMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5), 
                                                                 h4(strong("Soil Quality Graph")),
-                                                                plotlyOutput("gsoil", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
+                                                                plotlyOutput("gsoil", height = "500px") %>% withSpinner(type = 4, color = "#CF4420", size = 1.25),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
                                                          column(12, 
                                                                 
@@ -1120,19 +1121,19 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 fluidRow(style = "margin: 6px;", align = "justify",
                                                                          h4(strong("Land Use in Powhatan County")),
                                                                          p("Each parcel of land in Powhatan County has an assigned land use. These land uses are: Single Family Urban, 
-                                                                Single Family Suburban, Multi-Family Residential, Commercial & Industrial, Agriculture/Undeveloped (20-99 Acres), 
-                                                                Agriculture/Undeveloped (100+ Acres), Other, and Undefined. We used the state of Virginia’s land use codes to make 
+                                                                Single Family Suburban, Multi-Family Residential, Commercial & Industrial, Agriculture / Undeveloped (20-99 Acres), 
+                                                                Agriculture / Undeveloped (100+ Acres), Other, and Undefined. We used the state of Virginia’s land use codes to make 
                                                                 our maps cleaner. This involved condensing some of the categories from Powhatan’s system into the other category. In 
                                                                 our data, we also had some parcels with no land use category. Those parcels make up the undefined category."),
-                                                                         p("Based on the Powhatan County map on the right, Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) 
+                                                                         p("Based on the Powhatan County map on the right, Agriculture / Undeveloped (20-99 Acres) and Agriculture / Undeveloped (100+ Acres) 
                                                                 are the two biggest land use categories for all years. Single Family Suburban is third biggest in acreage. The map itself 
                                                                 doesn’t change a lot but the number of parcels that change is a lot."),
                                                                          h4(strong("Land Use Transition Matrix")),
                                                                          p("The transition matrix under the map shows the land conversion from 2012-2022 in Powhatan County. Based on the matrix the three 
-                                                                categories that are changing the most are Agriculture/Undeveloped (20-99 Acres), Agriculture/Undeveloped (100+ Acres), and 
+                                                                categories that are changing the most are Agriculture / Undeveloped (20-99 Acres), Agriculture / Undeveloped (100+ Acres), and 
                                                                 Single-Family Suburban. While the category that goes the most is Single Family Suburban. This category grew by 584 parcels. 
-                                                                Both Agriculture/Undeveloped (20-99 Acres) and Agriculture/Undeveloped (100+ Acres) lost many parcels of land to different land 
-                                                                uses. Most of the parcels that changed from both Agriculture/Undeveloped (20-99) and Agriculture/Undeveloped (100+ Acres) changed 
+                                                                Both Agriculture / Undeveloped (20-99 Acres) and Agriculture / Undeveloped (100+ Acres) lost many parcels of land to different land 
+                                                                uses. Most of the parcels that changed from both Agriculture / Undeveloped (20-99) and Agriculture / Undeveloped (100+ Acres) changed 
                                                                 to Single Family Suburban.")
                                                                 )), 
                                                          column(8, 
@@ -1177,7 +1178,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   "Total Acreage by Land Type 2012" = "pcrop12")
                                                                 ),
                                                                 
-                                                                plotlyOutput("pcrop_graph", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
+                                                                plotlyOutput("pcrop_graph", height = "500px"),
                                                                 p(tags$small("Data Source: United States Department of Agriculture")),
                                                          ),
                                                 ) ,
@@ -1215,7 +1216,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 h4(strong("Soil Quality Map")),
                                                                 leafletOutput("p.soilMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
                                                                 h4(strong("Soil Quality Graph")),
-                                                                plotlyOutput("psoil", height = "500px") %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
+                                                                plotlyOutput("psoil", height = "500px") %>% withSpinner(type = 4, color = "#CF4420", size = 1.25),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
                                                          column(12, 
                                                                 
@@ -1268,8 +1269,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                          p("New parcels spread across Goochland in 2019-2022. Meanwhile, there are always new parcels in the southeastern region which is close to Richmond. It implies 
                                                                 that metropolis might have some impacts on the parcellation. It is seeming that the northwestern has more parcels generated. In fact, the southeastern has 
                                                                 generated new parcels more frequently according to the hotspot maps. It is because new parcels in the southeast are smaller and lots of the new parcels are 
-                                                                single-family housing. While new parcels in the northwest are larger. Besides, parcellation happened less frequently along the James River. The map of Land Uses Over the Years shows 
-                                                                that most of the land along the James River is large-size agricultural/undeveloped land.")
+                                                                single-family housing. While new parcels in the northwest are larger. Besides, parcellation happened less frequently along the James River. The map of land uses over the years shows 
+                                                                that most of the land along the James River is large-size agricultural / undeveloped land.")
                                                                 )), 
                                                          column(8, 
                                                                 h4(strong("Land Parcellation Map")),
@@ -1297,7 +1298,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                          p("There is a significant spatial pattern of the parcellation in Goochland. Parcellation happened more frequently in the southeastern area of the county, and it persisted every year. 
                                                                 In the middle area, it became more often in 2021 and 2022. Parcellation in the northwestern area is relatively less frequent in 2019-2022. Besides, the area of high frequent 
                                                                 parcellation in the southeast has expanded along the VA 288 highway. From the hot spot map over time, we can see the impact of the metropolitan area on parcellation. The map 
-                                                                of Land Uses Over the Years shows that agricultural/undeveloped land use is denser in the northwest. It might suggest some negative correlation between agricultural land use and land parcellation.")
+                                                                of land uses over the years shows that agricultural / undeveloped land use is denser in the northwest. It might suggest some negative correlation between agricultural land use and land parcellation.")
                                                                 )), 
                                                          column(8, 
                                                                 h4(strong("Parcellation Hot Spot Map")),
@@ -1395,7 +1396,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                    fluidRow(style = "margin: 6px;", align = "justify",
                                             p("Approximately 84,500 acres of land, about half of the area of Powhatan, were converted to 
                                               residential-suburban uses during the decade in Powhatan. Parcellation among the agricultural land 
-                                              is also noticeable, as 28 parcels (about 5750 acres) of large agricultural lands have been parcellated
+                                              is also noticeable, as 28 parcels (about 5,750 acres) of large agricultural lands have been parcellated
                                               into smaller agricultural plots."),
                                             p("Parcellation is occurring predominantly in the heart of Powhatan County, around the U.S. Routes 60 and 522. 
                                               On the east end near Richmond, high parcellation rates are seen along the U.S. Routes 60 and 288 within 
@@ -1407,7 +1408,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                               (the conclusion related with soil quality should be determined by the regression model.)"),
                                             br(),
                                             h4(strong("Goochland")),
-                                            p("Approximately 28870 acres of land, about 16% of the area of Goochland, were converted to residential uses including single-family 
+                                            p("Approximately 28,870 acres of land, about 16% of the area of Goochland, were converted to residential uses including single-family 
                                               residential urban and suburban during 2018-2022 in Goochland. There are 5 parcels (about 671 acres) of large agricultural lands that 
                                               have been parcellated into smaller agricultural plots."),
                                             p("Parcellation is occurring predominantly in the southeast of Goochland County near Richmond, around the U.S. Routes I64, 250, and 288. 
@@ -1457,11 +1458,12 @@ ui <- navbarPage(title = "DSPG 2022",
                                           p(strong("Powhatan County Administrative Data"), "Powhatan County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
                                             that has occured over a 8 year period (2014 - 2021). The team used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
                                           br(""),
-                                          img(src = "vdot.png", style = "display: inline; float: left;", width = "200px"),
+                                          img(src = "vdot_crop.png", style = "display: inline; float: left;", width = "180px"),
                                           p(strong("VDOT Traffic Data"), "The Virginia Department of Transportation (VDOT) is responsible for building, maintaining and operating the state's roads, bridges and tunnels. VDOT also conducts 
                                           a program where traffic data are gathered from sensors in or along streets and highways and other sources.  This data includes estimates of the average number of vehicles that traveled each segment
-                                          of road and daily vehicle miles traveled for specific groups of facilities and vehicle types are calculated.")
+                                          of road and daily vehicle miles traveled for specific groups of facilities and vehicle types are calculated. This project utilizes VDOT data to create traffic volume and commute maps for both counties.")
                                    )),
+                                   
                           )
                  ),
                  
@@ -1475,7 +1477,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                    h4(strong("VT Data Science for the Public Good")),
                                    p("The", a(href = 'https://aaec.vt.edu/academics/undergraduate/beyond-classroom/dspg.html', 'Data Science for the Public Good (DSPG) Young Scholars program', target = "_blank"),
                                      "is a summer immersive program held at the", a(href = 'https://aaec.vt.edu/index.html', 'Virginia Tech Department of Agricultural'), "and", a(href = 'https://ext.vt.edu/','Applied Economics and the Virginia Cooperative Extension Service.'),
-                                     "In its second year, the program engages students from across the country to work together on projects that address state, federal, and local government challenges around critical
+                                     "In its third year, the program engages students from across the country to work together on projects that address state, federal, and local government challenges around critical
                                 social issues relevant in the world today. DSPG young scholars conduct research at the intersection of statistics, computation, and the social sciences to determine how 
                                 information generated within every community can be leveraged to improve quality of life and inform public policy. For more information on program highlights, how to apply,
                                 and our annual symposium, please visit", 
@@ -1514,23 +1516,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                           p(a(href = "https://www.linkedin.com/in/susanchenja/", 'Dr. Susan Chen', target = '_blank'), "(Associate Professor of Econometrics & Data Analytics);",
                                           ),
                                           p("", style = "padding-top:10px;"),
-                                          h4(strong("VT Faculty Affiliates")),
-                                          img(src = "weizhang.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "120px"),
-                                          img(src = "patrick_kayser.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                          p(a(href = "https://aaec.vt.edu/people/faculty/Zhang-Wei.html", 'Dr. Wei Zhang', target = '_blank'), "(Assistant Professor of Agriculture & Applied Economics);",
-                                            
-                                            br(),
-                                            a(href = 'https://www.linkedin.com/in/patrick-kayser-a0492545/', 'Patrick Kayser', target = '_blank'), "(Virgina Tech, Virginia Land Use Value Analyst).",
-                                            p("", style = "padding-top:10px;"),
+
                                             h4(strong("Project Stakeholders")),
-                                            img(src = ".jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
-                                            img(src = ".jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                             p(a(href = "https://www.linkedin.com/in/rachel-henley-335a0345/", 'Rachel Henley', target = '_blank'), "(Virginia Cooperative Extension, Powhatan County);",
                                               br(), 
                                               a(href = 'https://goochland.ext.vt.edu/staff/Maxwell-Charlotte.html', 'Nichole Shuman', target = '_blank'), "(Virginia Cooperative Extension, Goochland County)."),
                                             p("", style = "padding-top:10px;"),
                                             
-                                          )
+                                          
                                    )
 
                           )) ,
