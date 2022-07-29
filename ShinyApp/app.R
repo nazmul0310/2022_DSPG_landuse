@@ -1723,30 +1723,6 @@ server <- function(input, output){
     hotspot.func("Powhatan", yrRange)
   })
   
-  output$p.hotspotMap <- renderLeaflet({
-    
-    p.hotspot.plt <- leaflet()%>%
-      addTiles() %>%
-      setView(lng=-77.9188, lat=37.5415 , zoom=10) %>%
-      addPolygons(data=po_cnty,
-                  fillColor = "transparent")
-    begin_year <- input$p.hotspotInput[1]-2000
-    end_year <- input$p.hotspotInput[2]-2000
-    yr <- c(begin_year:end_year)
-    file_list <- paste("data/Parcel_Hotspot/pow_hotspot_",yr,".shp",sep = "")
-    
-    for (file in file_list){
-      #import the heatspot maps of the selected years
-      po<- st_read(file) %>% st_transform("+proj=longlat +datum=WGS84")
-      p.hotspot.plt <- p.hotspot.plt %>% addPolygons(stroke = FALSE,
-                                                     data = po,
-                                                     weight = 1,
-                                                     smoothFactor=1,
-                                                     fillColor = "red",
-                                                     fillOpacity = 0.2)
-    }
-    p.hotspot.plt
-  })
   
   
   ### PARCELLATION ======================================

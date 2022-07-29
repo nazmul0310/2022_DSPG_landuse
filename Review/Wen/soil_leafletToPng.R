@@ -22,8 +22,8 @@ library(webshot)
 
 ## Data Imports ============================================
 
-gl_cnty<- st_read("D:/2022_DSPG_landuse/ShinyApp/data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-po_cnty<- st_read("D:/2022_DSPG_landuse/ShinyApp/data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+#gl_cnty<- st_read("D:/2022_DSPG_landuse/ShinyApp/data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+#po_cnty<- st_read("D:/2022_DSPG_landuse/ShinyApp/data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 g.soil <- read_sf("D:/2022_DSPG_landuse/Review/Wen/Soil Qual/gooch_soil_merge.shp") %>% select(NirrCpCls, geometry)%>% st_transform("+proj=longlat +datum=WGS84")
 p.soil <- read_sf("D:/2022_DSPG_landuse/Review/Wen/Soil Qual/pow_soil_merge.shp") %>% select(NirrCpCls, geometry)
@@ -40,11 +40,11 @@ luPlotFunction <- function(county) {
   
   # Sets view based on county
   if(county == "Powhatan"){
-    lu.plt <- lu.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10.5) %>% addPolygons(data = po_cnty, stroke = TRUE, weight = 2, opacity = 1, fillOpacity = 0)
+    lu.plt <- lu.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10.5) 
     parcelData <- p.soil
   }
   else{
-    lu.plt <- lu.plt %>% setView(lng=-77.885376, lat=37.73, zoom = 10.5) %>% addPolygons(data = gl_cnty, stroke = TRUE, weight = 2, opacity = 1, fillOpacity = 0)
+    lu.plt <- lu.plt %>% setView(lng=-77.885376, lat=37.73, zoom = 10.5) 
     parcelData <- g.soil
   }
   
