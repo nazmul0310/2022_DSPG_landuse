@@ -1355,8 +1355,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                               This pattern might reflect the urban influence on the county. This pattern might also imply some correlation between parcellation and 
                                               transportation. On the map of crop and land type, those Routes are labeled as “Developed”. High traffic volumes can also be seen along 
                                               those Routes. Hence the correlation between parcellation and those Routes is also a correlation between parcellation and developed areas (traffic volumes). "),
-                                            p("In the southeast, a pattern of denser land with soil quality Capability Class II (a good quality) can be seen. 
-                                            (But the conclusion should also wait for the regression model!)"),
+                                            p("(But the conclusion should also wait for the regression model!)"),
                                    ), 
                                    
                                    
