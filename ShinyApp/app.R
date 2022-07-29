@@ -1631,7 +1631,7 @@ server <- function(input, output){
     else if(input$gooch_lu_year == "2021"){
       return(list(src = "www/luPNGs/Gooch_LU21.png"))    
       }
-  })
+  },deleteFile = FALSE)
   
   output$p.luPNG <- renderSlickR({
     imgs <- paste0("data/luParcelData/luPNGs/Pow_LU", 15:21, ".png")
@@ -1660,7 +1660,7 @@ server <- function(input, output){
     else if(input$pow_lu_year == "2021"){
       return(list(src = "www/luPNGs/Pow_LU21.png"))    
     }
-  })
+  },deleteFile = FALSE)
   
   output$gooch_sankey <- renderHighchart({ 
     hchart(data_to_sankey(g.sankey), "sankey", ) %>%
