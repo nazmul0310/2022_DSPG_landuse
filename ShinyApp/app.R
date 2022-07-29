@@ -566,8 +566,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                               column(4, 
                                                      h4(strong("County Background")),
                                                      p("Goochland County is located in the Piedmont of the Commonwealth of Virginia. It covers 281.42 square miles. This makes Goochland the 71st 
-                                                       county in Virginia. The county is known for its fertile land and mineral deposits. The James River flows through the center of the county which
-                                                       supplied water to farmlands and to mills. Coal was mined in the east and gold in the west. Today, agriculture is still 
+                                                       county in Virginia. The county is known for its fertile land and mineral deposits. The James River flows along the southern border of the county
+                                                       which supplied water to farmlands and to mills. Coal was mined in the east and gold in the west. Today, agriculture is still 
                                                        important to the county economy. Goochland has updated its voting districts in 2022 to better represent the population of all 5 districts [1]. 
                                                        Goochland County also has a vast summer program with plenty of activities. The activities are located all over the county at different facilities 
                                                        including the skate park, gymnasium, the baseball fields, weight room, trails, and many more [2]."),
@@ -586,7 +586,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p("According to the 2017 Agricultural Census, there were approximately 355 farms with an average farm size of 160 acres. This makes the total land coverage of farms to be 56,739 acres. 
                                                      $11,740,000 was generated from agricultural products sold to market. 46% of farms sold less than $2,500, and 3% of farms sold over $100,000. Grains, oilseeds, dry beans, and dry peas were the main crops that 
                                                        were sold ($2,846,000) and milk from cows were the main livestock and poultry products sold ($4,936,000) [1]."),
-                                                     p("1.0% of Goochland’s population moved within the county, 8.4% moved into the county from a different county in VA, .7% moved from a completely different state, and .3% 
+                                                     p("1.0% of Goochland’s population moved within the county, 8.4% moved into the county from a different county in VA, 0.7% moved from a completely different state, and 0.3% 
                                                        moved from abroad [10]."),
                                               ) ,
                                               column(8, 
@@ -609,7 +609,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                               p("The", strong("employment"), "graphs indicates that the education, health, and social services industry group has been the largest by a wide margin, and specifically saw a large 
                                                        increase between 2018 and 2019. The agricultural, forestal, fishing, hunting, and mining industry group has consistently been the smallest, employing less than 5% of 
                                                        the population every year."),
-                                                              p("The" ,strong("income distribution"), "graph illustrates the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied 
+                                                              p("The" ,strong("income distribution"), "graphs illustrate the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied 
                                                        by a decrease in earnings below $75,000. It is also notable that earnings above $100,000 and below $35,000 are the largest categories throughout all years."),
                                                               p("The" ,strong("median earnings"), "graphs highlight the fact that those who have gone through some college or attained an associates degree earn the most. The median earnings for this 
                                                        group were significantly higher than others in 2017 and 2018, but saw a significant decrease to $65,890 in 2019. This number goes back up to $75,313 in 2020; still much lower than the first two years.")),
@@ -649,8 +649,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p("The total population  of Powhatan County is 29,253, split between 51% male (15,188), and 49% female (14,065) [3]. 28,762 identify as one race, where 25,732 are white, 2,505 are African 
                                                        American, 64 are American Indian and Alaska Native, 169 are Asian, 24 are Native Hawaiian and Other Pacific Islander, and 268 are some other race [4]."),
                                                      p("24,715 or 57.3% of the population within Powhatan County is employed. The unemployment rate is 1.4% [5]."),
-                                                     p("Of the 13,938 civilian employed population, there are very few that are employed in agriculture, forestry, fishing, hunting, and mining. Around .94% of the civilian employed 
-                                                       population fall under that category. Of that .94% of the workers, around half of them serve roles in management, business, science, and art occupations while 14.5% of that 
+                                                     p("Of the 13,938 civilian employed population, there are very few that are employed in agriculture, forestry, fishing, hunting, and mining. Around 0.94% of the civilian employed 
+                                                       population fall under that category. Of that 0.94% of the workers, around half of them serve roles in management, business, science, and art occupations while 14.5% of that 
                                                        population work in natural resources, construction, and maintenance occupations [6]."),
                                                      p("Of the 10,392 households, the median income is $93,833 with a margin of error of around 5,342. Approximately 30.2% of the 8,220 family have one earner, while 44.8% have two earners [7]. 
                                                        The greatest proportion (23.4%) of earners in Powhatan make between $100,000 to $149,999 [8]."),
@@ -659,7 +659,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p("According to the 2017 agricultural census, there were approximately 263 farms with an average farm size of 132 acres in 2017. This makes the total land coverage of farms to be 34,585 acres. $11,249,000 was generated from agriultural products sold to market. 
                                                        54% of farms sold less than $2,500, and 13% of farms sold between $25,000 and $24,999. Grains, oilseeds, dry beans, and dry peas were the main crops that were sold ($2,542,000) 
                                                        and poultry and eggs were the main livestock and poultry products sold ($6,056,000) [10]."),
-                                                     p("1.9% of Powhatan’s population moved within the county, 7.4% moved into the county from a different county in VA, .8% moved from a completely different state, and .1% moved from abroad [11]."),
+                                                     p("1.9% of Powhatan’s population moved within the county, 7.4% moved into the county from a different county in VA, 0.8% moved from a completely different state, and 0.1% moved from abroad [11]."),
                                                      
                                               ) ,
                                               column(8, 
@@ -679,7 +679,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                        the second largest, but has faced more inconsistency and has seen a decrease since 2018."),
                                                      p("The", strong("employment"), "graphs indicates that the education, health, and social services industry group has been the largest by a wide margin, and specifically saw a large increase in 2019. The agricultural, forestal,
                                                        fishing, hunting, and mining industry group has consistently been the smallest with the exception of 2018 when the information industry was smaller."),
-                                                     p("The", strong("income distribution"), "graph illustrates the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied by a consistent decrease in earnings below $75,000."),
+                                                     p("The", strong("income distribution"), "graphs illustrate the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied by a consistent decrease in earnings below $75,000."),
                                                      p("The", strong("median earnings"), "graphs highlight the fact that those with a highest educational attainment of Some college/Associates earn the most. The median earnings for this group were significantly higher than others up until 2019, but saw 
                                                        a significant decrease to $66,915 in 2020. This number is nearly identical to the median earnings for those with less than a high school education at $66,716."),
                                               )),
