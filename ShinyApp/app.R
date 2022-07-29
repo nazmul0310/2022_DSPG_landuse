@@ -467,6 +467,16 @@ hotspot.func <- function(county, range){
   hotspot.plt
 }
 
+
+
+
+### slickR function 
+
+slickR.func <- function(images){
+  my.slickR <- slickR(images, width = "100%", height = "500px", slideId = "slickRID") + settings(speed = 0, infinite = FALSE)
+  my.slickR
+}
+
 # ui --------------------------------------------------------------------------------------------------------------------
 
 ui <- navbarPage(title = "DSPG 2022",
@@ -1527,14 +1537,13 @@ server <- function(input, output){
   
   output$g.CropPNG <- renderSlickR({
     imgs <- paste0("data/Cropland/CroplandPngs/goochCrop", c(12, 21), ".png")
-    slickR(obj = imgs, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
-    
+    slickR.func(imgs)
   })
   
   output$p.CropPNG <- renderSlickR({
     imgs <- paste0("data/Cropland/CroplandPngs/powCrop", c(12, 21), ".png")
-    slickR(obj = imgs, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
-  })
+    slickR.func(imgs)
+    })
   
   gcrop <- reactive({
     input$gcrop
@@ -1564,12 +1573,12 @@ server <- function(input, output){
   
   output$g.soilPNG <- renderSlickR({
     img <- "data/Soil_Quality/Goochland.png"
-    slickR(img, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
+    slickR.func(img)
   })
   
   output$p.soilPNG <- renderSlickR({
     img <- "data/Soil_Quality/Powhatan.png"
-    slickR(img, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
+    slickR.func(img)
   })
   
   
@@ -1603,12 +1612,13 @@ server <- function(input, output){
   ### LAND USE ======================================
   output$g.luPNG <- renderSlickR({
     imgs <- paste0("data/luParcelData/luPNGs/Gooch_LU", 18:21, ".png")
-    slickR(imgs, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
+    slickR.func(imgs)
   })
+  
   
   output$p.luPNG <- renderSlickR({
     imgs <- paste0("data/luParcelData/luPNGs/Pow_LU", 15:21, ".png")
-    slickR(imgs, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
+    slickR.func(imgs)
   })
   
   output$gooch_sankey <- renderHighchart({ 
