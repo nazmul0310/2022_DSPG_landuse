@@ -1222,8 +1222,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             value = c(2019, 2022),
                                                                             sep = "", 
                                                                             width = "150%"),
-                                                                leafletOutput("g.parcellationPlot") %>% withSpinner(type = 4, color = "#861F41", size = 1.5)
-                                                                
+                                                                leafletOutput("g.parcellationPlot") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
+                                                                p(tags$small("Data Source: Goochland County Administrative Data")),
                                                          ),
                                                          
                                                 ), 
@@ -1252,8 +1252,10 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             width = "150%",
                                                                             sep = ""),
                                                                 leafletOutput("g.hotspotMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
-                                                                p(tags$small("Data Source: Goochland County Administrative Data"))),
-                                                         
+                                                                p(tags$small("Data Source: Goochland County Administrative Data")),
+                                                                p(),
+                                                                ),
+                                                              
                                                 )
                                               ) 
                                      )), 
@@ -1282,8 +1284,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             value = c(2012, 2020),
                                                                             sep = "", 
                                                                             width = "150%"),
-                                                                leafletOutput("p.parcellationPlot") %>% withSpinner(type = 4, color = "#861F41", size = 1.5)
-                                                                
+                                                                leafletOutput("p.parcellationPlot") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
+                                                                p(tags$small("Data Source: Powhatan County Administrative Data")),
+                                                                p(),
                                                          ),
                                                          
                                                 ), 
@@ -1311,8 +1314,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             width = "150%",
                                                                             sep = ""),
                                                                 leafletOutput("p.hotspotMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
-                                                                p(tags$small("Data Source: Powhatan County Administrative Data"))
-                                                                
+                                                                p(tags$small("Data Source: Powhatan County Administrative Data")),
+                                                                p(),
                                                          ),
                                                          
                                                 )
@@ -1335,7 +1338,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                    fluidRow(style = "margin: 6px;", align = "justify",
                                             h4(strong("Powhatan")),
                                             p("Approximately 84,500 acres of land, about half of the area of Powhatan, were converted to 
-                                              residential-suburban uses during the decade in Powhatan. Parcellation among the agricultural land 
+                                              residential-suburban uses during the decade in Powhatan (including recurrences). Parcellation among agricultural land 
                                               is also noticeable, as 28 parcels (about 5,750 acres) of large agricultural lands have been parcellated
                                               into smaller agricultural plots."),
                                             p("Parcellation is occurring predominantly in the heart of Powhatan County, around the U.S. Routes 60 and 522. 
