@@ -523,11 +523,15 @@ ui <- navbarPage(title = "DSPG 2022",
                                    column(4,
                                           h2(strong("Dashboard Aims")),
                                           p("Our dashboard is aimed at:"),
-                                          p(strong("Powhatan and Goochland County governments."), "Our analyses provide further insights and allow a better understanding about land conversion within each county. 
+                                          p(strong("Goochland and Powhatan County governments."), "Our analyses provide further insights and allow a better understanding about land conversion within each county. 
                                             Our statistical analysis looks at and explains the relationship between land conversion and several factors including soil quality and traffic volume. More information on our statistical analysis
                                             can be found under our Findings and Predictions tab. We hope that our results will inform decision-making regarding land conversion and conservation within the counties."),
                                           p(strong("Researchers working on land use conversion."), "Land conversion is a problem all over the country, not just Goochland and Powhatan counties. Our dashboard can act as an example 
-                                            or template to those researching the topic as well as a starting point for those looking specifically at Goochland and Powhatan.")
+                                            or template to those researching the topic as well as a starting point for those looking specifically at Goochland and Powhatan."),
+                                          br(),
+                                          img(src = "powhatan_crops2.JPG", style = "display: inline; float: left;", width = "500px"),
+                                          
+                                          p(tags$small("Photo courtesy of Rachel Henley, VCE"))
                                    )
                           ),
                           fluidRow(align = "center",
@@ -900,8 +904,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                               tabsetPanel(
                                                 tabPanel("Land Use",
                                                          p("", style = "padding-top:10px;"),
-                                                         column(4,
                                                                 fluidRow(style = "margin: 6px;", align = "justify",
+                                                                         column(4,
                                                                          h4(strong("Land Use in Goochland County")),
                                                                          p("Each parcel of land in Goochland County has an assigned land use. These land uses are: Single Family Urban, Single Family Suburban, 
                                                                   Multi-Family Residential, Commercial & Industrial, Agriculture / Undeveloped (20-99 Acres), Agriculture / Undeveloped (100+ Acres), Other, 
@@ -910,28 +914,33 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   undefined category."),
                                                                          p("Based on the Goochland County map on the right, Agriculture / Undeveloped (20-99 Acres) and Agriculture / Undeveloped (100+ Acres) are the 
                                                                   two biggest land use categories for all years. Single Family Suburban is third biggest in acreage. The map itself doesn’t change a lot but the
-                                                                  number of parcels that change is a lot."), 
-                                                                         h4(strong("Land Use Transition Matrix")),
-                                                                         p("The transition matrix under the map shows the land conversion from 2018-2022 in Goochland County. Based on the matrix the three 
-                                                                           categories that are changing the most are Agriculture / Undeveloped (20-99 Acres), Agriculture / Undeveloped (100+ Acres), and 
-                                                                           Single-Family Urban. The category that had the most parcels added was Single Family Urban. This category gained 220 parcels of 
-                                                                           land. Both Agriculture / Undeveloped (20-99 Acres) and Agriculture / Undeveloped (100+ Acres) lost many parcels of land to different 
-                                                                           land uses. Most of the parcels that changed from both Agriculture / Undeveloped (20-99) and Agriculture / Undeveloped (100+ Acres) 
-                                                                           changed to Single Family Urban.")
-                                                                )), 
+                                                                  number of parcels that change is a lot.") 
+                                                                        
+                                                                ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
                                                                 chooseSliderSkin(skin = "Shiny", color = "#861F41"),
                                                                 
                                                                 slickROutput("g.luPNG", width = "100%", height = "50%"),
-
-                                                                
-                                                                br(),
-                                                                h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
-                                                                
-                                                                highchartOutput("gooch_sankey",height = 600) %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
-                                                                p(tags$small("Data Source: Goochland County Administrative Data")))  ,
-                                                         
+                                                ))  ,
+                                                              fluidRow(style = "margin: 6px;", align = "justify",
+                                                                       column(4,
+                                                                              br(),
+                                                                              h4(strong("Land Use Transition Matrix")),
+                                                                              p("The transition matrix under the map shows the land conversion from 2018-2022 in Goochland County. Based on the matrix the three 
+                                                                           categories that are changing the most are Agriculture / Undeveloped (20-99 Acres), Agriculture / Undeveloped (100+ Acres), and 
+                                                                           Single-Family Urban. The category that had the most parcels added was Single Family Urban. This category gained 220 parcels of 
+                                                                           land. Both Agriculture / Undeveloped (20-99 Acres) and Agriculture / Undeveloped (100+ Acres) lost many parcels of land to different 
+                                                                           land uses. Most of the parcels that changed from both Agriculture / Undeveloped (20-99) and Agriculture / Undeveloped (100+ Acres) 
+                                                                           changed to Single Family Urban."),
+                                                                       ),
+                                                                       column(8,
+                                                                              br(),
+                                                                              h4(strong("Land Use Conversion in Goochland (Counts): 2018-2022")),
+                                                                              
+                                                                              highchartOutput("gooch_sankey",height = 600) %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
+                                                                              p(tags$small("Data Source: Goochland County Administrative Data")))
+                                                                       )
                                                 ), 
                                                 tabPanel("Crop Layer",
                                                          p("", style = "padding-top:10px;"),
@@ -970,15 +979,22 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                          h4(strong("Soil Quality in Goochland County")),
                                                                          p("Good quality soil is essential for crops to produce. Which makes soil quality a factor that could result in land conversion. 
                                                                   The National Cooperative Soil Survey is a survey done to classify soil into classes based on its usefulness. Those classes are: "),
+                                                                         p(strong("Good Agricultural Soil:")),
                                                                          tags$ul(
                                                                            
                                                                            tags$li(strong("Class 1"), "soils have few limitations that restrict their use."),
                                                                            
-                                                                           tags$li(strong("Class 2"), "soils have moderate limitations that reduce the choice of plants or that require moderate conservation practices."),
+                                                                           tags$li(strong("Class 2"), "soils have moderate limitations that reduce the choice of plants or that require moderate conservation practices.")),
+                                                                           
+                                                                           p(strong("Restricted Agricultural Soil:")),
+                                                                         tags$ul(
                                                                            
                                                                            tags$li(strong("Class 3"), "soils have severe limitations that reduce the choice of plants, require special conservation practices, or both."),
                                                                            
-                                                                           tags$li(strong("Class 4"), "soils have very severe limitations that reduce the choice of plants, require very careful management, or both."),
+                                                                           tags$li(strong("Class 4"), "soils have very severe limitations that reduce the choice of plants, require very careful management, or both.")),
+                                                                           
+                                                                           p(strong("Pasture, Rangeland & Wildlife:"),
+                                                                         tags$ul(
                                                                            
                                                                            tags$li(strong("Class 5"), "soils are subject to little or no erosion but have other limitations, impractical to remove, that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
                                                                            
@@ -989,10 +1005,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                            tags$li(strong("Class 8"), "soils and miscellaneous areas have limitations that preclude commercial plant production and that restrict their use to recreational purposes, wildlife habitat, watershed, or esthetic purposes."),
                                                                            
                                                                          ),
-                                                                         p("Most of Goochland County’s soil is in Class 2 or 3. This means that most of the land in Goochland is farmable, but it has limitations that reduce the choice of plants or that require very careful 
-                                                                  management, or both.  On the other end of the spectrum, Goochland has zero acres of land in Class 8. Goochland also has a low number of acres with no data with 5,237 acres. Despite the limitations, 
-                                                                  it still is possible to farm and for Goochland to be mostly agricultural."),
-                                                                )), 
+                                                                         p("The soil quality classes have been aggregated into 3 categories for easier comprehension. Most of Goochland County’s soil is in Class 2 or 3. This means that most of the land in Goochland is farmable, but it has limitations that reduce the choice of plants or that require very careful 
+                                                                         management, or both.  On the other end of the spectrum, Goochland has zero acres of land in Class 8. Goochland also has a low number of acres with no data with 5,237 acres. Despite the limitations, it is still possible to farm and for Goochland to be mostly agricultural."),
+                                                                ))), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
                                                                 slickROutput(outputId = "g.soilPNG", width = "100%", height = "50%"), 
@@ -1033,8 +1048,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                               tabsetPanel(
                                                 tabPanel("Land Use",
                                                          p("", style = "padding-top:10px;"),
-                                                         column(4,
                                                                 fluidRow(style = "margin: 6px;", align = "justify",
+                                                                         column(4,
                                                                          h4(strong("Land Use in Powhatan County")),
                                                                          p("Each parcel of land in Powhatan County has an assigned land use. These land uses are: Single Family Urban, 
                                                                 Single Family Suburban, Multi-Family Residential, Commercial & Industrial, Agriculture / Undeveloped (20-99 Acres), 
@@ -1043,27 +1058,34 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 our data, we also had some parcels with no land use category. Those parcels make up the undefined category."),
                                                                          p("Based on the Powhatan County map on the right, Agriculture / Undeveloped (20-99 Acres) and Agriculture / Undeveloped (100+ Acres) 
                                                                 are the two biggest land use categories for all years. Single Family Suburban is third biggest in acreage. The map itself 
-                                                                doesn’t change a lot but the number of parcels that change is a lot."),
-                                                                         h4(strong("Land Use Transition Matrix")),
-                                                                         p("The transition matrix under the map shows the land conversion from 2012-2022 in Powhatan County. Based on the matrix the three 
-                                                                           categories that are changing the most are Agriculture / Undeveloped (20-99 Acres), Agriculture / Undeveloped (100+ Acres), and 
-                                                                           Single-Family Suburban. The category that had the most parcels added was Single Family Suburban. This category gained 533 parcels
-                                                                           of land. Both Agriculture / Undeveloped (20-99 Acres) and Agriculture / Undeveloped (100+ Acres) lost many parcels of land to 
-                                                                           different land uses. Most of the parcels that changed from both Agriculture / Undeveloped (20-99) and Agriculture / Undeveloped 
-                                                                           (100+ Acres) changed to Single Family Suburban.")
-                                                                )), 
+                                                                doesn’t change a lot but the number of parcels that change is a lot.")
+                                                                         
+                                                                ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
                                                                 
                                                                 slickROutput("p.luPNG", width = "100%", height = "50%"),
                                                                 
-                                                                h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
-                                                                highchartOutput("pow_sankey",height = 600) %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
-                                                                
-                                                                p(tags$small("Data Source: Powhatan County Administrative Data")))  ,
+
                                                          
-                                                         
-                                                ), 
+                                                )), 
+                                                                fluidRow(style = "margin: 6px;", align = "justify",
+                                                                         column(4,
+                                                                                br(),
+                                                                                h4(strong("Land Use Transition Matrix")),
+                                                                                p("The transition matrix under the map shows the land conversion from 2012-2022 in Powhatan County. Based on the matrix the three 
+                                                                           categories that are changing the most are Agriculture / Undeveloped (20-99 Acres), Agriculture / Undeveloped (100+ Acres), and 
+                                                                           Single-Family Suburban. The category that had the most parcels added was Single Family Suburban. This category gained 533 parcels
+                                                                           of land. Both Agriculture / Undeveloped (20-99 Acres) and Agriculture / Undeveloped (100+ Acres) lost many parcels of land to 
+                                                                           different land uses. Most of the parcels that changed from both Agriculture / Undeveloped (20-99) and Agriculture / Undeveloped 
+                                                                           (100+ Acres) changed to Single Family Suburban.")),
+                                                                         column(8,
+                                                                                br(),
+                                                                                h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
+                                                                                highchartOutput("pow_sankey",height = 600) %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
+                                                                                
+                                                                                p(tags$small("Data Source: Powhatan County Administrative Data"))
+                                                                ))),
                                                 tabPanel("Crop Layer",
                                                          p("", style = "padding-top:10px;"),
                                                          column(4,
@@ -1099,28 +1121,35 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                          h4(strong("Soil Quality in Powhatan County")),
                                                                          p("Good quality soil is essential for crops to produce. Which makes soil quality a factor that could result in land conversion. 
                                                                   The National Cooperative Soil Survey is a survey done to classify soil into classes based on its usefulness. Those classes are: "),
+                                                                         p(strong("Good Agricultural Soil:")),
                                                                          tags$ul(
                                                                            
                                                                            tags$li(strong("Class 1"), "soils have few limitations that restrict their use."),
                                                                            
-                                                                           tags$li(strong("Class 2"), "soils have moderate limitations that reduce the choice of plants or that require moderate conservation practices."),
+                                                                           tags$li(strong("Class 2"), "soils have moderate limitations that reduce the choice of plants or that require moderate conservation practices.")),
+                                                                         
+                                                                         p(strong("Restricted Agricultural Soil:")),
+                                                                         tags$ul(
                                                                            
                                                                            tags$li(strong("Class 3"), "soils have severe limitations that reduce the choice of plants, require special conservation practices, or both."),
                                                                            
-                                                                           tags$li(strong("Class 4"), "soils have very severe limitations that reduce the choice of plants, require very careful management, or both."),
-                                                                           
-                                                                           tags$li(strong("Class 5"), "soils are subject to little or no erosion but have other limitations, impractical to remove, that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
-                                                                           
-                                                                           tags$li(strong("Class 6"), "soils have severe limitations that make them generally suitable for cultivation and that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
-                                                                           
-                                                                           tags$li(strong("Class 7"), "soils have very severe limitations that make them unsuitable for cultivation and that restrict their use mainly to grazing, forestland, or wildlife habitat."),
-                                                                           
-                                                                           tags$li(strong("Class 8"), "soils and miscellaneous areas have limitations that preclude commercial plant production and that restrict their use to recreational purposes, wildlife habitat, watershed, or esthetic purposes [1]."),
-                                                                           
-                                                                         ),
-                                                                         p("Powhatan County soil is mostly in Class 2. As mentioned above, Class 2 has moderate limitations so crops can be grown here. Powhatan also has land that is in Class 1. This is the best land
+                                                                           tags$li(strong("Class 4"), "soils have very severe limitations that reduce the choice of plants, require very careful management, or both.")),
+                                                                         
+                                                                         p(strong("Pasture, Rangeland & Wildlife:")),
+                                                                           tags$ul(
+                                                                             
+                                                                             tags$li(strong("Class 5"), "soils are subject to little or no erosion but have other limitations, impractical to remove, that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
+                                                                             
+                                                                             tags$li(strong("Class 6"), "soils have severe limitations that make them generally suitable for cultivation and that restrict their use mainly to pasture, rangeland, forestland, or wildlife habitat."),
+                                                                             
+                                                                             tags$li(strong("Class 7"), "soils have very severe limitations that make them unsuitable for cultivation and that restrict their use mainly to grazing, forestland, or wildlife habitat."),
+                                                                             
+                                                                             tags$li(strong("Class 8"), "soils and miscellaneous areas have limitations that preclude commercial plant production and that restrict their use to recreational purposes, wildlife habitat, watershed, or esthetic purposes."),
+                                                                             
+                                                                           ),
+                                                                         p("Powhatan County soil is mostly in Class 2. As mentioned above, Class 2 is considered good qualy soil so crops can be grown here. Powhatan also has land that is in Class 1. This is the best land
                                                                   in the county, but it only makes up 1,686 acres. Class 4 soil is also prevalent in Powhatan. However, this soil class is unfavorable for farming as it has very severe limitations. The graph 
-                                                                  on the right can be zoomed in on Class 8. This class is the least suitable soil class for any activity. Powhatan has 29 acres in the class. Overall, Powhatan has good farmland and can remain agricultural. "),
+                                                                  on the right can be zoomed in on Class 8. This class is the least suitable soil class for any activity. Powhatan has only 29 acres in the class. Overall, Powhatan has good farmland and can remain agricultural. "),
                                                                 )), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
@@ -1297,13 +1326,11 @@ ui <- navbarPage(title = "DSPG 2022",
                           fluidRow(style = "margin: 6px;",
                                    h1(strong("Project Findings and Predictions"), align = "center"),
                                    p("", style = "padding-top:10px;"),
-                                   p("As counties with rich agricultural histories, Powhatan and Goochland have the phenomenon 
-                                     that large size of agricultural land has been parcellated and converted to other uses. 
-                                     This research uses quantitative tools to understand how some key natural and social factors 
-                                     affect the parcellation and conversion with administrative data and county-level geospatial 
-                                     data. "),
-                                   h4(strong("Powhatan")),
+                                   p("Given the rich agricultural histories of the two counties, we are interested in how 
+                                   agricultural land has changed over the last several years. This research uses quantitative tools to understand how some key natural and social factors 
+                                   affect the parcellation and conversion with administrative data and county-level geospatial data. "),
                                    fluidRow(style = "margin: 6px;", align = "justify",
+                                            h4(strong("Powhatan")),
                                             p("Approximately 84,500 acres of land, about half of the area of Powhatan, were converted to 
                                               residential-suburban uses during the decade in Powhatan. Parcellation among the agricultural land 
                                               is also noticeable, as 28 parcels (about 5,750 acres) of large agricultural lands have been parcellated
@@ -1338,44 +1365,40 @@ ui <- navbarPage(title = "DSPG 2022",
                           fluidRow(style = "margin: 6px;",
                                    h1(strong("Data Sources"), align = "center"),
                                    p("", style = "padding-top:10px;"),
-                                   column(4,
                                           fluidRow(style = "margin: 6px;", align = "justify",
-                                          img(src = "data-acs.png", style = "display: inline; float: left;", width = "180px"),
-                                          p(strong("American Community Survey"), "The American Community Survey (ACS) is an demographics survey conducted by the U.S Census Bureau. The ACS samples households to compile 1-year and 5-year datasets 
+                                                   column(4,
+                                                   img(src = "data-acs.png", style = "display: inline; float: left;", width = "180px"),
+                                                   p(strong("American Community Survey"), "The American Community Survey (ACS) is an demographics survey conducted by the U.S Census Bureau. The ACS samples households to compile 1-year and 5-year datasets 
                                       providing information on social and economic characteristics including employment, education, and income. This project utilizes ACS 2016/2020 5-year
-                                      estimates to obtain county- and census tract-level data to explore Goochland and Powhatan Counties' resident characteristics."),
-                                          br(""),
-                                          img(src = "nass.jpg", style = "display: inline; float: left;", width = "130px"),
-                                          p(strong("USDA National Agricultural Statistics Service"), "The National Agricultural Statistics Service (NASS) under the United States Department of Agriculture (USDA) provides statistics on a wide variety
-                                            of agricultural topics. This project specifically relies on crop layer data to create maps and to conduct a statistical analysis on the probablity of land use conversion.")
-                                          )),
-                                   column(4,
+                                      estimates to obtain county- and census tract-level data to explore Goochland and Powhatan Counties' resident characteristics.")),
+                                                   column(4,
+                                                   img(src = "goochland.jpg", style = "display: inline; float: left;", width = "150px"),
+                                                   p(strong("Goochland County Administrative Data"), "Goochland County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
+                                            that has occured over a 5 year period (2018 - 2022). The team used this data to create visualizations, specifically focusing on the distribution and change in land use in the county.")),
+                                                   column(4,
+                                                   img(src = "powhatan.jpg", style = "display: inline; float: left;", width = "150px"),
+                                                   p(strong("Powhatan County Administrative Data"), "Powhatan County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
+                                            that has occured over a 8 year period (2014 - 2021). The team used this data to create visualizations, specifically focusing on the distribution and change in land use in the county.")),
+                                          ),
+                                          
                                           fluidRow(style = "margin: 6px;", align = "justify",
-                                          p(strong("Goochland County Administrative Data"), "Goochland County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
-                                            that has occured over a 5 year period (2018 - 2022). The team used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
-                                          br(),
-                                          p(),
-                                          br(),
-                                          img(src = "ncss.jpg", style = "display: inline; float: left;", width = "150px"),
+                                                   column(4,
+                                                   img(src = "nass.jpg", style = "display: inline; float: left;", width = "130px"),
+                                                   p(strong("USDA National Agricultural Statistics Service"), "The National Agricultural Statistics Service (NASS) under the United States Department of Agriculture (USDA) provides statistics on a wide variety
+                                                    of agricultural topics. This project specifically relies on crop layer data to create maps and to conduct a statistical analysis on the probablity of land use conversion.")),
+                                                   column(4,
+                                                   img(src = "ncss.jpg", style = "display: inline; float: left;", width = "150px"),
                                           p(strong("USDA National Cooperative Soil Survey"), "The National Cooperative Soil Survey (NCSS) under the USDA provides soil data which was used to generate soil quality maps for both counties. 
-                                            The data was also used for our statistical analysis to predict the occurrence of land use conversion."),
-
-                                   )),
-                                   column(4,
-                                          fluidRow(style = "margin: 6px;", align = "justify",
-                                          img(src = "powhatan.jpg", style = "display: inline; float: left;", width = "150px"),
-                                          p(strong("Powhatan County Administrative Data"), "Powhatan County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
-                                            that has occured over a 8 year period (2014 - 2021). The team used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
-                                          br(""),
+                                            The data was also used for our statistical analysis to predict the occurrence of land use conversion.")),
+                                          column(4,
                                           img(src = "vdot_crop.png", style = "display: inline; float: left;", width = "180px"),
                                           p(strong("VDOT Traffic Data"), "The Virginia Department of Transportation (VDOT) is responsible for building, maintaining and operating the state's roads, bridges and tunnels. VDOT also conducts 
                                           a program where traffic data are gathered from sensors in or along streets and highways and other sources.  This data includes estimates of the average number of vehicles that traveled each segment
-                                          of road and daily vehicle miles traveled for specific groups of facilities and vehicle types are calculated. This project utilizes VDOT data to create traffic volume and commute maps for both counties.")
+                                          of road and daily vehicle miles traveled for specific groups of facilities and vehicle types are calculated. This project utilizes VDOT data to create traffic volume and commute maps for both counties."))
                                    )),
                                    
-                          )
-                 ),
-                 
+                          ),
+
                  
                  ## Tab Team --------------------------------------------
                  tabPanel("Meet the Team", 
