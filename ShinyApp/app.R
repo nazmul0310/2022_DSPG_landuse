@@ -919,9 +919,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
-                                                                chooseSliderSkin(skin = "Shiny", color = "#861F41"),
+                                                                radioButtons(inputId = "gooch_lu_year", label = "Select year: ",
+                                                                             choices = c("2018", "2019", "2020", "2021"),
+                                                                             selected = "2021"),
+                                                                imageOutput("gooch_lu_map", width = "100%", height = "50%"),
                                                                 
-                                                                slickROutput("g.luPNG", width = "100%", height = "50%"),
+                                                                # chooseSliderSkin(skin = "Shiny", color = "#861F41"),
+                                                                # 
+                                                                # slickROutput("g.luPNG", width = "100%", height = "50%"),
                                                 ))  ,
                                                               fluidRow(style = "margin: 6px;", align = "justify",
                                                                        column(4,
@@ -1064,7 +1069,12 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
                                                                 
-                                                                slickROutput("p.luPNG", width = "100%", height = "50%"),
+                                                                radioButtons(inputId = "pow_lu_year", label = "Select year: ",
+                                                                             choices = c("2015", "2016", "2017", "2018", "2019", "2020", "2021"),
+                                                                             selected = "2021"),
+                                                                imageOutput("pow_lu_map", width = "100%", height = "50%"),
+                                                                
+                                                                #slickROutput("p.luPNG", width = "100%", height = "50%"),
                                                                 
 
                                                          
@@ -1604,14 +1614,53 @@ server <- function(input, output){
   })
   
   ### LAND USE ======================================
-  output$g.luPNG <- renderSlickR({
-    imgs <- paste0("data/luParcelData/luPNGs/Gooch_LU", 18:21, ".png")
-    slickR(imgs, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
+  # output$g.luPNG <- renderSlickR({
+  #   imgs <- paste0("data/luParcelData/luPNGs/Gooch_LU", 18:21, ".png")
+  #   slickR(imgs, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
+  # })
+  
+  output$gooch_lu_map <- renderImage({
+    if(input$gooch_lu_year == "2018"){
+    return(list(src = "www/luPNGs/Gooch_LU18.png"))    
+      }
+    else if(input$gooch_lu_year == "2019"){
+      return(list(src = "www/luPNGs/Gooch_LU19.png"))    
+      }
+    else if(input$gooch_lu_year == "2020"){
+      return(list(src = "www/luPNGs/Gooch_LU20.png"))    
+      }
+    else if(input$gooch_lu_year == "2021"){
+      return(list(src = "www/luPNGs/Gooch_LU21.png"))    
+      }
   })
   
   output$p.luPNG <- renderSlickR({
     imgs <- paste0("data/luParcelData/luPNGs/Pow_LU", 15:21, ".png")
     slickR(imgs, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
+  })
+  
+  output$pow_lu_map <- renderImage({
+    if(input$pow_lu_year == "2015"){
+      return(list(src = "www/luPNGs/Pow_LU15.png"))    
+    }
+    else if(input$pow_lu_year == "2016"){
+      return(list(src = "www/luPNGs/Pow_LU16.png"))    
+    }
+    else if(input$pow_lu_year == "2017"){
+      return(list(src = "www/luPNGs/Pow_LU17.png"))    
+    }
+    else if(input$pow_lu_year == "2018"){
+      return(list(src = "www/luPNGs/Pow_LU18.png"))    
+    }
+    else if(input$pow_lu_year == "2019"){
+      return(list(src = "www/luPNGs/Pow_LU19.png"))    
+    }
+    else if(input$pow_lu_year == "2020"){
+      return(list(src = "www/luPNGs/Pow_LU20.png"))    
+    }
+    else if(input$pow_lu_year == "2021"){
+      return(list(src = "www/luPNGs/Pow_LU21.png"))    
+    }
   })
   
   output$gooch_sankey <- renderHighchart({ 
