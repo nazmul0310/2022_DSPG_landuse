@@ -1528,7 +1528,7 @@ server <- function(input, output){
     
   })
   
-  output$p.CropPNG <- renderLeaflet({
+  output$p.CropPNG <- renderSlickR({
     imgs <- paste0("data/Cropland/CroplandPngs/powCrop", c(12, 21), ".png")
     slickR(obj = imgs, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
   })
