@@ -167,14 +167,14 @@ pcon <- st_read("data/Conservation/Powhatan_Natural_Conservation.shp") %>% st_tr
 goochland_con <- leaflet()%>%
   addTiles() %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
-  setView(lng=-78, lat=37.75, zoom=10.48) %>% 
+  setView(lng=-77.9, lat=37.73, zoom=10.48) %>% 
   addPolygons(data=gcon, weight=0, fillOpacity=0.5, fillColor="purple")%>%
   addPolygons(data=gl_cnty, weight=2, color="black", fillOpacity=0, opacity = 1)
 
 powhatan_con <- leaflet()%>%
   addTiles() %>%
   addProviderTiles(providers$CartoDB.Positron)%>%
-  setView(lng=-77.9188, lat=37.5415, zoom=10.495) %>% 
+  setView(lng=-77.9188, lat=37.5415, zoom=10.48) %>% 
   addPolygons(data=pcon[1,], weight=0, fillOpacity = 0.5, fillColor = "#f89540", group = "Priority Conservation Areas")%>%
   addPolygons(data=pcon[2,], weight=0, fillOpacity = 0.5, fillColor = "#b73779", group = "Protected Lands")%>%
   addPolygons(data=pcon[3,], weight=0, fillOpacity = 0.5, fillColor = "#21918c", group = "AFD")%>%
@@ -924,10 +924,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                              selected = "2021"),
                                                                 imageOutput("gooch_lu_map", width = "100%", height = "50%"),
                                                                 
-                                                                # chooseSliderSkin(skin = "Shiny", color = "#861F41"),
-                                                                # 
-                                                                # slickROutput("g.luPNG", width = "100%", height = "50%"),
-                                                ))  ,
+                                                                ))  ,
                                                               fluidRow(style = "margin: 6px;", align = "justify",
                                                                        column(4,
                                                                               br(),
@@ -1015,7 +1012,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 ))), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
-                                                                slickROutput(outputId = "g.soilPNG", width = "100%", height = "50%"), 
+                                                                img(src = "Goochland.png", style = "display: inline; float: left;", width = "100%", height = "50%"),
                                                                 h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("gsoil", height = "500px") %>% withSpinner(type = 4, color = "#CF4420", size = 1.25),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
@@ -1074,8 +1071,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                              selected = "2021"),
                                                                 imageOutput("pow_lu_map", width = "100%", height = "50%"),
                                                                 
-                                                                #slickROutput("p.luPNG", width = "100%", height = "50%"),
-                                                                
+
 
                                                          
                                                 )), 
@@ -1163,7 +1159,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 )), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
-                                                                slickROutput(outputId = "p.soilPNG", width = "100%", height = "50%"),
+                                                                img(src = "Powhatan.png", style = "display: inline; float: left;", width = "100%", height = "50%"),
                                                                 h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("psoil", height = "500px") %>% withSpinner(type = 4, color = "#CF4420", size = 1.25),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
