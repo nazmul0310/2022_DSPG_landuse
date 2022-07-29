@@ -32,6 +32,8 @@ library(highcharter)
 library(sf) #for importing shp file
 library(highcharter) #for transition matrix
 library(htmlwidgets) #for transition matrix
+library(png)
+library(slickR)
 
 options(scipen=999)
 options(shiny.maxRequestSize = 500*1024^2)
@@ -183,82 +185,21 @@ powhatan_con <- leaflet()%>%
     options = layersControlOptions(collapsed = FALSE))
 
 
+## LAND USE =================================================
+
+
 ### LAND USE =================================================
 
-GoochlandAllParcel <- read_sf("data/luParcelData/GoochAll.shp")
-names(GoochlandAllParcel) <- c("FIN_MLUSE", "year", "geometry")
-PowhatanAllParcel <- read_sf("data/luParcelData/PowAll.shp")
+# this will be where we import the png's for land use
 
-luPlotFunction <- function(inputYear, county) {
+# g.lu18.png <- readPNG("data/luParcelData/luPNGs/Gooch_LU18.png")
+# g.lu19.png <- readPNG("data/luParcelData/luPNGs/Gooch_LU19.png")
+# g.lu20.png <- readPNG("data/luParcelData/luPNGs/Gooch_LU20.png")
+# g.lu21.png <- readPNG("data/luParcelData/luPNGs/Gooch_LU21.png")
 
-  lu.plt <- leaflet() %>%
-    addTiles() %>%
-    addProviderTiles(providers$CartoDB.Positron)
 
-  # Sets view based on county
-  if(county == "Powhatan"){
-    lu.plt <- lu.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10) %>% addPolygons(data = po_cnty, fillOpacity = 0)
-    parcelData <- PowhatanAllParcel %>% filter(year == inputYear)
-  }
-  else{
-    lu.plt <- lu.plt %>% setView(lng=-77.885376, lat=37.684143, zoom = 10) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
-    parcelData <- GoochlandAllParcel %>% filter(year == inputYear)
-  }
 
-  LUC_values <- c("Single Family Residential Urban",
-                  "Single Family Residential Suburban",
-                  "Multi-Family Residential",
-                  "Commerical / Industrial",
-                  "Agricultural / Undeveloped (20-99 Acres)",
-                  "Agricultural / Undeveloped (100+ Acres)",
-                  "Other",
-                  "Undefined")
 
-  LUC_values <- factor(LUC_values, levels = LUC_values)
-
-  mypalette <- colorBin(palette = "viridis", as.numeric(LUC_values), bins = 8)
-  colors <- mypalette(unclass(LUC_values))
-  colors[8] <- "#4D4D4D" # undefined gets a grayed out color
-  legendpalette <- colorFactor(palette = colors,levels=LUC_values)
-
-  lu.plt <- leaflet() %>%
-    addTiles() %>%
-    addProviderTiles(providers$CartoDB.Positron) %>%
-    addPolygons(data = parcelData %>% filter(FIN_MLUSE == "Single Family Residential Urban"),
-                fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Single Family Urban") %>%
-    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Single Family Residential Suburban"),
-                fillColor = colors[2], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Single Family Suburban") %>%
-    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Multi-Family Residential"),
-                fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Multi-Family Residential") %>%
-    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Commerical / Industrial") ,
-                fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Commercial & Industrial") %>%
-    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Agricultural / Undeveloped (20-99 Acres)"),
-                fillColor = colors[5], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Agriculture/Undeveloped (20-99 Acres)") %>%
-    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Agricultural / Undeveloped (100+ Acres)") ,
-                fillColor = colors[6], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Agriculture/Undeveloped (100+ Acres)") %>%
-    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Other"),
-                fillColor = colors[7], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Other") %>%
-    addPolygons(data=parcelData %>% filter(FIN_MLUSE == "Undefined") ,
-                fillColor = colors[8], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
-                group = "Undefined") %>%
-    addLayersControl(
-      overlayGroups = c("Single Family Urban", "Single Family Suburban", "Multi-Family Residential", "Commercial & Industrial", "Agriculture/Undeveloped (20-99 Acres)", "Agriculture/Undeveloped (100+ Acres)", "Other", "Undefined"),
-      position = "bottomleft",
-      options = layersControlOptions(collapsed = FALSE)) %>%
-    addLegend(data=parcelData, "bottomright",
-              pal = legendpalette, values = LUC_values,
-              title = "Land Use Type",
-              labFormat = labelFormat(),
-              opacity = 1)
-  lu.plt
-}
 
 #transition matrix
 agLabels <- c("Agricultural / Undeveloped (20-99 Acres) (before)", "Agricultural / Undeveloped (100+ Acres) (before)")
@@ -1003,12 +944,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
                                                                 chooseSliderSkin(skin = "Shiny", color = "#861F41"),
-                                                                sliderInput(inputId = "luYear.g", label = "Year:",
-                                                                            min = 2018, max = 2021, value = 2021,
-                                                                            sep = "", width = "150%"),
-
-
-                                                                leafletOutput(outputId = "luPlot.g") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
+                                                                
+                                                                slickROutput("g.luPNG", width = "100%", height = "50%"),
 
                                                                 
                                                                 br(),
@@ -1141,13 +1078,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 )), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
-                                                                sliderInput(inputId = "luYear.p", label = "Year:",
-                                                                            min = 2015, max = 2021, value = 2021,
-                                                                            sep = "", width = "150%"),
-
-
-                                                                leafletOutput(outputId = "luPlot.p") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
-
+                                                                
+                                                                slickROutput("p.luPNG", width = "100%", height = "50%"),
+                                                                
                                                                 h4(strong("Land Use Conversion in Powhatan (Counts): 2012-2021")),
                                                                 highchartOutput("pow_sankey",height = 600) %>% withSpinner(type = 4, color = "#861F41", size = 1.25),
                                                                 
@@ -1444,7 +1377,6 @@ ui <- navbarPage(title = "DSPG 2022",
                                           )),
                                    column(4,
                                           fluidRow(style = "margin: 6px;", align = "justify",
-                                          img(src = "goochland.jpg", style = "display: inline; float: left;", width = "150px"),
                                           p(strong("Goochland County Administrative Data"), "Goochland County provided us with parcel/property data which allowed us to gain a better understanding of the different land uses and parcellation
                                             that has occured over a 5 year period (2018 - 2022). The team used this data to create visualizations, specifically focusing on the distribution and change in land use in the county."),
                                           br(),
@@ -1753,13 +1685,14 @@ server <- function(input, output){
   })
   
   ### LAND USE ======================================
-  output$luPlot.g <- renderLeaflet({
-    luPlotFunction(input$luYear.g, "Goochland")
-  }) %>% bindCache(input$luYear.g) #will it be faster?
-
-  output$luPlot.p <- renderLeaflet({
-    luPlotFunction(input$luYear.p, "Powhatan")
-
+  output$g.luPNG <- renderSlickR({
+    imgs <- paste0("data/luParcelData/luPNGs/Gooch_LU", 18:21, ".png")
+    slickR(imgs, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
+  })
+  
+  output$p.luPNG <- renderSlickR({
+    imgs <- paste0("data/luParcelData/luPNGs/Pow_LU", 15:21, ".png")
+    slickR(imgs, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
   })
   
   output$gooch_sankey <- renderHighchart({ 
