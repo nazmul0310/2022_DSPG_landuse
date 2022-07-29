@@ -190,16 +190,6 @@ powhatan_con <- leaflet()%>%
 
 ### LAND USE =================================================
 
-# this will be where we import the png's for land use
-
-# g.lu18.png <- readPNG("data/luParcelData/luPNGs/Gooch_LU18.png")
-# g.lu19.png <- readPNG("data/luParcelData/luPNGs/Gooch_LU19.png")
-# g.lu20.png <- readPNG("data/luParcelData/luPNGs/Gooch_LU20.png")
-# g.lu21.png <- readPNG("data/luParcelData/luPNGs/Gooch_LU21.png")
-
-
-
-
 
 #transition matrix
 agLabels <- c("Agricultural / Undeveloped (20-99 Acres) (before)", "Agricultural / Undeveloped (100+ Acres) (before)")
@@ -285,9 +275,6 @@ cropPlot.func <- function(county, year){
 
 ### SOIL QUALITY =================================================
 
-g.soilData <- read_sf("data/Soil_Quality/Goochland/Goochland_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-p.soilData <- read_sf("data/Soil_Quality/Powhatan/Powhatan_soil.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-
 soilClass <- c("Capability Class-I","Capability Class-II","Capability Class-III","Capability Class-IV",
                "Capability Class-V","Capability Class-VI","Capability Class-VII","Capability Class-VIII",
                "NODATA")
@@ -358,13 +345,6 @@ trafficVol.func <- function(county){
               colors = c("green", "yellow", "orange", "red", "maroon"))
   trafficVol.plt
 }
-
-
-g.cropMap12 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-g.cropMap21 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-
-p.cropMap12 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-p.cropMap21 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 pow.travelTimes <- st_read("data/travelTimes/Powhatan_Travel_Time/Powhatan_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 gooch.travelTimes <- st_read("data/travelTimes/Goochland_Travel_Time/Goochland_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
@@ -978,11 +958,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 )), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
-                                                                radioButtons(inputId = "g.cropYear", label = "Select Year: ", 
-                                                                             choices = c("2012", "2021"), 
-                                                                             selected = "2021"),
                                                                 
-                                                                leafletOutput("g.cropMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
+                                                                slickROutput("g.CropPNG", width = "100%", height = "50%"),
+                                                                
                                                                 br(),
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 selectInput("gcrop", "Select Variable:", width = "100%", choices = c(
@@ -1032,7 +1010,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 ))), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
-                                                                leafletOutput("g.soilMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5), 
+                                                                slickROutput(outputId = "g.soilPNG", width = "100%", height = "50%"), 
                                                                 h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("gsoil", height = "500px") %>% withSpinner(type = 4, color = "#CF4420", size = 1.25),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
@@ -1122,10 +1100,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 )), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
-                                                                radioButtons(inputId = "p.cropYear", label = "Select Year: ", 
-                                                                             choices = c("2012", "2021"), 
-                                                                             selected = "2021"),
-                                                                leafletOutput("p.cropMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),                                                                
+                                                                slickROutput("p.CropPNG", width = "100%", height = "50%"),
+                                                                
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 
                                                                 
@@ -1177,7 +1153,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 )), 
                                                          column(8, 
                                                                 h4(strong("Soil Quality Map")),
-                                                                leafletOutput("p.soilMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
+                                                                slickROutput(outputId = "p.soilPNG", width = "100%", height = "50%"),
                                                                 h4(strong("Soil Quality Graph")),
                                                                 plotlyOutput("psoil", height = "500px") %>% withSpinner(type = 4, color = "#CF4420", size = 1.25),
                                                                 p(tags$small("Data Source: National Cooperative Soil Survey"))),
@@ -1549,75 +1525,15 @@ server <- function(input, output){
   
   ### CROP LAYERS ================================================
   
-  output$g.cropMap <- renderLeaflet({
-    my.crop.plt<- leaflet()%>%
-      addTiles() %>%
-      addProviderTiles(providers$CartoDB.Positron) %>%
-      addPolygons(data = gl_cnty, fillColor = "transparent") %>% 
-      setView(lng=-77.9, lat=37.73, zoom = 10)
-    
-    
-    
-    if(input$g.cropYear == 2012){
-      for (i in 1:11){
-        my.crop.plt <- addPolygons(my.crop.plt,data=g.cropMap12 %>% filter(g.cropMap12$New_Label==gcrop_values[i]), 
-                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i])
-      }
-      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = gcrop_legendpalette, values = gcrop_values,
-                                               title = "Crop Layer Land Type",
-                                               labFormat = labelFormat(),
-                                               opacity = 1,
-                                               data=g.cropMap12)
-    }
-    
-    # Adds crop layer 2021
-    else {
-      gcrop_colors <- gcrop_colors[-9]
-      for (i in 1:10){
-        my.crop.plt <- addPolygons(my.crop.plt, data = g.cropMap21%>% filter(g.cropMap21$New_Label==gcrop_values21[i]),
-                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i])
-      }
-      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = gcrop_legendpalette21, values = gcrop_values21,
-                                               title = "Crop Layer Land Type",
-                                               labFormat = labelFormat(),
-                                               opacity = 1,
-                                               data=g.cropMap21)
-    }
-    
+  output$g.CropPNG <- renderSlickR({
+    imgs <- paste0("data/Cropland/CroplandPngs/goochCrop", c(12, 21), ".png")
+    slickR(obj = imgs, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
     
   })
   
-  output$p.cropMap <- renderLeaflet({
-    my.crop.plt<- leaflet()%>%
-      addTiles() %>%
-      addProviderTiles(providers$CartoDB.Positron) %>%
-      addPolygons(data = po_cnty, fillColor = "transparent") %>% 
-      setView(lng=-77.9188, lat=37.5415 , zoom=10)
-    
-    if(input$p.cropYear == 2012){
-      for (i in 1:11){
-        my.crop.plt <- addPolygons(my.crop.plt,data=p.cropMap12 %>% filter(p.cropMap12$New.Label==pcrop_values[i]), 
-                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i]) #color keeps the same with Gooch
-      }
-      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = pcrop_legendpalette, values = pcrop_values,
-                                               title = "Crop Layer Land Type",
-                                               labFormat = labelFormat(),
-                                               opacity = 1,
-                                               data=p.cropMap12)
-    }
-    # Adds crop layer 2021
-    else {
-      for (i in 1:11){
-        my.crop.plt <- addPolygons(my.crop.plt,data=p.cropMap21 %>% filter(p.cropMap21$Comb_Class==pcrop_values[i]), 
-                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i]) #color keeps the same with Gooch
-      }
-      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = pcrop_legendpalette, values = pcrop_values,
-                                               title = "Crop Layer Land Type",
-                                               labFormat = labelFormat(),
-                                               opacity = 1,
-                                               data=p.cropMap21)
-      
-    }
+  output$p.CropPNG <- renderLeaflet({
+    imgs <- paste0("data/Cropland/CroplandPngs/powCrop", c(12, 21), ".png")
+    slickR(obj = imgs, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
   })
   
   gcrop <- reactive({
@@ -1646,38 +1562,14 @@ server <- function(input, output){
     }
   })
   
-  output$g.soilMap <- renderLeaflet({
-    g.map <- leaflet() %>% 
-      addTiles() %>% 
-      addProviderTiles(providers$CartoDB.Positron) %>%
-      setView(lng=-77.9, lat=37.73, zoom=10.48) 
-    
-    for (i in 2:7){
-      g.map <- addPolygons(g.map, data=g.soilData %>% filter(NirrCpCls==i), smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = soilColors[i])
-    }
-    g.map <-g.map %>% addLegend("bottomright", pal = g.soilLegend, values = soilClass[-c(1,8)],
-                                title = "Soil Quality Class",
-                                labFormat = labelFormat(),
-                                opacity = 1,
-                                data=g.soilData) 
-    
+  output$g.soilPNG <- renderSlickR({
+    img <- "data/Soil_Quality/Goochland.png"
+    slickR(img, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
   })
   
-  output$p.soilMap <- renderLeaflet({
-    p.map <- leaflet() %>% 
-      addTiles() %>% 
-      addProviderTiles(providers$CartoDB.Positron) %>%
-      setView(lng=-77.9188, lat=37.5415 , zoom=10) 
-    
-    for (i in 1:8){
-      p.map <- addPolygons(p.map, data=p.soilData %>% filter(NirrCpCls==i), smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = soilColors[i])
-    }
-    p.map <-p.map %>% addLegend("bottomright", pal = soilLegend, values = soilClass,
-                                title = "Soil Quality Class",
-                                labFormat = labelFormat(),
-                                opacity = 1,
-                                data=p.soilData) 
-    
+  output$p.soilPNG <- renderSlickR({
+    img <- "data/Soil_Quality/Powhatan.png"
+    slickR(img, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
   })
   
   
