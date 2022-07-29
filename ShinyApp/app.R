@@ -932,8 +932,6 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   two biggest land use categories for all years. Single Family Suburban is third biggest in acreage. The map itself doesn’t change a lot but the
                                                                   number of parcels that change is a lot."), 
                                                                          h4(strong("Land Use Transition Matrix")),
-                                                                         p(),
-                                                                         p(),
                                                                          p("The transition matrix under the map shows the land conversion from 2018-2022 in Goochland County. Based on the matrix the three 
                                                                            categories that are changing the most are Agriculture / Undeveloped (20-99 Acres), Agriculture / Undeveloped (100+ Acres), and 
                                                                            Single-Family Urban. The category that had the most parcels added was Single Family Urban. This category gained 220 parcels of 
