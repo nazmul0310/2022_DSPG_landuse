@@ -929,9 +929,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 ), 
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
-                                                                chooseSliderSkin(skin = "Shiny", color = "#861F41"),
+                                                                radioButtons(inputId = "gooch_lu_year", label = "Select year: ",
+                                                                             choices = c("2018", "2019", "2020", "2021"),
+                                                                             selected = "2021"),
+                                                                imageOutput("gooch_lu_map", width = "300px", height = "600px"),
                                                                 
-                                                                slickROutput("g.luPNG", width = "100%", height = "50%"),
+                                                                # chooseSliderSkin(skin = "Shiny", color = "#861F41"),
+                                                                # 
+                                                                # slickROutput("g.luPNG", width = "100%", height = "50%"),
                                                 ))  ,
                                                               fluidRow(style = "margin: 6px;", align = "justify",
                                                                        column(4,
@@ -969,7 +974,12 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
                                                                 
-                                                                slickROutput("g.CropPNG", width = "100%", height = "50%"),
+                                                                radioButtons(inputId = "gooch_crop", label = "Select year: ",
+                                                                             choices = c("2012", "2021"),
+                                                                             selected = "2021"),
+                                                                imageOutput("gooch_crop_img"),
+                                                                
+                                                                #slickROutput("g.CropPNG", width = "100%", height = "50%"),
                                                                 
                                                                 br(),
                                                                 h4(strong("Crop Layer Graphs")),
@@ -1074,7 +1084,12 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(8, 
                                                                 h4(strong("Land Use Distribution and Change by Year")),
                                                                 
-                                                                slickROutput("p.luPNG", width = "100%", height = "50%"),
+                                                                radioButtons(inputId = "pow_lu_year", label = "Select year: ",
+                                                                             choices = c("2015", "2016", "2017", "2018", "2019", "2020", "2021"),
+                                                                             selected = "2021"),
+                                                                imageOutput("pow_lu_map", width = "100%", height = "50%"),
+                                                                
+                                                                #slickROutput("p.luPNG", width = "100%", height = "50%"),
                                                                 
 
                                                          
@@ -1110,7 +1125,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 )), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
-                                                                slickROutput("p.CropPNG", width = "100%", height = "50%"),
+                                                                
+                                                                radioButtons(inputId = "pow_crop", label = "Select year: ",
+                                                                             choices = c("2012", "2021"),
+                                                                             selected = "2021"),
+                                                                imageOutput("pow_crop_img", width = "50%", height = "50%"),
+                                                                
+                                                                
+                                                                #slickROutput("p.CropPNG", width = "100%", height = "50%"),
                                                                 
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 
@@ -1232,8 +1254,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             value = c(2019, 2022),
                                                                             sep = "", 
                                                                             width = "150%"),
-                                                                leafletOutput("g.parcellationPlot") %>% withSpinner(type = 4, color = "#861F41", size = 1.5)
-                                                                
+                                                                leafletOutput("g.parcellationPlot") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
+                                                                p(tags$small("Data Source: Goochland County Administrative Data")),
                                                          ),
                                                          
                                                 ), 
@@ -1262,8 +1284,10 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             width = "150%",
                                                                             sep = ""),
                                                                 leafletOutput("g.hotspotMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
-                                                                p(tags$small("Data Source: Goochland County Administrative Data"))),
-                                                         
+                                                                p(tags$small("Data Source: Goochland County Administrative Data")),
+                                                                p(),
+                                                                ),
+                                                              
                                                 )
                                               ) 
                                      )), 
@@ -1292,8 +1316,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             value = c(2012, 2020),
                                                                             sep = "", 
                                                                             width = "150%"),
-                                                                leafletOutput("p.parcellationPlot") %>% withSpinner(type = 4, color = "#861F41", size = 1.5)
-                                                                
+                                                                leafletOutput("p.parcellationPlot") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
+                                                                p(tags$small("Data Source: Powhatan County Administrative Data")),
+                                                                p(),
                                                          ),
                                                          
                                                 ), 
@@ -1321,8 +1346,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                             width = "150%",
                                                                             sep = ""),
                                                                 leafletOutput("p.hotspotMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
-                                                                p(tags$small("Data Source: Powhatan County Administrative Data"))
-                                                                
+                                                                p(tags$small("Data Source: Powhatan County Administrative Data")),
+                                                                p(),
                                                          ),
                                                          
                                                 )
@@ -1345,7 +1370,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                    fluidRow(style = "margin: 6px;", align = "justify",
                                             h4(strong("Powhatan")),
                                             p("Approximately 84,500 acres of land, about half of the area of Powhatan, were converted to 
-                                              residential-suburban uses during the decade in Powhatan. Parcellation among the agricultural land 
+                                              residential-suburban uses during the decade in Powhatan (including recurrences). Parcellation among agricultural land 
                                               is also noticeable, as 28 parcels (about 5,750 acres) of large agricultural lands have been parcellated
                                               into smaller agricultural plots."),
                                             p("Parcellation is occurring predominantly in the heart of Powhatan County, around the U.S. Routes 60 and 522. 
@@ -1365,8 +1390,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                               This pattern might reflect the urban influence on the county. This pattern might also imply some correlation between parcellation and 
                                               transportation. On the map of crop and land type, those Routes are labeled as “Developed”. High traffic volumes can also be seen along 
                                               those Routes. Hence the correlation between parcellation and those Routes is also a correlation between parcellation and developed areas (traffic volumes). "),
-                                            p("In the southeast, a pattern of denser land with soil quality Capability Class II (a good quality) can be seen. 
-                                            (But the conclusion should also wait for the regression model!)"),
+                                            p("(But the conclusion should also wait for the regression model!)"),
                                    ), 
                                    
                                    
@@ -1535,15 +1559,25 @@ server <- function(input, output){
   
   ### CROP LAYERS ================================================
   
-  output$g.CropPNG <- renderSlickR({
-    imgs <- paste0("data/Cropland/CroplandPngs/goochCrop", c(12, 21), ".png")
-    slickR.func(imgs)
+  output$gooch_crop_img <- renderImage({
+    if(input$gooch_crop == "2012"){
+      return(list(src = "www/CroplandPngs/goochCrop12.png"))    
+    }
+    else{
+      return(list(src = "www/CroplandPngs/goochCrop21.png"))    
+    }
   })
   
-  output$p.CropPNG <- renderSlickR({
-    imgs <- paste0("data/Cropland/CroplandPngs/powCrop", c(12, 21), ".png")
-    slickR.func(imgs)
-    })
+  
+  output$pow_crop_img <- renderImage({
+    if(input$pow_crop == "2012"){
+      return(list(src = "www/CroplandPngs/powCrop12.png", width = "100%", height = "75%"))    
+    }
+    else{
+      return(list(src = "www/CroplandPngs/powCrop21.png", width = "100%", height = "75%"))    
+    }
+  })
+  
   
   gcrop <- reactive({
     input$gcrop
@@ -1610,15 +1644,55 @@ server <- function(input, output){
   })
   
   ### LAND USE ======================================
-  output$g.luPNG <- renderSlickR({
-    imgs <- paste0("data/luParcelData/luPNGs/Gooch_LU", 18:21, ".png")
-    slickR.func(imgs)
+  
+  # output$g.luPNG <- renderSlickR({
+  #   imgs <- paste0("data/luParcelData/luPNGs/Gooch_LU", 18:21, ".png")
+  #   slickR(imgs, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
+  # })
+  
+  output$gooch_lu_map <- renderImage({
+    if(input$gooch_lu_year == "2018"){
+    return(list(src = "www/luPNGs/Gooch_LU18.png", width = "270%", height = "100%"))    
+      }
+    else if(input$gooch_lu_year == "2019"){
+      return(list(src = "www/luPNGs/Gooch_LU19.png", width = "270%", height = "100%"))    
+      }
+    else if(input$gooch_lu_year == "2020"){
+      return(list(src = "www/luPNGs/Gooch_LU20.png", width = "270%", height = "100%"))    
+      }
+    else{
+      return(list(src = "www/luPNGs/Gooch_LU21.png", width = "270%", height = "100%"))    
+      }
   })
   
   
   output$p.luPNG <- renderSlickR({
     imgs <- paste0("data/luParcelData/luPNGs/Pow_LU", 15:21, ".png")
     slickR.func(imgs)
+  })
+  
+  output$pow_lu_map <- renderImage({
+    if(input$pow_lu_year == "2015"){
+      return(list(src = "www/luPNGs/Pow_LU15.png", width = "100%", height = "75%"))    
+    }
+    else if(input$pow_lu_year == "2016"){
+      return(list(src = "www/luPNGs/Pow_LU16.png", width = "100%", height = "75%"))    
+    }
+    else if(input$pow_lu_year == "2017"){
+      return(list(src = "www/luPNGs/Pow_LU17.png", width = "100%", height = "75%"))    
+    }
+    else if(input$pow_lu_year == "2018"){
+      return(list(src = "www/luPNGs/Pow_LU18.png", width = "100%", height = "75%"))    
+    }
+    else if(input$pow_lu_year == "2019"){
+      return(list(src = "www/luPNGs/Pow_LU19.png", width = "100%", height = "75%"))    
+    }
+    else if(input$pow_lu_year == "2020"){
+      return(list(src = "www/luPNGs/Pow_LU20.png", width = "100%", height = "75%"))    
+    }
+    else if(input$pow_lu_year == "2021"){
+      return(list(src = "www/luPNGs/Pow_LU21.png", width = "100%", height = "75%"))    
+    }
   })
   
   output$gooch_sankey <- renderHighchart({ 
