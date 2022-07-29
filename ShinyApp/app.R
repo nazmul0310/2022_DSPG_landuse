@@ -968,11 +968,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 )), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
-                                                                radioButtons(inputId = "g.cropYear", label = "Select Year: ", 
-                                                                             choices = c("2012", "2021"), 
-                                                                             selected = "2021"),
                                                                 
-                                                                leafletOutput("g.cropMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
+                                                                slickROutput("g.CropPNG", width = "100%", height = "50%"),
+                                                                
                                                                 br(),
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 selectInput("gcrop", "Select Variable:", width = "100%", choices = c(
@@ -1099,10 +1097,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 )), 
                                                          column(8, 
                                                                 h4(strong("Crop Layer Map")),
-                                                                radioButtons(inputId = "p.cropYear", label = "Select Year: ", 
-                                                                             choices = c("2012", "2021"), 
-                                                                             selected = "2021"),
-                                                                leafletOutput("p.cropMap") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),                                                                
+                                                                slickROutput("p.CropPNG", width = "100%", height = "50%"),
+                                                                
                                                                 h4(strong("Crop Layer Graphs")),
                                                                 
                                                                 
@@ -1522,75 +1518,15 @@ server <- function(input, output){
   
   ### CROP LAYERS ================================================
   
-  output$g.cropMap <- renderLeaflet({
-    my.crop.plt<- leaflet()%>%
-      addTiles() %>%
-      addProviderTiles(providers$CartoDB.Positron) %>%
-      addPolygons(data = gl_cnty, fillColor = "transparent") %>% 
-      setView(lng=-77.9, lat=37.73, zoom = 10)
-    
-    
-    
-    if(input$g.cropYear == 2012){
-      for (i in 1:11){
-        my.crop.plt <- addPolygons(my.crop.plt,data=g.cropMap12 %>% filter(g.cropMap12$New_Label==gcrop_values[i]), 
-                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i])
-      }
-      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = gcrop_legendpalette, values = gcrop_values,
-                                               title = "Crop Layer Land Type",
-                                               labFormat = labelFormat(),
-                                               opacity = 1,
-                                               data=g.cropMap12)
-    }
-    
-    # Adds crop layer 2021
-    else {
-      gcrop_colors <- gcrop_colors[-9]
-      for (i in 1:10){
-        my.crop.plt <- addPolygons(my.crop.plt, data = g.cropMap21%>% filter(g.cropMap21$New_Label==gcrop_values21[i]),
-                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i])
-      }
-      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = gcrop_legendpalette21, values = gcrop_values21,
-                                               title = "Crop Layer Land Type",
-                                               labFormat = labelFormat(),
-                                               opacity = 1,
-                                               data=g.cropMap21)
-    }
-    
+  output$g.CropPNG <- renderSlickR({
+    imgs <- paste0("data/Cropland/CroplandPngs/goochCrop", c(12, 21), ".png")
+    slickR(imgs, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
     
   })
   
-  output$p.cropMap <- renderLeaflet({
-    my.crop.plt<- leaflet()%>%
-      addTiles() %>%
-      addProviderTiles(providers$CartoDB.Positron) %>%
-      addPolygons(data = po_cnty, fillColor = "transparent") %>% 
-      setView(lng=-77.9188, lat=37.5415 , zoom=10)
-    
-    if(input$p.cropYear == 2012){
-      for (i in 1:11){
-        my.crop.plt <- addPolygons(my.crop.plt,data=p.cropMap12 %>% filter(p.cropMap12$New.Label==pcrop_values[i]), 
-                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i]) #color keeps the same with Gooch
-      }
-      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = pcrop_legendpalette, values = pcrop_values,
-                                               title = "Crop Layer Land Type",
-                                               labFormat = labelFormat(),
-                                               opacity = 1,
-                                               data=p.cropMap12)
-    }
-    # Adds crop layer 2021
-    else {
-      for (i in 1:11){
-        my.crop.plt <- addPolygons(my.crop.plt,data=p.cropMap21 %>% filter(p.cropMap21$Comb_Class==pcrop_values[i]), 
-                                   smoothFactor = 0.1, fillOpacity = 1, stroke = FALSE, color = gcrop_colors[i]) #color keeps the same with Gooch
-      }
-      my.crop.plt  <- my.crop.plt%>% addLegend("bottomright", pal = pcrop_legendpalette, values = pcrop_values,
-                                               title = "Crop Layer Land Type",
-                                               labFormat = labelFormat(),
-                                               opacity = 1,
-                                               data=p.cropMap21)
-      
-    }
+  output$p.CropPNG <- renderLeaflet({
+    imgs <- paste0("data/Cropland/CroplandPngs/powCrop", c(12, 21), ".png")
+    slickR(imgs, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
   })
   
   gcrop <- reactive({
