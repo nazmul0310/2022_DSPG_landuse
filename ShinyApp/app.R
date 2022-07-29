@@ -1228,12 +1228,14 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(4, 
                                                                 fluidRow(style = "margin: 6px;", align = "justify",
                                                                          h4(strong("Land Parcels in Goochland County")),
-                                                                         p("Drag the slider on the right to select the year range of interest. Solid red represents new split parcels in the selected latest year. Lighter red represents new split parcels of the years before the selected latest year."), 
-                                                                         p("New parcels spread across Goochland in 2019-2022. Meanwhile, there are always new parcels in the southeastern region which is close to Richmond. It implies 
-                                                                that metropolis might have some impacts on the parcellation. It is seeming that the northwestern has more parcels generated. In fact, the southeastern has 
-                                                                generated new parcels more frequently according to the hotspot maps. It is because new parcels in the southeast are smaller and lots of the new parcels are 
-                                                                single-family housing. While new parcels in the northwest are larger. Besides, parcellation happened less frequently along the James River. The map of land uses over the years shows 
-                                                                that most of the land along the James River is large-size agricultural / undeveloped land.")
+                                                                         p("The dark red layer represents land that was parcellated during the most recent year selected. The lighter pink layer represent land that parcellated during 
+                                                                           all previous years selected. If the years 2012 and 2020 are selected, the dark layer would show 2020 parcellations and the light pink layer would show parcellation between 2012 and 2019."), 
+                                                                         
+                                                                         p("New parcels spread across Goochland in 2019-2022. Meanwhile, there are always new parcels in the southeastern region closer to Richmond. This implies 
+                                                                that close proximity to a metropolitan area might have some impact on parcellation. It seems that the northwestern region has more parcels generated. In fact, the southeastern region has 
+                                                                generated new parcels more frequently according to the hotspot maps. This is because new parcels in the southeast are smaller and many of the new parcels are 
+                                                                single-family housing while new parcels in the northwest are larger. Parcellation is also occurring less frequently along the James River. The map of land uses over the years shows 
+                                                                that most of the land along the James River is large, agricultural / undeveloped land.")
                                                                 )), 
                                                          column(8, 
                                                                 h4(strong("Land Parcellation Map")),
@@ -1255,9 +1257,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(4,
                                                                 fluidRow(style = "margin: 6px;", align = "justify",
                                                                          h4(strong("Parcellation Hot Spots in Goochland County")),
-                                                                         p("There are new parcels split from their mother parcels every year in Goochland. The hot spot map shows the area where parcellation happens the most frequently with red polygons. 
-                                                                After selecting the year range via the slider, the map will show the parcellation frequency during the period. The more solid the circle is, the more frequently parcellation has 
-                                                                happened in this area during the selected period."),
+                                                                         p("There are new parcels being split from their mother parcels every year in Goochland. The hot spot map shows the area where parcellation occurrs the most frequently with red polygons. 
+                                                                After selecting the year range via the slider, the map shows the parcellation frequency during the period. The more solid the circle is, the more frequently parcellation has 
+                                                                occured in this area during the selected period."),
                                                                          p("There is a significant spatial pattern of the parcellation in Goochland. Parcellation happened more frequently in the southeastern area of the county, and it persisted every year. 
                                                                 In the middle area, it became more often in 2021 and 2022. Parcellation in the northwestern area is relatively less frequent in 2019-2022. Besides, the area of high frequent 
                                                                 parcellation in the southeast has expanded along the VA 288 highway. From the hot spot map over time, we can see the impact of the metropolitan area on parcellation. The map 
@@ -1289,10 +1291,11 @@ ui <- navbarPage(title = "DSPG 2022",
                                                          column(4, 
                                                                 fluidRow(style = "margin: 6px;", align = "justify",
                                                                          h4(strong("Land Parcels in Powhatan County")),
-                                                                         p("Drag the slider on the right to select the year range of interest. 
-                                                                  Solid red represents new split parcels in the selected latest year. 
-                                                                  Lighter red represents new split parcels of the years before the selected latest year."), 
-                                                                         p("New parcels spread across Powhatan in 2012-2020. Some large-size parcels are generated along the James River. (I cannot find other patterns)")
+                                                                         p("The dark red layer represents land that was parcellated during the most recent year selected. The lighter pink layer represent land that 
+                                                                           parcellated during all previous years selected. If the years 2012 and 2020 are selected, the dark layer would show 2020 parcellations and 
+                                                                           the light pink layer would show parcellation between 2012 and 2019. "), 
+                                                                         p("There are large parcels being broken down along the northern border of the county. There is also significant parcellation in the center of 
+                                                                           the county along Route 60 where most development has occurred in the last several years.")
                                                                 )), 
                                                          column(8, 
                                                                 h4(strong("Land Parcellation Map")),
