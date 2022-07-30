@@ -1365,7 +1365,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                    affect the parcellation and conversion with administrative data and county-level geospatial data. "),
                                    fluidRow(style = "margin: 6px;", align = "justify",
                                             h4(strong("Powhatan")),
-                                            p("Approximately 84,500 acres of land, about half of the area of Powhatan, were converted to 
+                                            p("Large amounts of agricultural land were converted to 
                                               residential-suburban uses during the decade in Powhatan (including recurrences). Parcellation among agricultural land 
                                               is also noticeable, as 28 parcels (about 5,750 acres) of large agricultural lands have been parcellated
                                               into smaller agricultural plots."),
@@ -1376,17 +1376,26 @@ ui <- navbarPage(title = "DSPG 2022",
                                               those Routes are labeled as “Developed”. High traffic volumes can also be seen along U.S. Routes 60 and 288. Hence the 
                                               correlation between parcellation and those Routes is also a correlation between parcellation and developed areas (traffic volumes)."),
                                             p("There is no obvious sign that poor soil quality can be a driver of land conversion out of agriculture from the visualization map. 
-                                              (the conclusion related with soil quality should be determined by the regression model.)"),
+                                              Our linear probability model and logit model also show that the variables of soil quality are not significant. "),
                                             br(),
                                             h4(strong("Goochland")),
-                                            p("Approximately 28,870 acres of land, about 16% of the area of Goochland, were converted to residential uses including single-family 
+                                            p("The phenomenon occurred in Goochland too. Lots of lands were converted to residential uses including single-family 
                                               residential urban and suburban during 2018-2022 in Goochland. There are 5 parcels (about 671 acres) of large agricultural lands that 
                                               have been parcellated into smaller agricultural plots."),
                                             p("Parcellation is occurring predominantly in the southeast of Goochland County near Richmond, around the U.S. Routes I64, 250, and 288. 
                                               This pattern might reflect the urban influence on the county. This pattern might also imply some correlation between parcellation and 
                                               transportation. On the map of crop and land type, those Routes are labeled as “Developed”. High traffic volumes can also be seen along 
-                                              those Routes. Hence the correlation between parcellation and those Routes is also a correlation between parcellation and developed areas (traffic volumes). "),
-                                            p("(But the conclusion should also wait for the regression model!)"),
+                                              those Routes. Hence the correlation between parcellation and those Routes is also a correlation between parcellation and developed areas (traffic volumes). 
+                                              But both the linear probability model and logit model show that soil quality doesn’t have significant impact on land conversion from agricultural uses to others. "),
+                                            p("The results of linear probability model show the correlation between factors of our interest and land conversion from agricultural uses to others. The probability 
+                                              of the conversion reduces 0.0047% as the size of the parcel increases one acre. The situation that the owner in Powhatan reduces the probability by 1.57% compared 
+                                              to the situation that the owner is not in the county. Compared to parcels whose distance to Richmond is within 30 minutes, the possibility of those with further 
+                                              distance reduces to some extent. If the distance is more than 60 minutes, the possibility reduces 8%. The possibility reductions of those within 60 minutes and 
+                                              45 minutes are 9.6% and 9.8%, respectively. Daily traffic volume shows a “U shape” impact on the probability of conversion. If daily traffic volume is 1000-5000, 
+                                              the probability increases 0.9%. While the probability decreases 8.7% for parcels with more than 25000 daily traffic volume. Those conclusions are compared to parcels 
+                                              with less than 1000 daily traffic volume. The variables of area in acre and if traffic volume is 1000-5000 are significant at 5% level. The other variables discussed 
+                                              above are significant at 0.1% level. For robust check, the logit model is used. Although the magnitudes of coefficients change, the directions of the impacts of those 
+                                              variables are unchanged. It implies that the results are quite robust. "),
                                    ), 
                                    
                                    
