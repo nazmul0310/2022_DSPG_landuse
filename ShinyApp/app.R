@@ -1344,6 +1344,13 @@ ui <- navbarPage(title = "DSPG 2022",
                                    p("Given the rich agricultural histories of the two counties, we are interested in how agricultural land has changed over the last several years. 
                                      This research uses quantitative tools to understand how some key natural and social factors affect the parcellation and conversion with administrative data and county-level geospatial data."),
                                    fluidRow(style = "margin: 6px;", align = "justify",
+                                            h4(strong("Goochland")),
+                                            p("In Goochland, agricultural land was converted to residential, mainly single-family residential urban, and suburban. 
+                                              There were also 5 parcels (about 671 acres) of large agricultural lands that have been parcellated into smaller agricultural plots."),
+                                            p("Parcellation is occurring predominantly in the southeast of Goochland County near Richmond, around the U.S. Routes I64, 250, and 288. This pattern might reflect the urban influence on the county. 
+                                              This pattern might also imply some correlation between parcellation and transportation. On the crop and land type map, those Routes are labeled as “Developed.” 
+                                              High traffic volumes can also be seen along those Routes."),
+                                            br(),
                                             h4(strong("Powhatan")),
                                             p("Large amounts of agricultural land were converted to 
                                               residential-suburban uses during the decade in Powhatan (including recurrences). Parcellation among agricultural land 
@@ -1361,14 +1368,6 @@ ui <- navbarPage(title = "DSPG 2022",
                                               The analysis was conducted for Powhatan County only due to data availability. The findings from a logistic regression model show that the probability of converting out of agriculture: 
                                               decreases as the size of the parcel increases, decreases if the land owner lives in Powhatan, decreases with distance from Richmond. The association with traffic volume shows a U shaped impact 
                                               on the probability of conversion. Soil quality is not significantly associated with land conversion. Note these are not causal effects. They are associations."),
-                                            br(),
-                                            h4(strong("Goochland")),
-                                            p("In Goochland, agricultural land was converted to residential, mainly single-family residential urban, and suburban. 
-                                              There were also 5 parcels (about 671 acres) of large agricultural lands that have been parcellated into smaller agricultural plots."),
-                                            p("Parcellation is occurring predominantly in the southeast of Goochland County near Richmond, around the U.S. Routes I64, 250, and 288. This pattern might reflect the urban influence on the county. 
-                                              This pattern might also imply some correlation between parcellation and transportation. On the crop and land type map, those Routes are labeled as “Developed.” 
-                                              High traffic volumes can also be seen along those Routes."),
-                                            p(" "),
                                    ), 
                                    
                                    
