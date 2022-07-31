@@ -260,8 +260,9 @@ gcrop_legendpalette21 <- colorFactor(palette = gcrop_colors[-9],levels=gcrop_val
 croplayer1 <- read.csv("data/ag_analysis.csv")
 cropPlot.func <- function(county, year){
   data <- croplayer1 %>% filter(County == county, Year == year)
-  crop.plt <- data %>% ggplot(aes(x = Combined, y = Area.Acre, fill = Combined)) + 
-    geom_bar(stat = "identity", hoverinfo = "text", aes(text = paste0(Combined, "\nTotal Acres: ", round(Area.Acre, 0)))) + 
+  crop.plt <- data %>% ggplot(aes(x = Combined, y = Area.Acre, fill = Combined,
+                                  text = paste0(Combined, "\nTotal Acres: ", round(Area.Acre, 0)))) + 
+    geom_bar(stat = "identity") + 
     coord_flip() + 
     theme_light() + 
     theme(axis.text.y = element_text(hjust=0), legend.position = "none") +
@@ -539,7 +540,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                           p(strong("Researchers working on land use conversion."), "Land conversion is a global problem, not just in Goochland and Powhatan counties. We hope our dashboard can act as a starting point for those researching this topic in 
                                             Goochland, Powhatan, or further afield."),
                                           br(),
-                                          img(src = "powhatan_crops2.JPG", style = "display: inline; float: left;", width = "500px"),
+                                          img(src = "powhatan_crops2.JPG", style = "display: inline; float: left;", width = "400px"),
                                           
                                           p(tags$small("Photo courtesy of Rachel Henley, VCE"))
                                    )
@@ -1536,7 +1537,7 @@ server <- function(input, output){
   
   ### CROP LAYERS ================================================
   
-  output$gooch_crop_img <- renderImage({
+  output$gooch_crop_img <- renderImage(deleteFile = FALSE,{
     if(input$gooch_crop == "2012"){
       return(list(src = "www/CroplandPngs/goochCrop12.png", width = "270%", height = "100%"))    
     }
@@ -1546,7 +1547,7 @@ server <- function(input, output){
   })
   
   
-  output$pow_crop_img <- renderImage({
+  output$pow_crop_img <- renderImage(deleteFile = FALSE,{
     if(input$pow_crop == "2012"){
       return(list(src = "www/CroplandPngs/powCrop12.png", width = "270%", height = "100%"))    
     }
