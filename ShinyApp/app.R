@@ -1389,15 +1389,15 @@ ui <- navbarPage(title = "DSPG 2022",
                                               But both the linear probability model and logit model show that soil quality doesn’t have significant impact on land conversion from agricultural uses to others. "),
                                             br(),
                                             h4(strong("Statistical models with Powhatan data")),
-                                            p("The results of linear probability model show the correlation between factors of our interest and land conversion from agricultural uses to others. The probability 
-                                              of the conversion reduces 0.0047% as the size of the parcel increases one acre. The situation that the owner in Powhatan reduces the probability by 1.57% compared 
-                                              to the situation that the owner is not in the county. Compared to parcels whose distance to Richmond is within 30 minutes, the possibility of those with further 
-                                              distance reduces to some extent. If the distance is more than 60 minutes, the possibility reduces 8%. The possibility reductions of those within 60 minutes and 
-                                              45 minutes are 9.6% and 9.8%, respectively. Daily traffic volume shows a “U shape” impact on the probability of conversion. If daily traffic volume is 1000-5000, 
-                                              the probability increases 0.9%. While the probability decreases 8.7% for parcels with more than 25000 daily traffic volume. Those conclusions are compared to parcels 
-                                              with less than 1000 daily traffic volume. The variables of area in acre and if traffic volume is 1000-5000 are significant at 5% level. The other variables discussed 
-                                              above are significant at 0.1% level. For robust check, the logit model is used. Although the magnitudes of coefficients change, the directions of the impacts of those 
-                                              variables are unchanged. It implies that the results are quite robust. "),
+                                            p("The results of the linear probability model show the correlation between factors of interest and land conversion from agricultural uses to others. 
+                                              The probability of the conversion reduces by 0.0047% as the size of the parcel increases by one acre. The situation that the owner in Powhatan reduces 
+                                              the probability by 1.57% compared to the situation where the owner is not in the county. Compared to parcels whose distance to Richmond is within 30 minutes, 
+                                              the possibility of those with further distance reduces to some extent. If the distance is more than 60 minutes, the possibility reduces by 8%. The possibility 
+                                              reductions of those within 60 minutes and 45 minutes are 9.6% and 9.8%, respectively. Daily traffic volume shows a “U shape” impact on the probability of conversion. 
+                                              If daily traffic volume is 1000-5000, the probability increases by 0.9%. At the same time, the probability decreases by 8.7% for parcels with more than 25000 daily traffic volume. 
+                                              Those conclusions are compared to parcels with less than 1000 daily traffic volumes. The variables of the area in acres and if traffic volume is 1000-5000 are significant at the 5% level. 
+                                              The other variables discussed above are significant at the 0.1% level. For robust check, the logit model is used. Although the magnitudes of coefficients change, the directions of the impacts 
+                                              of those variables are unchanged. It implies that the results are quite robust."),
                                    ), 
                                    
                                    
