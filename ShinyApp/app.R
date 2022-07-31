@@ -1387,6 +1387,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                               transportation. On the map of crop and land type, those Routes are labeled as “Developed”. High traffic volumes can also be seen along 
                                               those Routes. Hence the correlation between parcellation and those Routes is also a correlation between parcellation and developed areas (traffic volumes). 
                                               But both the linear probability model and logit model show that soil quality doesn’t have significant impact on land conversion from agricultural uses to others. "),
+                                            br(),
+                                            h4(strong("Statistical models with Powhatan data")),
                                             p("The results of linear probability model show the correlation between factors of our interest and land conversion from agricultural uses to others. The probability 
                                               of the conversion reduces 0.0047% as the size of the parcel increases one acre. The situation that the owner in Powhatan reduces the probability by 1.57% compared 
                                               to the situation that the owner is not in the county. Compared to parcels whose distance to Richmond is within 30 minutes, the possibility of those with further 
