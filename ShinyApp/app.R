@@ -593,7 +593,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      ),
                                                      radioButtons(inputId = "yearSelect_gsoc", label = "Select Year: ", 
                                                                   choices = c("2017", "2018", "2019", "2020"), 
-                                                                  selected = "2020"),
+                                                                  selected = "2020", inline = TRUE),
                                                      plotOutput("gsoc", height = "500px"),
                                                      fluidRow(style = "margin: 6px;",
                                                               align = "justify",
@@ -666,7 +666,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      ),
                                                      radioButtons(inputId = "yearSelect_psoc", label = "Select Year: ", 
                                                                   choices = c("2017", "2018", "2019", "2020"), 
-                                                                  selected = "2020"),
+                                                                  selected = "2020", inline = TRUE),
                                                      plotOutput("psoc", height = "500px"),
                                                      h4(strong("Visualization Summaries")),
                                                      p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. The 25-44 age group has been 
@@ -931,7 +931,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 h4(strong("Land Use Distribution and Change by Year")),
                                                                 radioButtons(inputId = "gooch_lu_year", label = "Select year: ",
                                                                              choices = c("2018", "2019", "2020", "2021"),
-                                                                             selected = "2021"),
+                                                                             selected = "2021", inline = TRUE),
                                                                 imageOutput("gooch_lu_map", width = "300px", height = "600px"),
                                                                 
                                                                 ))  ,
@@ -973,8 +973,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                                 radioButtons(inputId = "gooch_crop", label = "Select year: ",
                                                                              choices = c("2012", "2021"),
-                                                                             selected = "2021"),
-                                                                imageOutput("gooch_crop_img"),
+                                                                             selected = "2021", inline = TRUE),
+                                                                imageOutput("gooch_crop_img", width = "300px", height = "600px"),
                                                                 
                                                                 #slickROutput("g.CropPNG", width = "100%", height = "50%"),
                                                                 
@@ -1083,7 +1083,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                                 radioButtons(inputId = "pow_lu_year", label = "Select year: ",
                                                                              choices = c("2015", "2016", "2017", "2018", "2019", "2020", "2021"),
-                                                                             selected = "2021"),
+                                                                             selected = "2021", inline = TRUE),
                                                                 imageOutput("pow_lu_map", width = "100%", height = "50%"),
                                                                 
 
@@ -1124,8 +1124,8 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                                 radioButtons(inputId = "pow_crop", label = "Select year: ",
                                                                              choices = c("2012", "2021"),
-                                                                             selected = "2021"),
-                                                                imageOutput("pow_crop_img", width = "50%", height = "50%"),
+                                                                             selected = "2021", inline = TRUE),
+                                                                imageOutput("pow_crop_img", width = "300px", height = "600px"),
                                                                 
                                                                 
                                                                 #slickROutput("p.CropPNG", width = "100%", height = "50%"),
@@ -1568,20 +1568,20 @@ server <- function(input, output){
   
   output$gooch_crop_img <- renderImage({
     if(input$gooch_crop == "2012"){
-      return(list(src = "www/CroplandPngs/goochCrop12.png", width = "100%", height = "150%"))    
+      return(list(src = "www/CroplandPngs/goochCrop12.png", width = "270%", height = "100%"))    
     }
     else{
-      return(list(src = "www/CroplandPngs/goochCrop21.png", width = "100%", height = "150%"))    
+      return(list(src = "www/CroplandPngs/goochCrop21.png", width = "270%", height = "100%"))    
     }
   })
   
   
   output$pow_crop_img <- renderImage({
     if(input$pow_crop == "2012"){
-      return(list(src = "www/CroplandPngs/powCrop12.png", width = "100%", height = "75%"))    
+      return(list(src = "www/CroplandPngs/powCrop12.png", width = "270%", height = "100%"))    
     }
     else{
-      return(list(src = "www/CroplandPngs/powCrop21.png", width = "100%", height = "75%"))    
+      return(list(src = "www/CroplandPngs/powCrop21.png", width = "270%", height = "100%"))    
     }
   })
   
