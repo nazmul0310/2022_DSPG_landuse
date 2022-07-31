@@ -1566,10 +1566,10 @@ server <- function(input, output){
   
   output$gooch_crop_img <- renderImage({
     if(input$gooch_crop == "2012"){
-      return(list(src = "www/CroplandPngs/goochCrop12.png"))    
+      return(list(src = "www/CroplandPngs/goochCrop12.png", width = "100%", height = "150%"))    
     }
     else{
-      return(list(src = "www/CroplandPngs/goochCrop21.png"))    
+      return(list(src = "www/CroplandPngs/goochCrop21.png", width = "100%", height = "150%"))    
     }
   })
   
