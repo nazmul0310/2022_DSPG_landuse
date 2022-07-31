@@ -1390,7 +1390,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                             br(),
                                             h4(strong("Statistical models with Powhatan data")),
                                             p("The results of the linear probability model show the correlation between factors of interest and land conversion from agricultural uses to others. 
-                                              The probability of the conversion reduces by 0.0047% as the size of the parcel increases by one acre. The situation that the owner in Powhatan reduces 
+                                              The probability of the conversion reduces by 0.0047% as the size of the parcel increases by one acre. The situation where the owner in Powhatan reduces 
                                               the probability by 1.57% compared to the situation where the owner is not in the county. Compared to parcels whose distance to Richmond is within 30 minutes, 
                                               the possibility of those with further distance reduces to some extent. If the distance is more than 60 minutes, the possibility reduces by 8%. The possibility 
                                               reductions of those within 60 minutes and 45 minutes are 9.6% and 9.8%, respectively. Daily traffic volume shows a “U shape” impact on the probability of conversion. 
