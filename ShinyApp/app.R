@@ -922,7 +922,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 radioButtons(inputId = "gooch_lu_year", label = "Select year: ",
                                                                              choices = c("2018", "2019", "2020", "2021"),
                                                                              selected = "2021"),
-                                                                imageOutput("gooch_lu_map", width = "100%", height = "50%"),
+                                                                imageOutput("gooch_lu_map"),
                                                                 
                                                                 ))  ,
                                                               fluidRow(style = "margin: 6px;", align = "justify",
@@ -1068,7 +1068,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                                 radioButtons(inputId = "pow_lu_year", label = "Select year: ",
                                                                              choices = c("2015", "2016", "2017", "2018", "2019", "2020", "2021"),
-                                                                             selected = "2021"),
+                                                                             selected = "2021", ),
                                                                 imageOutput("pow_lu_map", width = "100%", height = "50%"),
                                                                 
 
