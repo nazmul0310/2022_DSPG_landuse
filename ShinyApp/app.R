@@ -540,7 +540,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                           p(strong("Researchers working on land use conversion."), "Land conversion is a global problem, not just in Goochland and Powhatan counties. We hope our dashboard can act as a starting point for those researching this topic in 
                                             Goochland, Powhatan, or further afield."),
                                           br(),
-                                          img(src = "powhatan_crops.JPG", style = "display: inline; float: left;", width = "400px"),
+                                          img(src = "powhatan_crops.JPG", style = "display: inline; float: center;", width = "400px"),
                                           br(),
                                           p(tags$small("Photo courtesy of Rachel Henley, VCE"))
                                    )
