@@ -57,6 +57,8 @@ tag.map.title <- tags$style(HTML("
 
 
 ## Plotting functions ======================================
+gl_cnty<- st_read("data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+po_cnty<- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 
   ### Land Use ===============================================
@@ -236,6 +238,8 @@ webshot("data/Cropland/CroplandPngs/temp.html", file = "data/Cropland/CroplandPn
 
 
 
+pow.travelTimes <- st_read("data/travelTimes/Powhatan_Travel_Time/Powhatan_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+gooch.travelTimes <- st_read("data/travelTimes/Goochland_Travel_Time/Goochland_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 
 travelTime.func <- function(county){
@@ -246,11 +250,12 @@ travelTime.func <- function(county){
   
   if(county == "Powhatan"){
     travelTime.plt <- travelTime.plt %>% setView(lng=-77.8888, lat=37.5315 , zoom=11) %>% addPolygons(data = po_cnty, fillColor = "transparent", weight = 2, color = "Black") 
-      
+    position <- "bottomright"
     data <- pow.travelTimes
   } else {
     travelTime.plt <- travelTime.plt %>% setView(lng=-77.885376, lat=37.73143, zoom = 11) %>% addPolygons(data = gl_cnty, fillColor = "transparent", weight = 2, color = "Black") 
     data <- gooch.travelTimes
+    position <- "bottomleft"
   }
   
   
@@ -265,7 +270,7 @@ travelTime.func <- function(county){
                 fillColor = colors,
                 smoothFactor = 0.1, fillOpacity=.6, weight = 1,stroke = FALSE) %>%
     addCircleMarkers(lng = -77.44071077873014, lat = 37.534379575044426, label = "Richmond") %>%
-    addLegend(position = "bottomright", labels = c("Within 30 minutes", "Within 45 minutes", "Within 1 hour", "More than 1 hour"), 
+    addLegend(position = position, labels = c("Within 30 minutes", "Within 45 minutes", "Within 1 hour", "More than 1 hour"), 
               colors = sorted_colors)
   
   travelTime.plt
@@ -293,6 +298,10 @@ for(i in 1:2){
 
 
 
+gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+groads<- st_read("data/Traffic_Hotspot/Gooch_roads.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+ptraffic<- st_read("data/Traffic_Hotspot/Powhatan_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+proads<- st_read("data/Traffic_Hotspot/Pow_roads.shp") %>%  st_transform("+proj=longlat +datum=WGS84")
 
 trafficVol.func <- function(county){
   trafficVol.plt <- leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
@@ -302,11 +311,13 @@ trafficVol.func <- function(county){
     trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=11) %>% addPolygons(data = po_cnty, fillOpacity = 0)
     roadData <- proads
     trafficData <- ptraffic
+    position <- "bottomright"
   }
   else{
     trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.885376, lat=37.73143, zoom = 11) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
     roadData <- groads
     trafficData <- gtraffic
+    position <- "bottomleft"
   }
   
   trafficVol.plt <- trafficVol.plt %>%
@@ -316,7 +327,7 @@ trafficVol.func <- function(county){
     addPolygons(data=filter(trafficData, gridcode==3), weight=0, fillOpacity = 0.5, fillColor = "orange", group = "5,000 to 10,000")%>%
     addPolygons(data=filter(trafficData, gridcode==4), weight=0, fillOpacity = 0.5, fillColor = 'red', group= "10,000 to 25,000")%>%
     addPolygons(data=filter(trafficData, gridcode==5), weight=0, fillOpacity = 0.5, fillColor ='maroon', group= "More than 25,000")%>%
-    addLegend(position = "bottomright", labels = c("Less than 1,000", "1,000 to 5,000", "5,000 to 10,000", "10,000 to 25,000", "More than 25,000"),
+    addLegend(position = position, labels = c("Less than 1,000", "1,000 to 5,000", "5,000 to 10,000", "10,000 to 25,000", "More than 25,000"),
               colors = c("green", "yellow", "orange", "red", "maroon"))
   trafficVol.plt
 }
