@@ -238,6 +238,47 @@ webshot("data/Cropland/CroplandPngs/temp.html", file = "data/Cropland/CroplandPn
 
 
 
+travelTime.func <- function(county){
+  
+  # Initial plot
+  travelTime.plt <- leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
+    addTiles()
+  
+  if(county == "Powhatan"){
+    travelTime.plt <- travelTime.plt %>% setView(lng=-77.8888, lat=37.5315 , zoom=11) %>% addPolygons(data = po_cnty, fillColor = "transparent", weight = 2, color = "Black") 
+      
+    data <- pow.travelTimes
+  } else {
+    travelTime.plt <- travelTime.plt %>% setView(lng=-77.885376, lat=37.73143, zoom = 11) %>% addPolygons(data = gl_cnty, fillColor = "transparent", weight = 2, color = "Black") 
+    data <- gooch.travelTimes
+  }
+  
+  
+  data$Trv2RcMnd <- factor(data$Trv2RcMnd, levels = c("30 minutes", "45 minutes", "One hour", "More than an hour"))
+  # Custom color palette
+  mypalette <- colorBin(palette = "viridis", as.numeric(data$Trv2RcMnd), bins = 5)
+  colors <- mypalette(unclass(data$Trv2RcMnd))
+  sorted_colors <- c("#440154", "#2A788E", "#7AD151", "#FDE725")
+  
+  travelTime.plt <- travelTime.plt %>%
+    addPolygons(data = data, color = "black",
+                fillColor = colors,
+                smoothFactor = 0.1, fillOpacity=.6, weight = 1,stroke = FALSE) %>%
+    addCircleMarkers(lng = -77.44071077873014, lat = 37.534379575044426, label = "Richmond") %>%
+    addLegend(position = "bottomright", labels = c("Within 30 minutes", "Within 45 minutes", "Within 1 hour", "More than 1 hour"), 
+              colors = sorted_colors)
+  
+  travelTime.plt
+}
+
+curr.plt <- travelTime.func("Goochland")
+saveWidget(curr.plt, "www/trafficPNGs/temp.html", selfcontained = FALSE)
+webshot("www/trafficPNGs/temp.html", file = "www/trafficPNGs/goochProx.png")
+
+curr.plt <- travelTime.func("Powhatan")
+saveWidget(curr.plt, "www/trafficPNGs/temp.html", selfcontained = FALSE)
+webshot("www/trafficPNGs/temp.html", file = "www/trafficPNGs/powProx.png")
+
 
 
 
@@ -250,4 +291,41 @@ for(i in 1:2){
   webshot("data/Cropland/CroplandPgs/temp.html", file = filenames[])
 }
 
+
+
+
+trafficVol.func <- function(county){
+  trafficVol.plt <- leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
+    addTiles()
+  
+  if(county == "Powhatan"){
+    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=11) %>% addPolygons(data = po_cnty, fillOpacity = 0)
+    roadData <- proads
+    trafficData <- ptraffic
+  }
+  else{
+    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.885376, lat=37.73143, zoom = 11) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
+    roadData <- groads
+    trafficData <- gtraffic
+  }
+  
+  trafficVol.plt <- trafficVol.plt %>%
+    addPolygons(data=roadData, weight=1, color = "black", fillOpacity=0)%>%
+    addPolygons(data=filter(trafficData, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
+    addPolygons(data=filter(trafficData, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
+    addPolygons(data=filter(trafficData, gridcode==3), weight=0, fillOpacity = 0.5, fillColor = "orange", group = "5,000 to 10,000")%>%
+    addPolygons(data=filter(trafficData, gridcode==4), weight=0, fillOpacity = 0.5, fillColor = 'red', group= "10,000 to 25,000")%>%
+    addPolygons(data=filter(trafficData, gridcode==5), weight=0, fillOpacity = 0.5, fillColor ='maroon', group= "More than 25,000")%>%
+    addLegend(position = "bottomright", labels = c("Less than 1,000", "1,000 to 5,000", "5,000 to 10,000", "10,000 to 25,000", "More than 25,000"),
+              colors = c("green", "yellow", "orange", "red", "maroon"))
+  trafficVol.plt
+}
+
+curr.plt <- trafficVol.func("Powhatan")
+saveWidget(curr.plt, "www/trafficPNGs/temp.html", selfcontained = FALSE)
+webshot("www/trafficPNGs/temp.html", file = "www/trafficPNGs/powVol.png")
+
+curr.plt <- trafficVol.func("Goochland")
+saveWidget(curr.plt, "www/trafficPNGs/temp.html", selfcontained = FALSE)
+webshot("www/trafficPNGs/temp.html", file = "www/trafficPNGs/goochVol.png")
 
