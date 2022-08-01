@@ -1525,7 +1525,7 @@ server <- function(input, output){
     psoil
   })
   
-  output$gooch_trafficPNG <- renderImage({
+  output$gooch_trafficPNG <- renderImage(deleteFile = FALSE,{
     if(input$gooch_traffic == "gvol"){
       return(list(src = "www/trafficPNGs/goochVol.png", width = "100%", height = "100%"))
     }
@@ -1534,7 +1534,7 @@ server <- function(input, output){
     }
   })
   
-  output$pow_trafficPNG <- renderImage({
+  output$pow_trafficPNG <- renderImage(deleteFile = FALSE,{
     if(input$pow_traffic == "pvol"){
       return(list(src = "www/trafficPNGs/powVol.png", width = "100%", height = "100%"))
     }
@@ -1560,11 +1560,6 @@ server <- function(input, output){
       }
   },deleteFile = FALSE)
   
-  
-  output$p.luPNG <- renderSlickR({
-    imgs <- paste0("data/luParcelData/luPNGs/Pow_LU", 15:21, ".png")
-    slickR.func(imgs)
-  })
   
   output$pow_lu_map <- renderImage({
     if(input$pow_lu_year == "2015"){
