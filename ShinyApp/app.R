@@ -1561,11 +1561,6 @@ server <- function(input, output){
   },deleteFile = FALSE)
   
   
-  output$p.luPNG <- renderSlickR({
-    imgs <- paste0("data/luParcelData/luPNGs/Pow_LU", 15:21, ".png")
-    slickR.func(imgs)
-  })
-  
   output$pow_lu_map <- renderImage({
     if(input$pow_lu_year == "2015"){
       return(list(src = "www/luPNGs/Pow_LU15.png", width = "100%", height = "75%"))    
