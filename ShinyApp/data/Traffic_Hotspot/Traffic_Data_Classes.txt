@@ -1,7 +1,0 @@
-gridcode 	Description (Annual vehicle count)
-
-1		Less than 1000 
-2		1000-5000
-3		5000-10000
-4		10000-25000
-5		More than 25000
