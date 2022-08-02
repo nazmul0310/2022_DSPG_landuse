@@ -36,7 +36,7 @@ library(png)
 library(slickR)
 
 options(scipen=999)
-options(shiny.maxRequestSize = 500*1024^2)
+#options(shiny.maxRequestSize = 80*1024^2)
 
 # CODE TO DETECT ORIGIN OF LINK AND CHANGE LOGO ACCORDINGLY
 jscode <- "function getUrlVars() {
@@ -315,76 +315,6 @@ psoil <-ggplotly(psoil, tooltip = "text")
 
 ### TRAFFIC ===============================================
 
-gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-groads<- st_read("data/Traffic_Hotspot/Gooch_roads.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-ptraffic<- st_read("data/Traffic_Hotspot/Powhatan_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-proads<- st_read("data/Traffic_Hotspot/Pow_roads.shp") %>%  st_transform("+proj=longlat +datum=WGS84")
-
-trafficVol.func <- function(county){
-  trafficVol.plt <- leaflet() %>%
-    addTiles()
-  
-  if(county == "Powhatan"){
-    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10) %>% addPolygons(data = po_cnty, fillOpacity = 0)
-    roadData <- proads
-    trafficData <- ptraffic
-  }
-  else{
-    trafficVol.plt <- trafficVol.plt %>% setView(lng=-78, lat=37.75, zoom = 10) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
-    roadData <- groads
-    trafficData <- gtraffic
-  }
-  
-  trafficVol.plt <- trafficVol.plt %>%
-    addPolygons(data=roadData, weight=1, color = "black", fillOpacity=0)%>%
-    addPolygons(data=filter(trafficData, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
-    addPolygons(data=filter(trafficData, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
-    addPolygons(data=filter(trafficData, gridcode==3), weight=0, fillOpacity = 0.5, fillColor = "orange", group = "5,000 to 10,000")%>%
-    addPolygons(data=filter(trafficData, gridcode==4), weight=0, fillOpacity = 0.5, fillColor = 'red', group= "10,000 to 25,000")%>%
-    addPolygons(data=filter(trafficData, gridcode==5), weight=0, fillOpacity = 0.5, fillColor ='maroon', group= "More than 25,000")%>%
-    addLegend(position = "bottomright", labels = c("Less than 1,000", "1,000 to 5,000", "5,000 to 10,000", "10,000 to 25,000", "More than 25,000"),
-              colors = c("green", "yellow", "orange", "red", "maroon"))
-  trafficVol.plt
-}
-
-pow.travelTimes <- st_read("data/travelTimes/Powhatan_Travel_Time/Powhatan_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-gooch.travelTimes <- st_read("data/travelTimes/Goochland_Travel_Time/Goochland_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-Rmnd30 <- st_read("data/travelTimes/Richmond_Travel_Times/30MinuteTravelTime.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-Rmnd45 <- st_read("data/travelTimes/Richmond_Travel_Times/45MinuteTravelTime.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-Rmnd60 <- st_read("data/travelTimes/Richmond_Travel_Times/60MinuteTravelTime.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-
-travelTime.func <- function(county){
-  
-  # Initial plot
-  travelTime.plt <- leaflet() %>%
-    addTiles()
-  
-  if(county == "Powhatan"){
-    travelTime.plt <- travelTime.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10)
-    data <- pow.travelTimes
-  } else {
-    travelTime.plt <- travelTime.plt %>% setView(lng=-78, lat=37.75, zoom = 10)
-    data <- gooch.travelTimes
-  }
-  
-  
-  data$Trv2RcMnd <- factor(data$Trv2RcMnd, levels = c("30 minutes", "45 minutes", "One hour", "More than an hour"))
-  # Custom color palette
-  mypalette <- colorBin(palette = "viridis", as.numeric(data$Trv2RcMnd), bins = 5)
-  colors <- mypalette(unclass(data$Trv2RcMnd))
-  sorted_colors <- c("#440154", "#2A788E", "#7AD151", "#FDE725")
-  
-  travelTime.plt <- travelTime.plt %>%
-    addPolygons(data = data, color = "black",
-                fillColor = colors,
-                smoothFactor = 0.1, fillOpacity=.6, weight = 1,stroke = FALSE) %>%
-    addCircleMarkers(lng = -77.44071077873014, lat = 37.534379575044426, label = "Richmond") %>%
-    addLegend(position = "bottomright", labels = c("Within 30 minutes", "Within 45 minutes", "Within 1 hour", "More than 1 hour"), 
-              colors = sorted_colors)
-  
-  travelTime.plt
-}
-
 
 ## PARCELLATION ============================================
 
@@ -468,16 +398,6 @@ hotspot.func <- function(county, range){
   hotspot.plt
 }
 
-
-
-
-### slickR function 
-
-slickR.func <- function(images){
-  my.slickR <- slickR(images, width = "100%", height = "500px", slideId = "slickRID") + settings(speed = 0, infinite = FALSE)
-  my.slickR
-}
-
 # ui --------------------------------------------------------------------------------------------------------------------
 
 ui <- navbarPage(title = "DSPG 2022",
@@ -540,7 +460,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                           p(strong("Researchers working on land use conversion."), "Land conversion is a global problem, not just in Goochland and Powhatan counties. We hope our dashboard can act as a starting point for those researching this topic in 
                                             Goochland, Powhatan, or further afield."),
                                           br(),
-                                          img(src = "powhatan_crops.JPG", style = "display: inline; float: left;", width = "400px"),
+                                          img(src = "powhatan_crops.JPG", style = "display: inline; float: center;", width = "400px"),
                                           br(),
                                           p(tags$small("Photo courtesy of Rachel Henley, VCE"))
                                    )
@@ -593,13 +513,12 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      fluidRow(style = "margin: 6px;",
                                                               align = "justify",
                                                               h4(strong("Visualization Summaries")),
-                                                              p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. 
-                                                       The 25-44 age group has been the second largest, but has faced more inconsistency and has seen a decrease since 2019."),
+                                                              p("The", strong("age distribution"), "graphs show that the categories consisting of age groups 45 and above have consistently been the largest in the county, making up more than 30% of the population."),
                                                               p("The", strong("employment"), "graphs indicates that the education, health, and social services industry group has been the largest by a wide margin, and specifically saw a large 
-                                                       increase between 2018 and 2019. The agricultural, forestal, fishing, hunting, and mining industry group has consistently been the smallest, employing less than 5% of 
+                                                       increase between 2017 and 2018. The agricultural, forestal, fishing, hunting, and mining industry group has consistently been the smallest, employing less than 5% of 
                                                        the population every year."),
                                                               p("The" ,strong("income distribution"), "graphs illustrate the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied 
-                                                       by a decrease in earnings below $75,000. It is also notable that earnings above $100,000 and below $35,000 are the largest categories throughout all years."),
+                                                       by a general decrease in earnings below $75,000. It is also notable that earnings above $100,000 and below $35,000 are the largest categories throughout all years."),
                                                               p("The" ,strong("median earnings"), "graphs highlight the fact that those who have gone through some college or attained an associates degree earn the most. The median earnings for this 
                                                        group were significantly higher than others in 2017 and 2018, but saw a significant decrease to $65,890 in 2019. This number goes back up to $75,313 in 2020; still much lower than the first two years.")),
                                                      
@@ -664,7 +583,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                                      p("The", strong("age distribution"), "graphs shows that the 45-64 age group has consistently been the largest in the county, making up more than 30% of the population since 2017. The 25-44 age group has been 
                                                        the second largest, but has faced more inconsistency and has seen a decrease since 2018."),
                                                      p("The", strong("employment"), "graphs indicates that the education, health, and social services industry group has been the largest by a wide margin, and specifically saw a large increase in 2019. The agricultural, forestal,
-                                                       fishing, hunting, and mining industry group has consistently been the smallest with the exception of 2018 when the information industry was smaller."),
+                                                       fishing, hunting, and mining industry group has consistently been one of the smallest."),
                                                      p("The", strong("income distribution"), "graphs illustrate the consistent growth in individuals and households earning at least $100,000 each year. This growth has been accompanied by a consistent decrease in earnings below $75,000."),
                                                      p("The", strong("median earnings"), "graphs highlight the fact that those with a highest educational attainment of Some college/Associates earn the most. The median earnings for this group were significantly higher than others up until 2019, but saw 
                                                        a significant decrease to $66,915 in 2020. This number is nearly identical to the median earnings for those with less than a high school education at $66,716."),
@@ -771,7 +690,7 @@ ui <- navbarPage(title = "DSPG 2022",
                                               column(6,
                                                      fluidRow(style = "margin: 6px;", align = "justify",
                                                      p("", style = "padding-top:10px;"),
-                                                     p(strong("Conservation Reserve Enhancement program (CREP):")), 
+                                                     p(strong("Conservation Reserve Enhancement Program (CREP):")), 
                                                      p("This is a state-sponsored enhancement to the federal CRP. It is a cost-share program where federal reimbursement is made through the FSA for up to 
                                                        “50% of a participant's eligible expenses for implementing best management practices (BMP)”. BMP examples include adding fencing, alternative watering 
                                                        systems, and restoring wetlands. Participation in this program is voluntary, and the contract period is around 10-15 years [2]."),
@@ -1039,7 +958,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   "Traffic Volume" = "gvol",
                                                                   "Proximity to Richmond" = "grich")
                                                                 ),
-                                                                leafletOutput("goochland_traffic") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
+                                                                imageOutput("gooch_trafficPNG", height = "110%"),
+                                                                
+                                                                br(),
                                                                 p(tags$small("Data Source: Virginia Department of Traffic")),
                                                                 
                                                          ),
@@ -1190,7 +1111,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                   "Traffic Volume" = "pvol",
                                                                   "Proximity to Richmond" = "prich"), 
                                                                 ),
-                                                                leafletOutput("powhatan_traffic") %>% withSpinner(type = 4, color = "#861F41", size = 1.5),
+                                                                imageOutput("pow_trafficPNG", height = "110%"),
+                                                                
+                                                                br(),
                                                                 p(tags$small("Data Source: Virginia Department of Transportation")),
                                                                 
                                                          ),
@@ -1605,30 +1528,25 @@ server <- function(input, output){
     psoil
   })
   
-  output$goochland_traffic <- renderLeaflet({
+  output$gooch_trafficPNG <- renderImage(deleteFile = FALSE,{
     if(input$gooch_traffic == "gvol"){
-      trafficVol.func("Goochland")
+      return(list(src = "www/trafficPNGs/goochVol.png", width = "100%", height = "100%"))
     }
     else if(input$gooch_traffic == "grich"){
-      travelTime.func("Goochland")
+      return(list(src = "www/trafficPNGs/goochProx.png", width = "100%", height = "100%"))
     }
   })
   
-  output$powhatan_traffic <- renderLeaflet({
+  output$pow_trafficPNG <- renderImage(deleteFile = FALSE,{
     if(input$pow_traffic == "pvol"){
-      trafficVol.func("Powhatan")
+      return(list(src = "www/trafficPNGs/powVol.png", width = "100%", height = "100%"))
     }
     else if(input$pow_traffic == "prich"){
-      travelTime.func("Powhatan")
+      return(list(src = "www/trafficPNGs/powProx.png", width = "100%", height = "100%"))
     }
   })
   
   ### LAND USE ======================================
-  
-  # output$g.luPNG <- renderSlickR({
-  #   imgs <- paste0("data/luParcelData/luPNGs/Gooch_LU", 18:21, ".png")
-  #   slickR(imgs, width = "100%", height = "500px") + settings(speed = 0, infinite = FALSE)
-  # })
   
   output$gooch_lu_map <- renderImage({
     if(input$gooch_lu_year == "2018"){
@@ -1645,11 +1563,6 @@ server <- function(input, output){
       }
   },deleteFile = FALSE)
   
-  
-  output$p.luPNG <- renderSlickR({
-    imgs <- paste0("data/luParcelData/luPNGs/Pow_LU", 15:21, ".png")
-    slickR.func(imgs)
-  })
   
   output$pow_lu_map <- renderImage({
     if(input$pow_lu_year == "2015"){
