@@ -31,8 +31,6 @@ knitr::opts_chunk$set(echo = TRUE)
 # Loading my packages
 
 ```{r}
-#setwd("C:/Users/Leo Allen/Desktop/Isochrones/isochrones")  #set the working directory
-
 library(RColorBrewer)
 library(traveltime)
 library(tidyverse)
@@ -75,8 +73,8 @@ library(rgdal)
 
 ```{r}
 
-YourAPIKey <- "eb02516c05b7d10f8e03477312b537fa"
-YourAppId <- "acfb52eb"
+YourAPIKey <- ""
+YourAppId <- ""
 
 ```
 
