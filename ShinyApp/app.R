@@ -919,14 +919,10 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 h4(strong("Land Use Distribution and Change by Year")),
                                                                 radioButtons(inputId = "gooch_lu_year", label = "Select year: ",
                                                                              choices = c("2018", "2019", "2020", "2021"),
-<<<<<<< HEAD
-                                                                             selected = "2021"),
-                                                                imageOutput("gooch_lu_map"),
-=======
+
                                                                              selected = "2021", inline = TRUE),
                                                                 imageOutput("gooch_lu_map", width = "300px", height = "600px"),
->>>>>>> 3a6943b2ddd0882d5a0c771e9a76fe82b56e56c4
-                                                                
+
                                                                 ))  ,
                                                               fluidRow(style = "margin: 6px;", align = "justify",
                                                                        column(4,
@@ -1072,11 +1068,9 @@ ui <- navbarPage(title = "DSPG 2022",
                                                                 
                                                                 radioButtons(inputId = "pow_lu_year", label = "Select year: ",
                                                                              choices = c("2015", "2016", "2017", "2018", "2019", "2020", "2021"),
-<<<<<<< HEAD
-                                                                             selected = "2021", ),
-=======
+
                                                                              selected = "2021", inline = TRUE),
->>>>>>> 3a6943b2ddd0882d5a0c771e9a76fe82b56e56c4
+
                                                                 imageOutput("pow_lu_map", width = "100%", height = "50%"),
                                                                 
 
