@@ -1,0 +1,13 @@
+name: ShinyApp
+title: ShinyApp
+username:
+account: christopher-79
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6720143
+bundleId: 6153287
+url: https://christopher-79.shinyapps.io/ShinyApp/
+when: 1659356348.4348
+lastSyncTime: 1659356348.43481
+asMultiple: FALSE
+asStatic: FALSE
