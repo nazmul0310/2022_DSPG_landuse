@@ -31,13 +31,25 @@ names(GoochlandAllParcel) <- c("FIN_MLUSE", "year", "geometry")
 PowhatanAllParcel <- read_sf("data/luParcelData/PowAll.shp")
 
   # Crop layer
-
 g.cropMap12 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84") %>% rename(cropLabel = New_Label)
 g.cropMap21 <- read_sf("data/Cropland/Gooch/Gooch_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84") %>% rename(cropLabel = New_Label) %>% select(-Comb_class)
 
 p.cropMap12 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2012.shp") %>% st_transform("+proj=longlat +datum=WGS84") %>% rename(cropLabel = New.Label) %>% select(-c(Id, gridcode))
 p.cropMap21 <- read_sf("data/Cropland/Pow/Powhatan_Ag_2021.shp") %>% st_transform("+proj=longlat +datum=WGS84") %>% rename(cropLabel = Comb_Class) %>% select(-c(Id, gridcode))
 
+  #Soil quality
+g.soil <- read_sf("data/Soil Qual/Goochland/gooch_soil_merge.shp") %>% select(NirrCpCls, geometry)%>% st_transform("+proj=longlat +datum=WGS84")
+p.soil <- read_sf("data/Soil Qual/Powhatan/pow_soil_merge.shp") %>% select(NirrCpCls, geometry)%>% st_transform("+proj=longlat +datum=WGS84")
+
+  #Traffic volumes
+gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+groads<- st_read("data/Traffic_Hotspot/Gooch_roads.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+ptraffic<- st_read("data/Traffic_Hotspot/Powhatan_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+proads<- st_read("data/Traffic_Hotspot/Pow_roads.shp") %>%  st_transform("+proj=longlat +datum=WGS84")
+
+  #Travel time
+pow.travelTimes <- st_read("data/travelTimes/Powhatan_Travel_Time/Powhatan_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
+gooch.travelTimes <- st_read("data/travelTimes/Goochland_Travel_Time/Goochland_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
 
   # map title
@@ -56,10 +68,9 @@ tag.map.title <- tags$style(HTML("
 "))
 
 
-## Plotting functions ======================================
-gl_cnty<- st_read("data/cnty_bndry/Goochland_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-po_cnty<- st_read("data/cnty_bndry/Powhatan_Boundary.shp") %>% st_transform("+proj=longlat +datum=WGS84")
 
+
+## Plotting functions ======================================
 
   ### Land Use ===============================================
 
@@ -136,7 +147,6 @@ luPlotFunction <- function(inputYear, county) {
 
   ### Crop layer ==================================================
 
-
 cropLayerFunction <- function(inputYear, county){
   cropLabels <- unique(sort(c(g.cropMap21$cropLabel, g.cropMap12$cropLabel, p.cropMap21$cropLabel, p.cropMap12$cropLabel)))
   mapPal <- colorFactor(palette = "viridis", factor(cropLabels))
@@ -183,65 +193,89 @@ cropLayerFunction <- function(inputYear, county){
 }
 
 
-## PNG Saving ===============================================
+  ### Soil quality ===============================================
 
-
-# Goochland Land use
-
-filenames <- c(paste0("data/luParcelData/luPNGs/Gooch_LU", 18:21, ".png"))
-for(year in 2018:2021){
+soil.Function <- function(county) {
   
-  curr.plt <- luPlotFunction(year, "Goochland")
+  soil.plt <- leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
+    addTiles() %>%
+    addProviderTiles(providers$CartoDB.Positron)
   
-  saveWidget(curr.plt, "data/luParcelData/luPNGs/temp.html", selfcontained = FALSE)
-  webshot("data/luParcelData/luPNGs/temp.html", file = filenames[year-2017],
-          cliprect = "viewport")
+  # Sets view based on county
+  if(county == "Powhatan"){
+    soil.plt <- soil.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=10.5) 
+    parcelData <- p.soil
+  }
+  else{
+    soil.plt <- soil.plt %>% setView(lng=-77.885376, lat=37.73, zoom = 10.5) 
+    parcelData <- g.soil
+  }
+  
+  SoilClass <- c("Good Agriculture",
+                 "Limited Agriculture",
+                 "Pasture, rangeland, and wildlife habitat",
+                 "NODATA")
+  
+  SoilClass <- factor(SoilClass, levels = SoilClass)
+  
+  mypalette <- colorBin(palette = "viridis", as.numeric(SoilClass), bins = 4)
+  colors <- mypalette(unclass(SoilClass))
+  colors[4] <- "#4D4D4D" # undefined gets a grayed out color
+  legendpalette <- colorFactor(palette = colors,levels=SoilClass)
+  
+  
+  soil.plt <- soil.plt %>%
+    addPolygons(data = parcelData %>% filter(NirrCpCls == "1, 2"),
+                fillColor = colors[1], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Good Agriculture") %>%
+    addPolygons(data=parcelData %>% filter(NirrCpCls == "3, 4"),
+                fillColor = colors[2], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Limited Agriculture") %>%
+    addPolygons(data=parcelData %>% filter(NirrCpCls == "5, 6, 7, 8"),
+                fillColor = colors[3], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "Pasture, rangeland, and wildlife habitat") %>% 
+    addPolygons(data=parcelData %>% filter(NirrCpCls == "NoData"),
+                fillColor = colors[4], smoothFactor = 0.1, fillOpacity=1, stroke = FALSE,
+                group = "NODATA") %>% 
+    addLegend(data=parcelData, "bottomleft",
+              pal = legendpalette, values = SoilClass,
+              title = "Soil Quality Class",
+              labFormat = labelFormat(),
+              opacity = 1) 
+  soil.plt
 }
 
-# Powhatan Land use
-
-filenames <- c(paste0("data/luParcelData/luPNGs/Pow_LU", 15:21, ".png"))
-for(year in 2015:2021){
-
-  curr.plt <- luPlotFunction(year, "Powhatan")
-
-  saveWidget(curr.plt, "data/luParcelData/luPNGs/temp.html", selfcontained = FALSE)
-  webshot("data/luParcelData/luPNGs/temp.html", file = filenames[year-2014],
-          cliprect = "viewport")
+  ### Traffic volumes ===========================================
+trafficVol.func <- function(county){
+  trafficVol.plt <- leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
+    addTiles()
+  
+  if(county == "Powhatan"){
+    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=11) %>% addPolygons(data = po_cnty, fillOpacity = 0)
+    roadData <- proads
+    trafficData <- ptraffic
+    position <- "bottomright"
+  }
+  else{
+    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.885376, lat=37.73143, zoom = 11) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
+    roadData <- groads
+    trafficData <- gtraffic
+    position <- "bottomleft"
+  }
+  
+  trafficVol.plt <- trafficVol.plt %>%
+    addPolygons(data=roadData, weight=1, color = "black", fillOpacity=0)%>%
+    addPolygons(data=filter(trafficData, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
+    addPolygons(data=filter(trafficData, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
+    addPolygons(data=filter(trafficData, gridcode==3), weight=0, fillOpacity = 0.5, fillColor = "orange", group = "5,000 to 10,000")%>%
+    addPolygons(data=filter(trafficData, gridcode==4), weight=0, fillOpacity = 0.5, fillColor = 'red', group= "10,000 to 25,000")%>%
+    addPolygons(data=filter(trafficData, gridcode==5), weight=0, fillOpacity = 0.5, fillColor ='maroon', group= "More than 25,000")%>%
+    addLegend(position = position, labels = c("Less than 1,000", "1,000 to 5,000", "5,000 to 10,000", "10,000 to 25,000", "More than 25,000"),
+              colors = c("green", "yellow", "orange", "red", "maroon"))
+  trafficVol.plt
 }
 
-
-curr.plt <- cropLayerFunction(2012, "Powhatan")
-saveWidget(curr.plt, "data/Cropland/CroplandPngs/temp.html", selfcontained = FALSE)
-webshot("data/Cropland/CroplandPngs/temp.html", file = "data/Cropland/CroplandPngs/powCrop12.png", 
-        cliprect = "viewport")
-
-curr.plt <- cropLayerFunction(2021, "Powhatan")
-saveWidget(curr.plt, "data/Cropland/CroplandPngs/temp.html", selfcontained = FALSE)
-webshot("data/Cropland/CroplandPngs/temp.html", file = "data/Cropland/CroplandPngs/powCrop21.png",
-        cliprect = "viewport")
-
-
-curr.plt <- cropLayerFunction(2012, "Goochland")
-saveWidget(curr.plt, "data/Cropland/CroplandPngs/temp.html", selfcontained = FALSE)
-webshot("data/Cropland/CroplandPngs/temp.html", file = "data/Cropland/CroplandPngs/goochCrop12.png")
-
-curr.plt <- cropLayerFunction(2021, "Goochland")
-saveWidget(curr.plt, "data/Cropland/CroplandPngs/temp.html", selfcontained = FALSE)
-webshot("data/Cropland/CroplandPngs/temp.html", file = "data/Cropland/CroplandPngs/goochCrop21.png")
-
-
-
-
-
-
-
-
-
-pow.travelTimes <- st_read("data/travelTimes/Powhatan_Travel_Time/Powhatan_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-gooch.travelTimes <- st_read("data/travelTimes/Goochland_Travel_Time/Goochland_Travel_Times.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-
-
+  ### Travel time ===============================================
 travelTime.func <- function(county){
   
   # Initial plot
@@ -276,6 +310,67 @@ travelTime.func <- function(county){
   travelTime.plt
 }
 
+## PNG Saving ===============================================
+
+
+# Land use
+
+filenames <- c(paste0("data/luParcelData/luPNGs/Gooch_LU", 18:21, ".png"))
+for(year in 2018:2021){
+  
+  curr.plt <- luPlotFunction(year, "Goochland")
+  
+  saveWidget(curr.plt, "data/luParcelData/luPNGs/temp.html", selfcontained = FALSE)
+  webshot("data/luParcelData/luPNGs/temp.html", file = filenames[year-2017],
+          cliprect = "viewport")
+}
+
+filenames <- c(paste0("data/luParcelData/luPNGs/Pow_LU", 15:21, ".png"))
+for(year in 2015:2021){
+
+  curr.plt <- luPlotFunction(year, "Powhatan")
+
+  saveWidget(curr.plt, "data/luParcelData/luPNGs/temp.html", selfcontained = FALSE)
+  webshot("data/luParcelData/luPNGs/temp.html", file = filenames[year-2014],
+          cliprect = "viewport")
+}
+
+
+# Crop layer
+
+curr.plt <- cropLayerFunction(2012, "Powhatan")
+saveWidget(curr.plt, "data/Cropland/CroplandPngs/temp.html", selfcontained = FALSE)
+webshot("data/Cropland/CroplandPngs/temp.html", file = "data/Cropland/CroplandPngs/powCrop12.png", 
+        cliprect = "viewport")
+
+curr.plt <- cropLayerFunction(2021, "Powhatan")
+saveWidget(curr.plt, "data/Cropland/CroplandPngs/temp.html", selfcontained = FALSE)
+webshot("data/Cropland/CroplandPngs/temp.html", file = "data/Cropland/CroplandPngs/powCrop21.png",
+        cliprect = "viewport")
+
+
+curr.plt <- cropLayerFunction(2012, "Goochland")
+saveWidget(curr.plt, "data/Cropland/CroplandPngs/temp.html", selfcontained = FALSE)
+webshot("data/Cropland/CroplandPngs/temp.html", file = "data/Cropland/CroplandPngs/goochCrop12.png")
+
+curr.plt <- cropLayerFunction(2021, "Goochland")
+saveWidget(curr.plt, "data/Cropland/CroplandPngs/temp.html", selfcontained = FALSE)
+webshot("data/Cropland/CroplandPngs/temp.html", file = "data/Cropland/CroplandPngs/goochCrop21.png")
+
+
+# Soil quality
+
+curr.plt <- soil.Function("Goochland")
+saveWidget(curr.plt, "D:/2022_DSPG_landuse/ShinyApp/data/Soil_Quality/Goochland/temp.html", selfcontained = FALSE)
+webshot("D:/2022_DSPG_landuse/ShinyApp/data/Soil_Quality/Goochland/temp.html", file = filenames,
+        cliprect = "viewport")
+
+curr.plt <- soil.Function("Powhatan")
+saveWidget(curr.plt, "D:/2022_DSPG_landuse/ShinyApp/data/Soil_Quality/Powhatan/temp.html", selfcontained = FALSE)
+webshot("D:/2022_DSPG_landuse/ShinyApp/data/Soil_Quality/Powhatan/temp.html", file = filenames,
+        cliprect = "viewport")
+
+# Travel time
 curr.plt <- travelTime.func("Goochland")
 saveWidget(curr.plt, "www/trafficPNGs/temp.html", selfcontained = FALSE)
 webshot("www/trafficPNGs/temp.html", file = "www/trafficPNGs/goochProx.png")
@@ -283,8 +378,6 @@ webshot("www/trafficPNGs/temp.html", file = "www/trafficPNGs/goochProx.png")
 curr.plt <- travelTime.func("Powhatan")
 saveWidget(curr.plt, "www/trafficPNGs/temp.html", selfcontained = FALSE)
 webshot("www/trafficPNGs/temp.html", file = "www/trafficPNGs/powProx.png")
-
-
 
 
 filenames <- c(paste0("data/Cropland/CroplandPngs/", "goochCrop", c("12", "21"), ".png"),
@@ -297,41 +390,7 @@ for(i in 1:2){
 }
 
 
-
-gtraffic<- st_read("data/Traffic_Hotspot/Goochland_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-groads<- st_read("data/Traffic_Hotspot/Gooch_roads.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-ptraffic<- st_read("data/Traffic_Hotspot/Powhatan_Traffic_Heatmap.shp") %>% st_transform("+proj=longlat +datum=WGS84")
-proads<- st_read("data/Traffic_Hotspot/Pow_roads.shp") %>%  st_transform("+proj=longlat +datum=WGS84")
-
-trafficVol.func <- function(county){
-  trafficVol.plt <- leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
-    addTiles()
-  
-  if(county == "Powhatan"){
-    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.9188, lat=37.5415 , zoom=11) %>% addPolygons(data = po_cnty, fillOpacity = 0)
-    roadData <- proads
-    trafficData <- ptraffic
-    position <- "bottomright"
-  }
-  else{
-    trafficVol.plt <- trafficVol.plt %>% setView(lng=-77.885376, lat=37.73143, zoom = 11) %>% addPolygons(data = gl_cnty, fillOpacity = 0)
-    roadData <- groads
-    trafficData <- gtraffic
-    position <- "bottomleft"
-  }
-  
-  trafficVol.plt <- trafficVol.plt %>%
-    addPolygons(data=roadData, weight=1, color = "black", fillOpacity=0)%>%
-    addPolygons(data=filter(trafficData, gridcode==1), weight=0, fillOpacity = 0.5, fillColor = "green", group = "Less than 1,000")%>%
-    addPolygons(data=filter(trafficData, gridcode==2), weight=0, fillOpacity = 0.5, fillColor = "yellow", group = "1,000 to 5,000")%>%
-    addPolygons(data=filter(trafficData, gridcode==3), weight=0, fillOpacity = 0.5, fillColor = "orange", group = "5,000 to 10,000")%>%
-    addPolygons(data=filter(trafficData, gridcode==4), weight=0, fillOpacity = 0.5, fillColor = 'red', group= "10,000 to 25,000")%>%
-    addPolygons(data=filter(trafficData, gridcode==5), weight=0, fillOpacity = 0.5, fillColor ='maroon', group= "More than 25,000")%>%
-    addLegend(position = position, labels = c("Less than 1,000", "1,000 to 5,000", "5,000 to 10,000", "10,000 to 25,000", "More than 25,000"),
-              colors = c("green", "yellow", "orange", "red", "maroon"))
-  trafficVol.plt
-}
-
+# Traffic volumes
 curr.plt <- trafficVol.func("Powhatan")
 saveWidget(curr.plt, "www/trafficPNGs/temp.html", selfcontained = FALSE)
 webshot("www/trafficPNGs/temp.html", file = "www/trafficPNGs/powVol.png")
